@@ -1,0 +1,47 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>mcp-compat-probe dataset</title>
+<style>
+ body{font:14px system-ui,sans-serif;margin:2rem;max-width:1200px}
+ table{border-collapse:collapse} td,th{border:1px solid #ccc;padding:2px 6px;text-align:left}
+ .ok{background:#dfd} .bad{background:#fcc} .unk{background:#eee} .note{background:#ffd;padding:.5rem}
+</style>
+<h1>mcp-compat-probe dataset</h1>
+<p>Does each LLM provider API accept a given MCP tool JSON Schema construct? Built by AI agents as part of an
+experiment run by start-up-team-k.
+<a href="https://github.com/start-up-team-k/mcp-compat-probe">Source and docs</a>.</p>
+<div id="status" class="note">Loading...</div>
+<h2>Live measurements</h2><div id="measured"></div>
+<h2>Issue-derived expectations (not measured)</h2><div id="expected"></div>
+<h2>Raw files</h2><ul id="files"></ul>
+<script>
+const get = u => fetch(u).then(r => { if (!r.ok) throw new Error(u + " " + r.status); return r.json(); });
+const el = (tag, text, cls) => { const e = document.createElement(tag); if (text !== undefined) e.textContent = text; if (cls) e.className = cls; return e; };
+function table(head, rows) {
+  const t = el("table"), h = el("tr");
+  head.forEach(x => h.appendChild(el("th", x))); t.appendChild(h);
+  rows.forEach(r => { const tr = el("tr"); r.forEach(c => tr.appendChild(typeof c === "object" ? el("td", c.t, c.c) : el("td", c))); t.appendChild(tr); });
+  return t;
+}
+Promise.all([get("data/latest.json"), get("data/expected-from-issues.json"), get("data/index.json").catch(() => [])]).then(([latest, exp, files]) => {
+  const res = latest.results || [];
+  const st = document.getElementById("status");
+  if (!res.length) {
+    st.textContent = "No live measurements yet. No API keys have run the probe workflow, so every cell below is unknown. Entries marked issue-derived come from public bug reports, not from our own measurements.";
+  } else {
+    st.textContent = "Last updated " + latest.generated_at + ". Cells show the HTTP status and date of the latest measurement.";
+  }
+  const cfgs = [...new Set(res.map(r => r.config))], probes = [...new Set(res.map(r => r.probe_id))];
+  const by = {}; res.forEach(r => by[r.probe_id + "|" + r.config] = r);
+  document.getElementById("measured").appendChild(res.length ? table(["probe"].concat(cfgs), probes.map(p => [p].concat(cfgs.map(c => {
+    const r = by[p + "|" + c];
+    return r ? { t: (r.accepted ? "accepted " : "rejected ") + r.http_status + " " + r.measured_at.slice(0, 10), c: r.accepted ? "ok" : "bad" } : { t: "unknown", c: "unk" };
+  })))) : el("p", "none"));
+  document.getElementById("expected").appendChild(table(["probe", "config", "expected", "source", "quote"],
+    exp.expectations.map(e => [e.probe_id, e.config, "rejected (not measured)", e.source_url, e.quote])));
+  const ul = document.getElementById("files");
+  ["latest.json", "expected-from-issues.json"].concat(files.map(f => "results/" + f)).forEach(f => {
+    const li = el("li"), a = el("a", f); a.href = "data/" + f; li.appendChild(a); ul.appendChild(li);
+  });
+}).catch(e => { document.getElementById("status").textContent = "Could not load dataset: " + e.message; });
+</script>

@@ -1,0 +1,69 @@
+{
+ "schema_version": 1,
+ "_comment": "NOT MEASURED. Expectations derived from error text quoted in public issues. The checker labels them 'issue-derived' and any live measurement in latest.json overrides them.",
+ "expectations": [
+  {
+   "probe_id": "top_anyof",
+   "config": "anthropic_messages",
+   "accepted": false,
+   "source_url": "https://github.com/makenotion/notion-mcp-server/issues/340",
+   "quote": "tools.N.custom.input_schema: input_schema does not support oneOf, allOf, or anyOf at the top level",
+   "note": "E-003. Anthropic error text from the issue.",
+   "measured": false
+  },
+  {
+   "probe_id": "top_anyof",
+   "config": "openai",
+   "accepted": false,
+   "source_url": "https://github.com/makenotion/notion-mcp-server/issues/340",
+   "quote": "Both Anthropic and OpenAI reject this at the API level",
+   "note": "E-003. Issue reports the keywords rejected at the top level; the exact keyword per provider is not itemized in the issue.",
+   "measured": false
+  },
+  {
+   "probe_id": "top_oneof",
+   "config": "anthropic_messages",
+   "accepted": false,
+   "source_url": "https://github.com/makenotion/notion-mcp-server/issues/340",
+   "quote": "tools.N.custom.input_schema: input_schema does not support oneOf, allOf, or anyOf at the top level",
+   "note": "E-003. Anthropic error text from the issue.",
+   "measured": false
+  },
+  {
+   "probe_id": "top_oneof",
+   "config": "openai",
+   "accepted": false,
+   "source_url": "https://github.com/makenotion/notion-mcp-server/issues/340",
+   "quote": "Both Anthropic and OpenAI reject this at the API level",
+   "note": "E-003. Issue reports the keywords rejected at the top level; the exact keyword per provider is not itemized in the issue.",
+   "measured": false
+  },
+  {
+   "probe_id": "top_allof",
+   "config": "anthropic_messages",
+   "accepted": false,
+   "source_url": "https://github.com/makenotion/notion-mcp-server/issues/340",
+   "quote": "tools.N.custom.input_schema: input_schema does not support oneOf, allOf, or anyOf at the top level",
+   "note": "E-003. Anthropic error text from the issue.",
+   "measured": false
+  },
+  {
+   "probe_id": "top_allof",
+   "config": "openai",
+   "accepted": false,
+   "source_url": "https://github.com/makenotion/notion-mcp-server/issues/340",
+   "quote": "Both Anthropic and OpenAI reject this at the API level",
+   "note": "E-003. Issue reports the keywords rejected at the top level; the exact keyword per provider is not itemized in the issue.",
+   "measured": false
+  },
+  {
+   "probe_id": "type_array_null",
+   "config": "gemini_parameters",
+   "accepted": false,
+   "source_url": "https://github.com/n8n-io/n8n/issues/15553",
+   "quote": "Invalid JSON payload received. Unknown name \"type\" at 'tools[0].function_declarations[1].parameters.properties[1].value': Proto field is not repeating, cannot start list.",
+   "note": "E-004. The error points at properties[i].value (a property schema) where the key \"type\" is rejected with 'Proto field is not repeating, cannot start list', i.e. `type` given as a JSON array (e.g. [\"string\",\"null\"]) instead of a single string. The issue thread itself never shows the schema; the array form is inferred from the proto error and a later comment in the same thread. Inferred, not measured.",
+   "measured": false
+  }
+ ]
+}

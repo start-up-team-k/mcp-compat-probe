@@ -1,0 +1,62 @@
+# Weekly measurement against live provider APIs.
+# Secrets are available ONLY in the `measure` job (environment "probe", read-only token).
+# Triggers are limited to schedule and workflow_dispatch; never pull_request_target.
+name: probe
+on:
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
+permissions: {}
+concurrency:
+  group: probe
+  cancel-in-progress: false
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    environment: probe
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Probe live APIs (providers without a key are skipped)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python -m mcp_compat_probe probe
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: data
+          path: mcp_compat_probe/data
+          if-no-files-found: ignore
+  commit:
+    needs: measure
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # commit results
+      actions: write    # dispatch pages.yml (pushes by GITHUB_TOKEN do not trigger it)
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: data
+          path: mcp_compat_probe/data
+      - name: Commit results and refresh Pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add mcp_compat_probe/data
+          if git diff --cached --quiet; then echo "no new data"; exit 0; fi
+          git commit -m "data: probe results $(date -u +%F)"
+          git push
+          gh workflow run pages.yml

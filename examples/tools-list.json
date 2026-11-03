@@ -1,0 +1,20 @@
+{
+  "tools": [
+    {
+      "name": "search",
+      "description": "Plain tool.",
+      "inputSchema": {"type": "object", "properties": {"q": {"type": "string"}}, "required": ["q"], "additionalProperties": false}
+    },
+    {
+      "name": "create_attachment",
+      "description": "Top-level anyOf, as in notion-mcp-server issue 340.",
+      "inputSchema": {"type": "object", "properties": {"content": {"type": "string"}, "source_url": {"type": "string"}},
+        "anyOf": [{"required": ["content"]}, {"required": ["source_url"]}]}
+    },
+    {
+      "name": "update_user",
+      "description": "Nullable property via a type array, as in n8n issue 15553.",
+      "inputSchema": {"type": "object", "properties": {"nickname": {"type": ["string", "null"]}}}
+    }
+  ]
+}
