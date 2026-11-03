@@ -20,8 +20,9 @@ from .probes import nodes
 D07, D2020 = "draft-07", "2020-12"
 ONLY_2020 = ("prefixItems", "unevaluatedProperties", "unevaluatedItems", "dependentSchemas", "dependentRequired",
              "$dynamicRef", "$dynamicAnchor", "minContains", "maxContains")
-NEEDS_CONFIG = re.compile(r"api[_ -]?key|token|credential|secret|not set|missing|required|env|auth|login|config",
-                          re.I)
+# ponytail: keyword guess on stderr; false positives/negatives possible, so the raw error is always stored.
+NEEDS_CONFIG = re.compile(r"api[_ -]?key|access[_ -]?token|credential|secret|not set|environment variable|"
+                          r"authentication required|sign-in|log ?in|unauthori[sz]ed", re.I)
 
 
 def dialect(schema):
