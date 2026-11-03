@@ -1,0 +1,3925 @@
+{
+ "tools": [
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Search Awards"
+   },
+   "description": "Search federal awards (contracts, IDVs, grants, loans, etc.) on USASpending.gov.\n\nThis is the primary workhorse for finding awards. Returns matching awards\nwith standard fields (Award ID, Recipient, Description, Amount, Agencies,\nNAICS, PSC, dates). Use get_award_detail() with the generated_internal_id\nfrom results to get full award details.\n\nImportant rules:\n- award_type groups cannot be mixed; pick one category per call\n- time_period_start/end use YYYY-MM-DD format\n- award_amount_min/max are in USD\n- place_of_performance_state is a 2-letter USPS code (e.g. 'MD', 'VA')\n- For loans, use award_type='loans' and sort='Loan Value'\n- def_codes filters to Disaster Emergency Fund codes (COVID-19, IIJA,\n  IRA supplementals); see get_def_codes_reference() for the list\n\nFiltering to specific contracting commands (NAVSEA, AFRL, etc.):\nUSASpending's subtier level is at the service branch (Department of the\nNavy, Army, Air Force), not the contracting command. To filter to a\nspecific command, use keywords with the PIID office prefix instead:\n- NAVSEA contracts:  keywords=['N00024']\n- Army Contracting:  keywords=['W91CRB']\n- AFRL:              keywords=['FA8650']\n- NAVAIR:            keywords=['N00019']\nThis performs a substring match on the PIID field and is more reliable\nthan the award_ids filter for partial matches.\n\nCommon filter value references:\n- set_aside_type_codes: SBA, SBP, 8A, 8AN, HZC, HZS, SDVOSBS, SDVOSBC,\n  WOSB, WOSBSS, EDWOSB, EDWOSBSS, VSA\n- extent_competed_type_codes: A (Full & Open), B, C, D, E, F, G, CDO, NDO\n- contract_pricing_type_codes: J (FFP), Y (T&M), Z (LH), U (CPFF),\n  V (CPIF), R (CPAF), L (FP Incentive), M (FP Award Fee)\n\nIMPORTANT: awarding_agency/funding_agency must be the FULL TOPTIER NAME,\nnot a slug. Use 'Department of Defense', NOT 'department-of-defense'.\nSlugs silently return zero results, and so does any name that is not a\ntoptier agency: the military departments are SUBTIERS, so pass\nawarding_agency='Department of Defense' with\nawarding_subagency='Department of the Navy' (never 'Department of the\nNavy' as awarding_agency). A mismatched pair (a subagency that does not\nbelong to the given toptier) also silently returns zero results. Use\nlist_toptier_agencies() and get_agency_sub_agencies() for exact names.\n\nResult caveats: recipient_name matches corporate affiliations, so a\nparent-company search can return joint ventures whose display names\nshare no text with the query (a Hanford JV surfaces under 'Leidos');\nverify names before presenting a definitive list. Large pulls can\nexceed MCP client payload budgets (limit=100 has measured ~90K\ncharacters); page in batches of 25-30 for big result sets.\n\n\"Award Amount\" is the award's lifetime obligation, not the amount in\nthe time window. There is no period-of-performance end-date filter, so\nexpiring-contract (recompete) questions can't be filtered here: sorting\nby 'End Date' over an action-date window returns long-ended awards that\nhad a closeout mod; filter the End Date column yourself.\n\ndate_type controls the award date window. Omitted (the default),\nthe latest action must be on/after the window start and the first signing\non/before its end. This interval overlap does NOT prove an action occurred\ninside the window. For actual dated actions use spending_by_transaction,\nread every page, and deduplicate award identifiers for distinct awards;\nget_transactions provides a discovered award's complete action history.\n'action_date' bounds the latest action, not any action; 'date_signed'\nbounds first signing; 'last_modified_date' bounds the latest update.\n'new_awards_only' keeps awards first signed in the window.\ndate_type needs time_period_start and/or time_period_end.\n\nprogram_numbers filters assistance awards by assistance listing (CFDA)\nnumber, e.g. ['93.778'] for Medicaid; use it with award_type='grants',\n'loans', 'direct_payments', or 'other'. autocomplete_cfda() finds numbers\nby program name.\n",
+   "inputSchema": {
+    "properties": {
+     "award_type": {
+      "default": "contracts",
+      "enum": [
+       "contracts",
+       "idvs",
+       "grants",
+       "loans",
+       "direct_payments",
+       "other"
+      ],
+      "title": "Award Type",
+      "type": "string"
+     },
+     "keywords": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Keywords"
+     },
+     "awarding_agency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Awarding Agency"
+     },
+     "awarding_subagency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Awarding Subagency"
+     },
+     "funding_agency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Funding Agency"
+     },
+     "recipient_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Recipient Name"
+     },
+     "naics_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Naics Codes"
+     },
+     "psc_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Psc Codes"
+     },
+     "set_aside_type_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Set Aside Type Codes"
+     },
+     "extent_competed_type_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Extent Competed Type Codes"
+     },
+     "contract_pricing_type_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Contract Pricing Type Codes"
+     },
+     "time_period_start": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Time Period Start"
+     },
+     "time_period_end": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Time Period End"
+     },
+     "date_type": {
+      "anyOf": [
+       {
+        "enum": [
+         "action_date",
+         "date_signed",
+         "last_modified_date",
+         "new_awards_only"
+        ],
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Date Type"
+     },
+     "award_amount_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Award Amount Min"
+     },
+     "award_amount_max": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Award Amount Max"
+     },
+     "place_of_performance_state": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Place Of Performance State"
+     },
+     "award_ids": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Award Ids"
+     },
+     "def_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Def Codes"
+     },
+     "program_numbers": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Program Numbers"
+     },
+     "sort": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Sort"
+     },
+     "order": {
+      "default": "desc",
+      "enum": [
+       "asc",
+       "desc"
+      ],
+      "title": "Order",
+      "type": "string"
+     },
+     "limit": {
+      "default": 25,
+      "title": "Limit",
+      "type": "integer"
+     },
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     }
+    },
+    "type": "object",
+    "title": "search_awardsArguments"
+   },
+   "name": "search_awards",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "search_awardsDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Award Count"
+   },
+   "description": "Count awards matching filters, broken down by award category.\n\nReturns counts grouped by: contracts, idvs, grants, loans, direct_payments, other.\nUse this for dimensional analysis: how many FFP vs T&M awards, how many\ncompeted vs sole-source, how many small business set-asides, etc.\n\nUnlike search_awards, this returns total counts across ALL award categories\nin a single call (not just the one specified in award_type). The award_type\nparameter is ignored here; filters apply to the count query directly.\n\ndef_codes filters to Disaster Emergency Fund codes; see\nget_def_codes_reference().\n\nAt least one filter is required (the API rejects empty filter sets with HTTP 400).\nTypical usage: pass time_period_start + time_period_end, or a keywords/agency filter.\n\ndate_type controls the award date window. Omitted (the default),\nthe latest action must be on/after the window start and the first signing\non/before its end. This interval overlap does NOT prove an action occurred\ninside the window. For actual dated actions use spending_by_transaction,\nread every page, and deduplicate award identifiers for distinct awards;\nget_transactions provides a discovered award's complete action history.\n'action_date' bounds the latest action, not any action; 'date_signed'\nbounds first signing; 'last_modified_date' bounds the latest update.\n'new_awards_only' keeps awards first signed in the window.\ndate_type needs time_period_start and/or time_period_end.\n\nprogram_numbers filters assistance awards by assistance listing (CFDA)\nnumber, e.g. ['93.778'] for Medicaid; use it with award_type='grants',\n'loans', 'direct_payments', or 'other'. autocomplete_cfda() finds numbers\nby program name.\n",
+   "inputSchema": {
+    "properties": {
+     "award_type": {
+      "default": "contracts",
+      "enum": [
+       "contracts",
+       "idvs",
+       "grants",
+       "loans",
+       "direct_payments",
+       "other"
+      ],
+      "title": "Award Type",
+      "type": "string"
+     },
+     "keywords": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Keywords"
+     },
+     "awarding_agency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Awarding Agency"
+     },
+     "awarding_subagency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Awarding Subagency"
+     },
+     "funding_agency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Funding Agency"
+     },
+     "recipient_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Recipient Name"
+     },
+     "naics_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Naics Codes"
+     },
+     "psc_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Psc Codes"
+     },
+     "set_aside_type_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Set Aside Type Codes"
+     },
+     "extent_competed_type_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Extent Competed Type Codes"
+     },
+     "contract_pricing_type_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Contract Pricing Type Codes"
+     },
+     "time_period_start": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Time Period Start"
+     },
+     "time_period_end": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Time Period End"
+     },
+     "date_type": {
+      "anyOf": [
+       {
+        "enum": [
+         "action_date",
+         "date_signed",
+         "last_modified_date",
+         "new_awards_only"
+        ],
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Date Type"
+     },
+     "award_amount_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Award Amount Min"
+     },
+     "award_amount_max": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Award Amount Max"
+     },
+     "place_of_performance_state": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Place Of Performance State"
+     },
+     "def_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Def Codes"
+     },
+     "program_numbers": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Program Numbers"
+     }
+    },
+    "type": "object",
+    "title": "get_award_countArguments"
+   },
+   "name": "get_award_count",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_award_countDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Spending Over Time"
+   },
+   "description": "Aggregate spending amounts over time, grouped by fiscal year, quarter, or month.\n\nUse this to visualize spending trends, identify fiscal-year-end spikes,\nor compare spending patterns across years.\n\nNote: The API returns fiscal_year as a STRING. Cast to int for numeric\ncomparisons. quarter and month are FISCAL periods (month 1 = October,\nquarter 1 = October-December). Buckets are clipped to the window, so a\ncalendar-2025 window returns a partial fiscal_year '2025' (January-\nSeptember only) and a partial '2026' (October-December); neither is\nthat whole fiscal year.\n\nDoD contract actions are published 90 days late, so when the window\nreaches into the last 90 days and DoD is in scope the answer carries a\ndata_note: those months are understated, so don't read them as a drop.\n\nawarding_agency must be a TOPTIER agency name ('Department of Defense').\nMilitary departments are subtiers: pass\nawarding_subagency='Department of the Navy'. A non-toptier name in\nawarding_agency (or a subagency that does not belong to the given\ntoptier) silently returns all-zero aggregates.\n\nAt least one filter is required (the API rejects empty filter sets with HTTP 400).\nTypical usage: pass time_period_start + time_period_end.\n\ndate_type controls the transaction date window. Omitted (the default)\nor 'action_date', it selects transaction actions inside the window.\n'date_signed' selects the associated award's first signing date;\n'last_modified_date' selects transaction update dates. 'new_awards_only'\nretains in-window actions associated with awards first signed in the\nwindow. These are transaction obligation totals, not new-award counts:\nuse new_awards_over_time for counts. Award search/count tools use a\ndifferent default interval-overlap rule.\ndate_type needs time_period_start and/or time_period_end.\n\nprogram_numbers filters assistance awards by assistance listing (CFDA)\nnumber, e.g. ['93.778'] for Medicaid; use it with award_type='grants',\n'loans', 'direct_payments', or 'other'. autocomplete_cfda() finds numbers\nby program name.\n",
+   "inputSchema": {
+    "properties": {
+     "group": {
+      "default": "fiscal_year",
+      "enum": [
+       "fiscal_year",
+       "quarter",
+       "month"
+      ],
+      "title": "Group",
+      "type": "string"
+     },
+     "keywords": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Keywords"
+     },
+     "awarding_agency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Awarding Agency"
+     },
+     "awarding_subagency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Awarding Subagency"
+     },
+     "funding_agency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Funding Agency"
+     },
+     "extent_competed_type_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Extent Competed Type Codes"
+     },
+     "contract_pricing_type_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Contract Pricing Type Codes"
+     },
+     "recipient_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Recipient Name"
+     },
+     "naics_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Naics Codes"
+     },
+     "psc_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Psc Codes"
+     },
+     "award_type": {
+      "anyOf": [
+       {
+        "enum": [
+         "contracts",
+         "idvs",
+         "grants",
+         "loans",
+         "direct_payments",
+         "other"
+        ],
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Award Type"
+     },
+     "time_period_start": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Time Period Start"
+     },
+     "time_period_end": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Time Period End"
+     },
+     "date_type": {
+      "anyOf": [
+       {
+        "enum": [
+         "action_date",
+         "date_signed",
+         "last_modified_date",
+         "new_awards_only"
+        ],
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Date Type"
+     },
+     "def_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Def Codes"
+     },
+     "program_numbers": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Program Numbers"
+     }
+    },
+    "type": "object",
+    "title": "spending_over_timeArguments"
+   },
+   "name": "spending_over_time",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "spending_over_timeDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Spending by Category"
+   },
+   "description": "Aggregate spending by a dimension (top vendors, top agencies, top NAICS, etc.).\n\nThe 'category' parameter controls the grouping dimension. Common uses:\n- category='recipient': top vendors for a filter set (vendor landscape analysis)\n- category='awarding_subagency': which contracting offices within an agency\n- category='naics': which work categories got the most spending\n- category='psc': which product/service codes got the most spending\n- category='state_territory': geographic distribution\n- category='cfda': grant assistance listings\n\nNote: recipient category returns vendor names in ALL CAPS and may contain\nduplicates (subsidiaries, rebrands, re-registrations). For precise market\nshare, apply name normalization to the returned 'name' field.\n\nAt least one filter is required. An unfiltered call would silently\naggregate the entire USASpending database (all years, all agencies),\nwhich is never what a caller wants.\n\ndate_type controls the transaction date window. Omitted (the default)\nor 'action_date', it selects transaction actions inside the window.\n'date_signed' selects the associated award's first signing date;\n'last_modified_date' selects transaction update dates. 'new_awards_only'\nretains in-window actions associated with awards first signed in the\nwindow. These are transaction obligation totals, not new-award counts:\nuse new_awards_over_time for counts. Award search/count tools use a\ndifferent default interval-overlap rule.\ndate_type needs time_period_start and/or time_period_end.\n\nprogram_numbers filters assistance awards by assistance listing (CFDA)\nnumber, e.g. ['93.778'] for Medicaid; use it with award_type='grants',\n'loans', 'direct_payments', or 'other'. autocomplete_cfda() finds numbers\nby program name.\n",
+   "inputSchema": {
+    "properties": {
+     "category": {
+      "enum": [
+       "awarding_agency",
+       "awarding_subagency",
+       "funding_agency",
+       "funding_subagency",
+       "recipient",
+       "cfda",
+       "naics",
+       "psc",
+       "country",
+       "county",
+       "district",
+       "state_territory",
+       "federal_account",
+       "defc"
+      ],
+      "title": "Category",
+      "type": "string"
+     },
+     "keywords": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Keywords"
+     },
+     "awarding_agency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Awarding Agency"
+     },
+     "awarding_subagency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Awarding Subagency"
+     },
+     "funding_agency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Funding Agency"
+     },
+     "recipient_name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Recipient Name"
+     },
+     "extent_competed_type_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Extent Competed Type Codes"
+     },
+     "contract_pricing_type_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Contract Pricing Type Codes"
+     },
+     "naics_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Naics Codes"
+     },
+     "psc_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Psc Codes"
+     },
+     "award_type": {
+      "anyOf": [
+       {
+        "enum": [
+         "contracts",
+         "idvs",
+         "grants",
+         "loans",
+         "direct_payments",
+         "other"
+        ],
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Award Type"
+     },
+     "set_aside_type_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Set Aside Type Codes"
+     },
+     "time_period_start": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Time Period Start"
+     },
+     "time_period_end": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Time Period End"
+     },
+     "date_type": {
+      "anyOf": [
+       {
+        "enum": [
+         "action_date",
+         "date_signed",
+         "last_modified_date",
+         "new_awards_only"
+        ],
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Date Type"
+     },
+     "def_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Def Codes"
+     },
+     "program_numbers": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Program Numbers"
+     },
+     "limit": {
+      "default": 10,
+      "title": "Limit",
+      "type": "integer"
+     },
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "category"
+    ],
+    "type": "object",
+    "title": "spending_by_categoryArguments"
+   },
+   "name": "spending_by_category",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "spending_by_categoryDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Award Detail"
+   },
+   "description": "Fetch full details for a single award by its generated_internal_id.\n\nUse the generated_internal_id value returned by search_awards to fetch\nthe complete award record. Returns: PIID, full description, total\nobligation, recipient details, parent award info, latest transaction\ncontract data (competition, set-aside, pricing type), period of\nperformance, place of performance, NAICS hierarchy, PSC hierarchy,\nbase and all options value, and sub-award totals. Award-level outlays and\ntotal_account_obligation are partial or lagged File C measures, not a\nreliable amount paid; compare with total_obligation for coverage.\n\nAccepts either a generated award id (CONT_AWD_*, CONT_IDV_*, ASST_NON_*,\nASST_AGG_*) or the numeric internal database id from a prior response.\n\nExample generated_award_id format: CONT_AWD_N0002424C0085_9700_N0002421D0001_9700\n",
+   "inputSchema": {
+    "properties": {
+     "generated_award_id": {
+      "title": "Generated Award Id",
+      "type": "string"
+     }
+    },
+    "required": [
+     "generated_award_id"
+    ],
+    "type": "object",
+    "title": "get_award_detailArguments"
+   },
+   "name": "get_award_detail",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_award_detailDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Transactions"
+   },
+   "description": "Fetch the full transaction (modification) history for an award.\n\nEvery modification, option exercise, and de-obligation is a transaction.\nModification number '0' is the original base award. Use to understand\nthe full lifecycle of a contract including its descriptive text at each\npoint in time.\n\nReturns per transaction: id, type, action_date, action_type,\nmodification_number, description, federal_action_obligation.\n",
+   "inputSchema": {
+    "properties": {
+     "generated_award_id": {
+      "title": "Generated Award Id",
+      "type": "string"
+     },
+     "limit": {
+      "default": 100,
+      "title": "Limit",
+      "type": "integer"
+     },
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     },
+     "sort": {
+      "default": "action_date",
+      "title": "Sort",
+      "type": "string"
+     },
+     "order": {
+      "default": "asc",
+      "enum": [
+       "asc",
+       "desc"
+      ],
+      "title": "Order",
+      "type": "string"
+     }
+    },
+    "required": [
+     "generated_award_id"
+    ],
+    "type": "object",
+    "title": "get_transactionsArguments"
+   },
+   "name": "get_transactions",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_transactionsDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Award Funding"
+   },
+   "description": "Fetch File C funding data for an award: federal account, object class, program activity.\n\nShows which Treasury accounts, object classes, and program activities\nfunded an award. File C can be partial or lagged; these rows do not\nestablish the full award obligation or amount paid to the contractor.\n\nSort fields: reporting_fiscal_date, account_title,\ntransaction_obligated_amount, object_class.\n",
+   "inputSchema": {
+    "properties": {
+     "generated_award_id": {
+      "title": "Generated Award Id",
+      "type": "string"
+     },
+     "limit": {
+      "default": 50,
+      "title": "Limit",
+      "type": "integer"
+     },
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     },
+     "sort": {
+      "default": "reporting_fiscal_date",
+      "title": "Sort",
+      "type": "string"
+     },
+     "order": {
+      "default": "desc",
+      "enum": [
+       "asc",
+       "desc"
+      ],
+      "title": "Order",
+      "type": "string"
+     }
+    },
+    "required": [
+     "generated_award_id"
+    ],
+    "type": "object",
+    "title": "get_award_fundingArguments"
+   },
+   "name": "get_award_funding",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_award_fundingDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get IDV Children"
+   },
+   "description": "Fetch child awards (task/delivery orders) under an IDV.\n\nFor a Multiple Award IDV, child_awards returns the task orders or delivery\norders placed against it. For a parent IDV, child_idvs returns the\ndownstream IDV structure. grandchild_awards walks the hierarchy.\n\nField name differences from search_awards: children use 'piid' (not\n'Award ID'), 'obligated_amount' (not 'Award Amount'), and\n'generated_unique_award_id' (not 'generated_internal_id').\n\nAn active vehicle can legitimately return zero children here:\nUSASpending's award cross-linking has gaps. Treat an empty result as a\nreporting gap, not proof that no orders exist. Try get_idv_activity()\non the same id. A search_awards call with keywords=['<IDV PIID>'] only\nfinds orders whose description happens to cite the IDV, so it misses\norders (often the largest) and is no proof of completeness.\n",
+   "inputSchema": {
+    "properties": {
+     "generated_idv_id": {
+      "title": "Generated Idv Id",
+      "type": "string"
+     },
+     "child_type": {
+      "default": "child_awards",
+      "enum": [
+       "child_awards",
+       "child_idvs",
+       "grandchild_awards"
+      ],
+      "title": "Child Type",
+      "type": "string"
+     },
+     "limit": {
+      "default": 50,
+      "title": "Limit",
+      "type": "integer"
+     },
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     },
+     "sort": {
+      "default": "period_of_performance_start_date",
+      "title": "Sort",
+      "type": "string"
+     },
+     "order": {
+      "default": "desc",
+      "enum": [
+       "asc",
+       "desc"
+      ],
+      "title": "Order",
+      "type": "string"
+     }
+    },
+    "required": [
+     "generated_idv_id"
+    ],
+    "type": "object",
+    "title": "get_idv_childrenArguments"
+   },
+   "name": "get_idv_children",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_idv_childrenDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Lookup PIID"
+   },
+   "description": "Look up awards by their exact PIID, across contracts AND IDVs.\n\nLooks for awards whose own PIID is exactly this value (the award_ids\nfilter), in both contracts and IDVs, and says how many share it.\nmatch='exact' rows are the awards themselves: an IDV PIID returns the\nIDV (award_type='idv'; its Award Amount is what was obligated on the IDV\nrecord itself, usually 0, so use get_idv_amounts() for the order total).\nPIIDs are not unique: task and delivery order numbers like '0001' repeat\nunder different parent IDVs, so check 'ambiguous' and tell matches apart\nby parent_idv_piid and Awarding Agency.\n\nOnly when nothing has that exact PIID does it fall back to keyword\nsearch, and those rows come back as match='fuzzy': keyword search\nmatches the award's own PIID and its description text, NOT its parent\nIDV, so a vehicle PIID or prefix returns only orders whose description\nhappens to cite it. For the orders under a vehicle use get_idv_activity()\nor get_idv_children() with the IDV's generated_internal_id; for a\ncontracting-office prefix (N00024, W91CRB, FA8650) use search_awards\nkeywords with a time window.\n\nlimit applies to contracts and to IDVs separately. Use\nget_award_detail() with a returned generated_internal_id for the full\nrecord. Handy for enriching PRISM, Contract Court, or FPDS exports where\nyou have a PIID but don't know whether it's a contract or IDV.\n",
+   "inputSchema": {
+    "properties": {
+     "piid": {
+      "title": "Piid",
+      "type": "string"
+     },
+     "limit": {
+      "default": 5,
+      "title": "Limit",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "piid"
+    ],
+    "type": "object",
+    "title": "lookup_piidArguments"
+   },
+   "name": "lookup_piid",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "lookup_piidDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Autocomplete PSC"
+   },
+   "description": "Autocomplete lookup for Product/Service Codes (PSC).\n\nUse exact four-character codes ('R499', 'D302') or description keywords\n('professional', 'application'). Returns matching PSC entries with\ncode and description. Two-character families such as 'D3' can return\nno autocomplete matches even when their descendant codes exist.\nFor partial PSC families or prefix expansion, use get_psc_filter_tree()\ninstead: path='Service/D/D3/' lists the D3 descendants; start with\npath='Service/A/' to discover and drill into an AJ family.\n\nMinimum 2 characters required. Single-character queries return first-N\nalphabetical results from the upstream API (useless for matching) and\nempty strings return HTTP 400.\n",
+   "inputSchema": {
+    "properties": {
+     "search_text": {
+      "title": "Search Text",
+      "type": "string"
+     },
+     "limit": {
+      "default": 10,
+      "title": "Limit",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "search_text"
+    ],
+    "type": "object",
+    "title": "autocomplete_pscArguments"
+   },
+   "name": "autocomplete_psc",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "autocomplete_pscDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Autocomplete NAICS"
+   },
+   "description": "Autocomplete lookup for NAICS codes.\n\nAccepts partial codes ('541') or keywords ('software'). Returns matching\nNAICS entries with code and description.\n\nMinimum 2 characters required. Short queries silently match substrings\ninside parenthetical notes (e.g. 'x' matches 'except') and produce\nnonsense results, so we require 2+ chars.\n\nexclude_retired defaults to True. The upstream NAICS taxonomy still\nreturns codes retired in 2012/2017/2022; these are almost never what\ncallers want. Set exclude_retired=False to include them.\n",
+   "inputSchema": {
+    "properties": {
+     "search_text": {
+      "title": "Search Text",
+      "type": "string"
+     },
+     "limit": {
+      "default": 10,
+      "title": "Limit",
+      "type": "integer"
+     },
+     "exclude_retired": {
+      "default": true,
+      "title": "Exclude Retired",
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "search_text"
+    ],
+    "type": "object",
+    "title": "autocomplete_naicsArguments"
+   },
+   "name": "autocomplete_naics",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "autocomplete_naicsDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "List Toptier Agencies"
+   },
+   "description": "List all top-tier federal agencies tracked by USASpending.\n\nReturns agency codes, names, abbreviations, and current-year budgetary\nresources. Use the returned 'toptier_code' values with get_agency_overview().\n",
+   "inputSchema": {
+    "properties": {},
+    "type": "object",
+    "title": "list_toptier_agenciesArguments"
+   },
+   "name": "list_toptier_agencies",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "list_toptier_agenciesDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Agency Overview"
+   },
+   "description": "Get descriptive information for an agency: name, mission, website,\ndata notes and DEF codes. It has no dollar figures; for spending use\nget_agency_obligations_by_award_category() (split by award type) or\nget_agency_budgetary_resources() (obligations and outlays by year).\n\ntoptier_code is the 3- or 4-digit agency code (e.g. '097' for DoD,\n'075' for HHS, '080' for NASA). Shorter inputs like '97' are left-padded\nto '097' automatically. Get valid codes via list_toptier_agencies().\n\nfiscal_year defaults to the last completed fiscal year, not the current\none (USAspending's own default). The answer always carries fiscal_year.\n",
+   "inputSchema": {
+    "properties": {
+     "toptier_code": {
+      "title": "Toptier Code",
+      "type": "string"
+     },
+     "fiscal_year": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Fiscal Year"
+     }
+    },
+    "required": [
+     "toptier_code"
+    ],
+    "type": "object",
+    "title": "get_agency_overviewArguments"
+   },
+   "name": "get_agency_overview",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_agency_overviewDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Agency Awards"
+   },
+   "description": "Get one obligation total and transaction count for an agency's awards\nin a fiscal year.\n\nThe total covers ALL award types together (contracts, IDVs, grants,\nloans, direct payments, other), so for most civilian agencies it is far\nlarger than contract spending (VA FY2026: $313B here vs $84B contracts).\nFor the split by award type use get_agency_obligations_by_award_category().\ntoptier_code is auto-padded to 3 digits if a shorter numeric value is\nsupplied.\n\nfiscal_year defaults to the last completed fiscal year, not the current\none (USAspending's own default, which right after October 1 holds only a\nfew days of data). The answer always carries fiscal_year.\n",
+   "inputSchema": {
+    "properties": {
+     "toptier_code": {
+      "title": "Toptier Code",
+      "type": "string"
+     },
+     "fiscal_year": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Fiscal Year"
+     }
+    },
+    "required": [
+     "toptier_code"
+    ],
+    "type": "object",
+    "title": "get_agency_awardsArguments"
+   },
+   "name": "get_agency_awards",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_agency_awardsDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get NAICS Details"
+   },
+   "description": "Get details for a NAICS code (2-6 digits).\n\nReturns the NAICS description, parent categories, and child subcategories\nif applicable.\n",
+   "inputSchema": {
+    "properties": {
+     "code": {
+      "title": "Code",
+      "type": "string"
+     }
+    },
+    "required": [
+     "code"
+    ],
+    "type": "object",
+    "title": "get_naics_detailsArguments"
+   },
+   "name": "get_naics_details",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_naics_detailsDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get PSC Filter Tree"
+   },
+   "description": "Get the PSC hierarchy tree.\n\nPass an empty path for the top-level. Drill down with paths like\n'Service/R/' to get the service professional services tree, or\n'Product/5' for product codes starting with 5.\n",
+   "inputSchema": {
+    "properties": {
+     "path": {
+      "default": "",
+      "title": "Path",
+      "type": "string"
+     }
+    },
+    "type": "object",
+    "title": "get_psc_filter_treeArguments"
+   },
+   "name": "get_psc_filter_tree",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_psc_filter_treeDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get State Profile"
+   },
+   "description": "Get the federal award totals for recipients located in a US state.\n\nExamples: '06' = California, '48' = Texas, '24' = Maryland, '51' = Virginia.\nReturns one summary: state name and code, total_prime_amount and\ntotal_prime_awards (all award types together), loan face value,\naward_amount_per_capita, total_outlays, and population / median household\nincome (older Census vintages: see pop_year and mhi_year). It has no\nbreakdown by agency, recipient or district; for those use\nspending_by_geography() or spending_by_category() with a time window.\n\nyear: a fiscal year like 2026, 'all' (every year on file) or 'latest'\n(USAspending's own default: the current fiscal year to date, which right\nafter October 1 holds only a few days of data). Defaults to the last\ncompleted fiscal year. The answer always carries fiscal_year.\n",
+   "inputSchema": {
+    "properties": {
+     "state_fips": {
+      "title": "State Fips",
+      "type": "string"
+     },
+     "year": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Year"
+     }
+    },
+    "required": [
+     "state_fips"
+    ],
+    "type": "object",
+    "title": "get_state_profileArguments"
+   },
+   "name": "get_state_profile",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_state_profileDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Search Subawards"
+   },
+   "description": "Search FFATA subaward reports on USASpending.\n\nReturns the FFATA subaward records (subcontracts under prime contracts and\nsubawards under prime grants). Complementary to the SAM.gov FFATA endpoints\nbut expressed at the USASpending data model.\n\naward_id: optional generated_internal_id (CONT_AWD_..., ASST_NON_..., etc.)\nto scope subawards to a single prime award. If omitted, returns subawards\nacross all primes for the page.\n\nPagination uses page (1-indexed) and limit (1-100).\n",
+   "inputSchema": {
+    "properties": {
+     "award_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Award Id"
+     },
+     "sort": {
+      "default": "amount",
+      "enum": [
+       "amount",
+       "action_date",
+       "subaward_number",
+       "recipient_name",
+       "description"
+      ],
+      "title": "Sort",
+      "type": "string"
+     },
+     "order": {
+      "default": "desc",
+      "enum": [
+       "asc",
+       "desc"
+      ],
+      "title": "Order",
+      "type": "string"
+     },
+     "limit": {
+      "default": 25,
+      "title": "Limit",
+      "type": "integer"
+     },
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     }
+    },
+    "type": "object",
+    "title": "search_subawardsArguments"
+   },
+   "name": "search_subawards",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "search_subawardsDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Spending by Subaward Grouped"
+   },
+   "description": "Find matching prime awards and their cumulative FFATA report totals.\n\nFilters select prime records, but subaward_count and subaward_obligation\ncover all reported subawards under each prime, not just subaward actions\nwithin time_period_start/end. This ranking is not a fiscal-period\nsubaward ranking. For dated reports, pass a returned\naward_generated_internal_id to search_subawards(award_id=...), read every\npage, and retain action_date values inside the desired period.\n\nsort accepts: award_id, subaward_count, award_generated_internal_id,\nsubaward_obligation. (These differ from search_subawards, which sorts by\namount/action_date/etc.) Anything else returns HTTP 400 from the API.\n\npage_metadata.hasNext is worked out here: the endpoint itself always\nsays false, even with more pages. Rows include primes with no\nsubawards (subaward_count 0). subaward_obligation sums FFATA reports,\nwhich can repeat cumulative amounts, so a subaward_to_award_ratio\nabove 1 is a reporting artefact, not more subcontracting than the prime.\n\nprogram_numbers filters assistance awards by assistance listing (CFDA)\nnumber, e.g. ['93.778'] for Medicaid; use it with award_type='grants',\n'loans', 'direct_payments', or 'other'. autocomplete_cfda() finds numbers\nby program name.\n",
+   "inputSchema": {
+    "properties": {
+     "time_period_start": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Time Period Start"
+     },
+     "time_period_end": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Time Period End"
+     },
+     "award_type_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Award Type Codes"
+     },
+     "awarding_agency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Awarding Agency"
+     },
+     "funding_agency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Funding Agency"
+     },
+     "naics_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Naics Codes"
+     },
+     "psc_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Psc Codes"
+     },
+     "set_aside_type_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Set Aside Type Codes"
+     },
+     "def_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Def Codes"
+     },
+     "program_numbers": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Program Numbers"
+     },
+     "sort": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Sort"
+     },
+     "order": {
+      "default": "desc",
+      "enum": [
+       "asc",
+       "desc"
+      ],
+      "title": "Order",
+      "type": "string"
+     },
+     "limit": {
+      "default": 25,
+      "title": "Limit",
+      "type": "integer"
+     },
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     }
+    },
+    "type": "object",
+    "title": "spending_by_subaward_groupedArguments"
+   },
+   "name": "spending_by_subaward_grouped",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "spending_by_subaward_groupedDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Search Recipients"
+   },
+   "description": "Search USASpending recipients (vendors and grantees) by keyword.\n\nReturns paginated recipients with their UEI, DUNS, name, and a recipient\n'id' hash for get_recipient_profile() and new_awards_over_time().\nFor get_recipient_children(), use the UEI (or legacy DUNS) from the\nparent (-P) row, not a recipient hash.\n\nkeyword can match recipient name, UEI, or DUNS. If omitted, returns the\ntop recipients ranked by `sort`.\n",
+   "inputSchema": {
+    "properties": {
+     "keyword": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Keyword"
+     },
+     "award_type": {
+      "default": "all",
+      "enum": [
+       "all",
+       "contracts",
+       "grants",
+       "loans",
+       "direct_payments",
+       "other"
+      ],
+      "title": "Award Type",
+      "type": "string"
+     },
+     "sort": {
+      "default": "amount",
+      "enum": [
+       "amount",
+       "name",
+       "duns",
+       "uei"
+      ],
+      "title": "Sort",
+      "type": "string"
+     },
+     "order": {
+      "default": "desc",
+      "enum": [
+       "asc",
+       "desc"
+      ],
+      "title": "Order",
+      "type": "string"
+     },
+     "limit": {
+      "default": 25,
+      "title": "Limit",
+      "type": "integer"
+     },
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     }
+    },
+    "type": "object",
+    "title": "search_recipientsArguments"
+   },
+   "name": "search_recipients",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "search_recipientsDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Recipient Profile"
+   },
+   "description": "Get full profile for a recipient by their USASpending hash.\n\nReturns recipient details: name, UEI, DUNS, business categories, location,\nparent (if any), and lifetime award totals. The hash is the 'id' field\nreturned by search_recipients(). (autocomplete_recipient does NOT return\nhashes; it is a name lookup only.)\n\nyear: optional 'all' or a fiscal year like 2026 (int or str both\naccepted). Default is 'latest' (trailing 12 months). Parent (-P) totals\ninclude their children. Profiles use a separate recipient rollup and can\ndiffer from transaction searches by recipient_name and award-type scope.\n",
+   "inputSchema": {
+    "properties": {
+     "recipient_hash": {
+      "title": "Recipient Hash",
+      "type": "string"
+     },
+     "year": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Year"
+     }
+    },
+    "required": [
+     "recipient_hash"
+    ],
+    "type": "object",
+    "title": "get_recipient_profileArguments"
+   },
+   "name": "get_recipient_profile",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_recipient_profileDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Recipient Children"
+   },
+   "description": "Get the child recipients (subsidiaries) of a parent recipient.\n\nPass the parent recipient's 12-character UEI (or legacy 9-digit DUNS).\nDo NOT pass a recipient hash: the /recipient/children/ endpoint is the\none recipient endpoint keyed by UEI/DUNS, and it rejects hashes with\nHTTP 400. Get the UEI from search_recipients() results (the 'uei' field\nof the -P row) or from get_recipient_profile().\n\nReturns the child recipients, each with its own -C suffixed recipient_id\nhash usable with get_recipient_profile(). Useful for mapping corporate\nstructures (e.g. Lockheed Martin parent -> all its subsidiaries).\n\nyear: optional 'all', 'latest', or a fiscal year like 2026.\n\nThe upstream endpoint returns a JSON array; it is wrapped here as\n{\"results\": [...], \"total\": N} to keep the dict-only response invariant.\n",
+   "inputSchema": {
+    "properties": {
+     "uei_or_duns": {
+      "title": "Uei Or Duns",
+      "type": "string"
+     },
+     "year": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Year"
+     }
+    },
+    "required": [
+     "uei_or_duns"
+    ],
+    "type": "object",
+    "title": "get_recipient_childrenArguments"
+   },
+   "name": "get_recipient_children",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_recipient_childrenDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Autocomplete Recipient"
+   },
+   "description": "Find recipient names by partial name or UEI/DUNS.\n\nThis is a recipient-name lookup; it does not supply the recipient hash\nfor get_recipient_profile() or new_awards_over_time(), and its UEI/DUNS\nfields may be null. Pass a returned name to search_recipients(): use\nits 'id' hash for profiles/trends, and the UEI (or legacy DUNS) from\nthe parent (-P) row for get_recipient_children().\n",
+   "inputSchema": {
+    "properties": {
+     "search_text": {
+      "title": "Search Text",
+      "type": "string"
+     },
+     "limit": {
+      "default": 10,
+      "title": "Limit",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "search_text"
+    ],
+    "type": "object",
+    "title": "autocomplete_recipientArguments"
+   },
+   "name": "autocomplete_recipient",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "autocomplete_recipientDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "List States"
+   },
+   "description": "List all states with their FIPS codes and award totals.\n\nReturns the full list of US states/territories with FIPS codes you can\npass to get_state_profile().\n\nThe /recipient/state/ endpoint returns a JSON array (not an object). We\nwrap it in {\"results\": [...]} to keep the tool return type consistent\nwith every other endpoint in this MCP.\n",
+   "inputSchema": {
+    "properties": {},
+    "type": "object",
+    "title": "list_statesArguments"
+   },
+   "name": "list_states",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "list_statesDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Agency Budgetary Resources"
+   },
+   "description": "Get an agency's budgetary resources by fiscal year.\n\nReturns agency budgetary resources, obligations and outlays for each\nfiscal year on file, plus government-wide budgetary resources and the\nagency's obligations by reported fiscal period. This endpoint does not\nprovide a discretionary-versus-mandatory breakdown.\n",
+   "inputSchema": {
+    "properties": {
+     "toptier_code": {
+      "title": "Toptier Code",
+      "type": "string"
+     }
+    },
+    "required": [
+     "toptier_code"
+    ],
+    "type": "object",
+    "title": "get_agency_budgetary_resourcesArguments"
+   },
+   "name": "get_agency_budgetary_resources",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_agency_budgetary_resourcesDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Agency Sub-Agencies"
+   },
+   "description": "List the subordinate (subtier) organizations of a toptier agency.\n\nReturns each sub-agency with its obligations, transaction count, and\nnew-award count for the given fiscal year. Useful for finding the\ncanonical subtier name to pass into search_awards() awarding_subagency.\n\nsort accepts name, total_obligations, transaction_count, or\nnew_award_count (this endpoint has no outlay column; a former\n'total_outlays' option was rejected by the API with HTTP 400).\n\nfiscal_year defaults to the last completed fiscal year, not the current\none (USAspending's own default, which right after October 1 holds only a\nfew days of data). The answer always carries fiscal_year.\n",
+   "inputSchema": {
+    "properties": {
+     "toptier_code": {
+      "title": "Toptier Code",
+      "type": "string"
+     },
+     "fiscal_year": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Fiscal Year"
+     },
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     },
+     "limit": {
+      "default": 25,
+      "title": "Limit",
+      "type": "integer"
+     },
+     "order": {
+      "default": "desc",
+      "enum": [
+       "asc",
+       "desc"
+      ],
+      "title": "Order",
+      "type": "string"
+     },
+     "sort": {
+      "default": "total_obligations",
+      "enum": [
+       "name",
+       "total_obligations",
+       "transaction_count",
+       "new_award_count"
+      ],
+      "title": "Sort",
+      "type": "string"
+     }
+    },
+    "required": [
+     "toptier_code"
+    ],
+    "type": "object",
+    "title": "get_agency_sub_agenciesArguments"
+   },
+   "name": "get_agency_sub_agencies",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_agency_sub_agenciesDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Agency Federal Accounts"
+   },
+   "description": "List the Treasury Account Symbols (federal accounts) used by an agency.\n\nReturns each federal account with its obligated amount and gross outlay\nfor the given fiscal year. Useful for understanding how an agency's\nmoney flows through Treasury.\n\nfiscal_year defaults to the last completed fiscal year, not the current\none (USAspending's own default, which right after October 1 holds only a\nfew days of data). The answer always carries fiscal_year.\n",
+   "inputSchema": {
+    "properties": {
+     "toptier_code": {
+      "title": "Toptier Code",
+      "type": "string"
+     },
+     "fiscal_year": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Fiscal Year"
+     },
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     },
+     "limit": {
+      "default": 25,
+      "title": "Limit",
+      "type": "integer"
+     },
+     "order": {
+      "default": "desc",
+      "enum": [
+       "asc",
+       "desc"
+      ],
+      "title": "Order",
+      "type": "string"
+     },
+     "sort": {
+      "default": "obligated_amount",
+      "enum": [
+       "name",
+       "obligated_amount",
+       "gross_outlay_amount"
+      ],
+      "title": "Sort",
+      "type": "string"
+     }
+    },
+    "required": [
+     "toptier_code"
+    ],
+    "type": "object",
+    "title": "get_agency_federal_accountsArguments"
+   },
+   "name": "get_agency_federal_accounts",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_agency_federal_accountsDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Agency Object Classes"
+   },
+   "description": "List the object class breakdown (what an agency spends money on).\n\nObject classes are OMB categories: Personnel Compensation, Travel,\nContractual Services, Equipment, Grants, etc. Useful for understanding\nwhat types of expenditures an agency makes.\n\nfiscal_year defaults to the last completed fiscal year, not the current\none (USAspending's own default, which right after October 1 holds only a\nfew days of data). The answer always carries fiscal_year.\n",
+   "inputSchema": {
+    "properties": {
+     "toptier_code": {
+      "title": "Toptier Code",
+      "type": "string"
+     },
+     "fiscal_year": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Fiscal Year"
+     },
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     },
+     "limit": {
+      "default": 25,
+      "title": "Limit",
+      "type": "integer"
+     },
+     "order": {
+      "default": "desc",
+      "enum": [
+       "asc",
+       "desc"
+      ],
+      "title": "Order",
+      "type": "string"
+     },
+     "sort": {
+      "default": "obligated_amount",
+      "enum": [
+       "name",
+       "obligated_amount",
+       "gross_outlay_amount"
+      ],
+      "title": "Sort",
+      "type": "string"
+     }
+    },
+    "required": [
+     "toptier_code"
+    ],
+    "type": "object",
+    "title": "get_agency_object_classesArguments"
+   },
+   "name": "get_agency_object_classes",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_agency_object_classesDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Agency Program Activities"
+   },
+   "description": "List the program activities (specific programs) within an agency.\n\nProgram activities are the specific named programs that obligate funds\n(e.g., 'Cybersecurity and Infrastructure Security Agency'). Useful for\npinpointing which program funds a specific activity.\n\nfiscal_year defaults to the last completed fiscal year, not the current\none (USAspending's own default, which right after October 1 holds only a\nfew days of data). The answer always carries fiscal_year.\n",
+   "inputSchema": {
+    "properties": {
+     "toptier_code": {
+      "title": "Toptier Code",
+      "type": "string"
+     },
+     "fiscal_year": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Fiscal Year"
+     },
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     },
+     "limit": {
+      "default": 25,
+      "title": "Limit",
+      "type": "integer"
+     },
+     "order": {
+      "default": "desc",
+      "enum": [
+       "asc",
+       "desc"
+      ],
+      "title": "Order",
+      "type": "string"
+     },
+     "sort": {
+      "default": "obligated_amount",
+      "enum": [
+       "name",
+       "obligated_amount",
+       "gross_outlay_amount"
+      ],
+      "title": "Sort",
+      "type": "string"
+     }
+    },
+    "required": [
+     "toptier_code"
+    ],
+    "type": "object",
+    "title": "get_agency_program_activitiesArguments"
+   },
+   "name": "get_agency_program_activities",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_agency_program_activitiesDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Agency Obligations by Award Category"
+   },
+   "description": "Get an agency's obligation breakdown by award category.\n\nReturns total obligated dollars split by category: contracts, IDVs, grants,\nloans, direct payments, other. Quick way to see what mix of award types\nan agency uses (heavy contractor agency vs grant-issuing agency vs mixed).\nFor DoD ('097') a fiscal year whose last 90 days are not yet published\n(DoD's 90-day delay) carries a data_note saying the total is understated.\n\nfiscal_year defaults to the last completed fiscal year, not the current\none (USAspending's own default, which right after October 1 holds only a\nfew days of data). The answer always carries fiscal_year.\n",
+   "inputSchema": {
+    "properties": {
+     "toptier_code": {
+      "title": "Toptier Code",
+      "type": "string"
+     },
+     "fiscal_year": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Fiscal Year"
+     }
+    },
+    "required": [
+     "toptier_code"
+    ],
+    "type": "object",
+    "title": "get_agency_obligations_by_award_categoryArguments"
+   },
+   "name": "get_agency_obligations_by_award_category",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_agency_obligations_by_award_categoryDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Award Funding Rollup"
+   },
+   "description": "Get a rollup of an award's funding totals.\n\nReturns total transaction obligated amount, awarding agency count,\nfunding agency count, and federal account count for a single award.\nUseful for a one-line summary of an award's funding picture.\n",
+   "inputSchema": {
+    "properties": {
+     "award_id": {
+      "title": "Award Id",
+      "type": "string"
+     }
+    },
+    "required": [
+     "award_id"
+    ],
+    "type": "object",
+    "title": "get_award_funding_rollupArguments"
+   },
+   "name": "get_award_funding_rollup",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_award_funding_rollupDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Award Subaward Count"
+   },
+   "description": "Count of subawards (FFATA subcontracts/subawards) reported on an award.",
+   "inputSchema": {
+    "properties": {
+     "award_id": {
+      "title": "Award Id",
+      "type": "string"
+     }
+    },
+    "required": [
+     "award_id"
+    ],
+    "type": "object",
+    "title": "get_award_subaward_countArguments"
+   },
+   "name": "get_award_subaward_count",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_award_subaward_countDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Award Federal Account Count"
+   },
+   "description": "Count of distinct federal accounts (TAS) funding an award.",
+   "inputSchema": {
+    "properties": {
+     "award_id": {
+      "title": "Award Id",
+      "type": "string"
+     }
+    },
+    "required": [
+     "award_id"
+    ],
+    "type": "object",
+    "title": "get_award_federal_account_countArguments"
+   },
+   "name": "get_award_federal_account_count",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_award_federal_account_countDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Award Transaction Count"
+   },
+   "description": "Count of transactions (modifications) on an award.",
+   "inputSchema": {
+    "properties": {
+     "award_id": {
+      "title": "Award Id",
+      "type": "string"
+     }
+    },
+    "required": [
+     "award_id"
+    ],
+    "type": "object",
+    "title": "get_award_transaction_countArguments"
+   },
+   "name": "get_award_transaction_count",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_award_transaction_countDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Awards Last Updated"
+   },
+   "description": "Get the timestamp of the last USASpending award data refresh.\n\nUse this to determine data freshness when comparing to other sources\n(SAM.gov Contract Awards API for example).\n",
+   "inputSchema": {
+    "properties": {},
+    "type": "object",
+    "title": "awards_last_updatedArguments"
+   },
+   "name": "awards_last_updated",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "awards_last_updatedDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Spending by Transaction"
+   },
+   "description": "Search at the transaction (modification) level.\n\nUnlike search_awards which returns one row per award, this returns one\nrow per transaction (initial action plus every modification). Useful for\ntracking obligation events over time, ceiling adjustments, deobligations,\nand admin mods.\n\nrecipient_uei is matched through the API's recipient text search (which\ncovers name, UEI, and DUNS), so pass the plain 12-character UEI.\n\nReturns standard transaction fields: Action Date, Mod, Award ID,\nAction Type, Awarding Agency, Recipient Name.\n\nprogram_numbers filters assistance awards by assistance listing (CFDA)\nnumber, e.g. ['93.778'] for Medicaid; use it with award_type='grants',\n'loans', 'direct_payments', or 'other'. autocomplete_cfda() finds numbers\nby program name.\n",
+   "inputSchema": {
+    "properties": {
+     "award_type": {
+      "default": "contracts",
+      "enum": [
+       "contracts",
+       "idvs",
+       "grants",
+       "loans",
+       "direct_payments",
+       "other"
+      ],
+      "title": "Award Type",
+      "type": "string"
+     },
+     "keywords": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "string"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Keywords"
+     },
+     "awarding_agency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Awarding Agency"
+     },
+     "funding_agency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Funding Agency"
+     },
+     "recipient_uei": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Recipient Uei"
+     },
+     "naics_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Naics Codes"
+     },
+     "program_numbers": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Program Numbers"
+     },
+     "psc_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Psc Codes"
+     },
+     "set_aside_type_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Set Aside Type Codes"
+     },
+     "time_period_start": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Time Period Start"
+     },
+     "time_period_end": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Time Period End"
+     },
+     "award_amount_min": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Award Amount Min"
+     },
+     "award_amount_max": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Award Amount Max"
+     },
+     "sort": {
+      "default": "Action Date",
+      "title": "Sort",
+      "type": "string"
+     },
+     "order": {
+      "default": "desc",
+      "enum": [
+       "asc",
+       "desc"
+      ],
+      "title": "Order",
+      "type": "string"
+     },
+     "limit": {
+      "default": 25,
+      "title": "Limit",
+      "type": "integer"
+     },
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     }
+    },
+    "type": "object",
+    "title": "spending_by_transactionArguments"
+   },
+   "name": "spending_by_transaction",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "spending_by_transactionDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Spending by Geography"
+   },
+   "description": "Geographic breakdown of spending.\n\nscope: 'recipient_location' (where the recipient is) or 'place_of_performance'\n(where the work happens).\ngeo_layer: 'state', 'county', or 'district'.\n\nAt least one filter is required. The API returns HTTP 500 on an empty\nfilter set, so the requirement is enforced here with a clear error.\n\nprogram_numbers filters assistance awards by assistance listing (CFDA)\nnumber, e.g. ['93.778'] for Medicaid; use it with award_type='grants',\n'loans', 'direct_payments', or 'other'. autocomplete_cfda() finds numbers\nby program name.\n",
+   "inputSchema": {
+    "properties": {
+     "scope": {
+      "default": "place_of_performance",
+      "enum": [
+       "recipient_location",
+       "place_of_performance"
+      ],
+      "title": "Scope",
+      "type": "string"
+     },
+     "geo_layer": {
+      "default": "state",
+      "enum": [
+       "state",
+       "county",
+       "district"
+      ],
+      "title": "Geo Layer",
+      "type": "string"
+     },
+     "award_type": {
+      "default": "all",
+      "enum": [
+       "contracts",
+       "idvs",
+       "grants",
+       "loans",
+       "direct_payments",
+       "other",
+       "all"
+      ],
+      "title": "Award Type",
+      "type": "string"
+     },
+     "time_period_start": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Time Period Start"
+     },
+     "time_period_end": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Time Period End"
+     },
+     "awarding_agency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Awarding Agency"
+     },
+     "funding_agency": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Funding Agency"
+     },
+     "naics_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Naics Codes"
+     },
+     "psc_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Psc Codes"
+     },
+     "def_codes": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Def Codes"
+     },
+     "program_numbers": {
+      "anyOf": [
+       {
+        "items": {
+         "anyOf": [
+          {
+           "type": "string"
+          },
+          {
+           "type": "integer"
+          }
+         ]
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Program Numbers"
+     }
+    },
+    "type": "object",
+    "title": "spending_by_geographyArguments"
+   },
+   "name": "spending_by_geography",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "spending_by_geographyDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "New Awards Over Time"
+   },
+   "description": "Pipeline trend of new awards to a recipient over time.\n\nREQUIRES recipient_id (the recipient hash with -P suffix for parent-level\nrollup, or -R for a single recipient). Returns counts of new awards\ngrouped by month, quarter, or fiscal year.\n\nThe endpoint rejects calls without recipient_id with HTTP 422, and it\nalso requires a time_period. When you omit the dates, a default range\ncovering all searchable data (2007-10-01 through 2099-09-30) is sent\nautomatically.\n",
+   "inputSchema": {
+    "properties": {
+     "recipient_id": {
+      "title": "Recipient Id",
+      "type": "string"
+     },
+     "group": {
+      "default": "month",
+      "enum": [
+       "fiscal_year",
+       "quarter",
+       "month"
+      ],
+      "title": "Group",
+      "type": "string"
+     },
+     "time_period_start": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Time Period Start"
+     },
+     "time_period_end": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Time Period End"
+     }
+    },
+    "required": [
+     "recipient_id"
+    ],
+    "type": "object",
+    "title": "new_awards_over_timeArguments"
+   },
+   "name": "new_awards_over_time",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "new_awards_over_timeDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get IDV Amounts"
+   },
+   "description": "Top-line amounts for an Indefinite Delivery Vehicle (IDV).\n\nReturns child IDV count, child award count, child award total obligation,\nand base/option values rolled up across all task/delivery orders under\nthe IDV. Pass a CONT_IDV_* generated_internal_id.\n",
+   "inputSchema": {
+    "properties": {
+     "award_id": {
+      "title": "Award Id",
+      "type": "string"
+     }
+    },
+    "required": [
+     "award_id"
+    ],
+    "type": "object",
+    "title": "get_idv_amountsArguments"
+   },
+   "name": "get_idv_amounts",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_idv_amountsDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get IDV Funding"
+   },
+   "description": "List File C funding records associated with an IDV.\n\nRows can identify the IDV itself as well as associated awards; they are\nnot a complete list of child orders. File C coverage can be partial or\nlagged and does not establish the full child-order obligation or amount\npaid. Use get_idv_amounts() for reported child-order obligation totals\nand get_idv_activity() or get_idv_children() for child-order records.\n",
+   "inputSchema": {
+    "properties": {
+     "award_id": {
+      "title": "Award Id",
+      "type": "string"
+     },
+     "sort": {
+      "default": "reporting_fiscal_date",
+      "enum": [
+       "reporting_fiscal_date",
+       "transaction_obligated_amount",
+       "piid"
+      ],
+      "title": "Sort",
+      "type": "string"
+     },
+     "order": {
+      "default": "desc",
+      "enum": [
+       "asc",
+       "desc"
+      ],
+      "title": "Order",
+      "type": "string"
+     },
+     "limit": {
+      "default": 25,
+      "title": "Limit",
+      "type": "integer"
+     },
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "award_id"
+    ],
+    "type": "object",
+    "title": "get_idv_fundingArguments"
+   },
+   "name": "get_idv_funding",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_idv_fundingDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get IDV Funding Rollup"
+   },
+   "description": "Funding rollup totals for an IDV (single dict, not paginated).",
+   "inputSchema": {
+    "properties": {
+     "award_id": {
+      "title": "Award Id",
+      "type": "string"
+     }
+    },
+    "required": [
+     "award_id"
+    ],
+    "type": "object",
+    "title": "get_idv_funding_rollupArguments"
+   },
+   "name": "get_idv_funding_rollup",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_idv_funding_rollupDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get IDV Activity"
+   },
+   "description": "List child task/delivery orders awarded under an IDV.\n\nResults are ALWAYS sorted by obligated amount, descending; the endpoint\naccepts no sort or order parameters. (Earlier releases exposed sort/order\nhere, but the API silently ignored them: the advertised default of\nperiod_of_performance_start_date was never the actual ordering. Round 10\naudit finding.) For date-ordered children use get_idv_children(), whose\nendpoint does honor sort/order.\n\nhide_edge_cases=True filters out child awards missing obligated/awarded\namounts or end dates.\n",
+   "inputSchema": {
+    "properties": {
+     "award_id": {
+      "title": "Award Id",
+      "type": "string"
+     },
+     "hide_edge_cases": {
+      "default": false,
+      "title": "Hide Edge Cases",
+      "type": "boolean"
+     },
+     "limit": {
+      "default": 25,
+      "title": "Limit",
+      "type": "integer"
+     },
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "award_id"
+    ],
+    "type": "object",
+    "title": "get_idv_activityArguments"
+   },
+   "name": "get_idv_activity",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_idv_activityDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Autocomplete Awarding Agency"
+   },
+   "description": "Find awarding agency names by partial match.\n\nUSASpending search filters require the EXACT awarding agency name\n(slugs return zero). Use this to resolve a partial name to the canonical\none before passing to search_awards() awarding_agency parameter.\n",
+   "inputSchema": {
+    "properties": {
+     "search_text": {
+      "title": "Search Text",
+      "type": "string"
+     },
+     "limit": {
+      "default": 10,
+      "title": "Limit",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "search_text"
+    ],
+    "type": "object",
+    "title": "autocomplete_awarding_agencyArguments"
+   },
+   "name": "autocomplete_awarding_agency",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "autocomplete_awarding_agencyDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Autocomplete Funding Agency"
+   },
+   "description": "Find funding agency names by partial match (companion to awarding agency).",
+   "inputSchema": {
+    "properties": {
+     "search_text": {
+      "title": "Search Text",
+      "type": "string"
+     },
+     "limit": {
+      "default": 10,
+      "title": "Limit",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "search_text"
+    ],
+    "type": "object",
+    "title": "autocomplete_funding_agencyArguments"
+   },
+   "name": "autocomplete_funding_agency",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "autocomplete_funding_agencyDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Autocomplete CFDA"
+   },
+   "description": "Find CFDA (Catalog of Federal Domestic Assistance) program numbers\nby partial title or program number. CFDA codes are used in grants.",
+   "inputSchema": {
+    "properties": {
+     "search_text": {
+      "title": "Search Text",
+      "type": "string"
+     },
+     "limit": {
+      "default": 10,
+      "title": "Limit",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "search_text"
+    ],
+    "type": "object",
+    "title": "autocomplete_cfdaArguments"
+   },
+   "name": "autocomplete_cfda",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "autocomplete_cfdaDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Autocomplete Glossary"
+   },
+   "description": "Find glossary terms (acquisition + spending vocabulary) by partial match.",
+   "inputSchema": {
+    "properties": {
+     "search_text": {
+      "title": "Search Text",
+      "type": "string"
+     },
+     "limit": {
+      "default": 10,
+      "title": "Limit",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "search_text"
+    ],
+    "type": "object",
+    "title": "autocomplete_glossaryArguments"
+   },
+   "name": "autocomplete_glossary",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "autocomplete_glossaryDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Award Types Reference"
+   },
+   "description": "Return the full mapping of award type codes to descriptions.\n\nReturns the canonical reference: contracts (A=BPA Call, B=Purchase Order,\nC=Delivery Order, D=Definitive Contract), IDVs, grants, loans, etc.\nAuthoritative source if you're unsure what a code letter means.\n",
+   "inputSchema": {
+    "properties": {},
+    "type": "object",
+    "title": "get_award_types_referenceArguments"
+   },
+   "name": "get_award_types_reference",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_award_types_referenceDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get DEF Codes Reference"
+   },
+   "description": "Return all Disaster Emergency Fund (DEFC) codes with public laws.\n\nDEFCs are used to filter awards funded by specific supplemental\nappropriations (COVID-19, IIJA, IRA, etc.).\n",
+   "inputSchema": {
+    "properties": {},
+    "type": "object",
+    "title": "get_def_codes_referenceArguments"
+   },
+   "name": "get_def_codes_reference",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_def_codes_referenceDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Glossary"
+   },
+   "description": "Get the full USASpending glossary of acquisition + spending terms.",
+   "inputSchema": {
+    "properties": {
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     },
+     "limit": {
+      "default": 50,
+      "title": "Limit",
+      "type": "integer"
+     }
+    },
+    "type": "object",
+    "title": "get_glossaryArguments"
+   },
+   "name": "get_glossary",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_glossaryDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Submission Periods"
+   },
+   "description": "List the reporting calendar and submission/certification deadlines.\n\nReturns available fiscal reporting periods and their scheduled start,\ndue, certification and reveal dates. These are global calendar periods,\nnot records of when individual agencies actually submitted or certified\ndata. A listed period does not establish complete agency data coverage.\n",
+   "inputSchema": {
+    "properties": {},
+    "type": "object",
+    "title": "get_submission_periodsArguments"
+   },
+   "name": "get_submission_periods",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_submission_periodsDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "List Federal Accounts"
+   },
+   "description": "List Treasury federal accounts (TAS) with budgetary resources.\n\nkeyword filters by account name or AID. fiscal_year controls the reported\nbudgetary-resource values, not which account rows are included. When\nomitted, the source uses its latest available fiscal year, which may\ndiffer from the current fiscal year; check the returned fy value.\nsort is a dict like {'field':'budgetary_resources','direction':'desc'}.\n",
+   "inputSchema": {
+    "properties": {
+     "keyword": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Keyword"
+     },
+     "fiscal_year": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Fiscal Year"
+     },
+     "sort": {
+      "anyOf": [
+       {
+        "additionalProperties": {
+         "type": "string"
+        },
+        "type": "object"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Sort"
+     },
+     "page": {
+      "default": 1,
+      "title": "Page",
+      "type": "integer"
+     },
+     "limit": {
+      "default": 25,
+      "title": "Limit",
+      "type": "integer"
+     }
+    },
+    "type": "object",
+    "title": "list_federal_accountsArguments"
+   },
+   "name": "list_federal_accounts",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "list_federal_accountsDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Federal Account Detail"
+   },
+   "description": "Get an individual federal account's metadata + budgetary resources.",
+   "inputSchema": {
+    "properties": {
+     "account_code": {
+      "title": "Account Code",
+      "type": "string"
+     }
+    },
+    "required": [
+     "account_code"
+    ],
+    "type": "object",
+    "title": "get_federal_account_detailArguments"
+   },
+   "name": "get_federal_account_detail",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_federal_account_detailDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Federal Account Object Classes"
+   },
+   "description": "Get the object class breakdown of obligations for a federal account.\n\nIMPORTANT: the returned obligations are CUMULATIVE across all reported\nfiscal years (FY2017 onward, the DATA Act window), not a single year.\nThey are NOT comparable to get_federal_account_fy_snapshot(), which is\nsingle-year (verified live: account 021-0725 summed to $3.38B here vs\n$0.42B obligated in its FY2024 snapshot). The upstream endpoint has no\nyear control: a fiscal_year body parameter is accepted but ignored, so\nnone is exposed here.\n\nNote: this endpoint requires POST (not GET like the other federal account\nsub-endpoints). Live audit caught this; the body is empty.\n",
+   "inputSchema": {
+    "properties": {
+     "account_code": {
+      "title": "Account Code",
+      "type": "string"
+     }
+    },
+    "required": [
+     "account_code"
+    ],
+    "type": "object",
+    "title": "get_federal_account_object_classesArguments"
+   },
+   "name": "get_federal_account_object_classes",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_federal_account_object_classesDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Federal Account Program Activities"
+   },
+   "description": "List program activity codes and names associated with a federal account.\n\nThe source lists distinct programs across all reported fiscal years; it\nhas no fiscal-year filter and includes no dollar amounts. fiscal_year is\nretained for compatibility, but does not filter this list. The response\nexplicitly discloses any requested year that was not applied.\n\nRetrieves source pages internally, up to 2,000 records, and reports whether\nthe list is complete. For single-year account resources and obligations,\nuse get_federal_account_fy_snapshot with the numeric account_id returned\nby list_federal_accounts. get_agency_program_activities provides fiscal-year\nprogram amounts for an agency, not for this individual federal account.\n",
+   "inputSchema": {
+    "properties": {
+     "account_code": {
+      "title": "Account Code",
+      "type": "string"
+     },
+     "fiscal_year": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Fiscal Year"
+     }
+    },
+    "required": [
+     "account_code"
+    ],
+    "type": "object",
+    "title": "get_federal_account_program_activitiesArguments"
+   },
+   "name": "get_federal_account_program_activities",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_federal_account_program_activitiesDictOutput"
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true,
+    "title": "Get Federal Account Fiscal Year Snapshot"
+   },
+   "description": "Get a single-fiscal-year snapshot of a federal account's resources.\n\nImportant: this endpoint takes the numeric `account_id` (e.g. 4595), NOT\nthe alphanumeric `account_number` (e.g. \"027-5183\") used by the other\nfederal-account endpoints. The list_federal_accounts response includes\nboth fields per record. Pass the integer account_id here.\n",
+   "inputSchema": {
+    "properties": {
+     "account_id": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "string"
+       }
+      ],
+      "title": "Account Id"
+     },
+     "fiscal_year": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "default": null,
+      "title": "Fiscal Year"
+     }
+    },
+    "required": [
+     "account_id"
+    ],
+    "type": "object",
+    "title": "get_federal_account_fy_snapshotArguments"
+   },
+   "name": "get_federal_account_fy_snapshot",
+   "outputSchema": {
+    "type": "object",
+    "additionalProperties": true,
+    "title": "get_federal_account_fy_snapshotDictOutput"
+   }
+  }
+ ]
+}

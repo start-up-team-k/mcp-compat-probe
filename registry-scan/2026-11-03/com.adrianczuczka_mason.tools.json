@@ -1,0 +1,617 @@
+{
+ "tools": [
+  {
+   "name": "mason_init",
+   "description": "Inspect this project now: returns documentation audit findings, committed-diff review findings, decision/map status, and a quickstart playbook. Quickstart is read-only and deterministic. Explicit mode: setup validates shared configuration and activates locally without editing shared files; mode: init explicitly prepares MCP, instructions and lifecycle hooks for review and commit. Neither runs audits or prepares repairs; use only when requested. Optional host selects codex or claude. Optional base selects the review comparison; evidence imports CI manifests with check outcomes, commit freshness, and links to changed files and accepted decisions. Repeat calls refresh findings even after setup.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "dir": {
+      "type": "string",
+      "description": "Absolute path to the project root directory"
+     },
+     "mode": {
+      "type": "string",
+      "enum": [
+       "quickstart",
+       "init",
+       "setup"
+      ],
+      "default": "quickstart",
+      "description": "Quickstart inspects without edits; init prepares shared configuration; setup activates compatible configuration locally."
+     },
+     "host": {
+      "type": "string",
+      "enum": [
+       "codex",
+       "claude"
+      ],
+      "description": "Assistant to configure in init/setup mode; inferred only when unambiguous."
+     },
+     "dryRun": {
+      "type": "boolean",
+      "description": "Init only: preview shared configuration changes without writing files."
+     },
+     "base": {
+      "type": "string",
+      "description": "Quickstart only: Git ref for committed-diff review. Defaults to the first available main branch ref."
+     },
+     "evidence": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "maxItems": 10,
+      "description": "Quickstart only: repository-local CI evidence manifests to include in the review. Imports Vitest JSON, SARIF, and native-validator mason-check-json results without executing check commands."
+     }
+    },
+    "required": [
+     "dir"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "mason_automation",
+   "description": "Inspect installed automation, observed host events, pending decision records and the notification baseline, or check all retained documentation findings across sessions. status is read-only; check saves local baselines and verification reports without editing source, approving advisories or consuming pending completion notices. Returns concise results with a full report path. Works without a map.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "dir": {
+      "type": "string",
+      "description": "Absolute path to the project directory"
+     },
+     "action": {
+      "type": "string",
+      "enum": [
+       "status",
+       "check"
+      ],
+      "description": "Inspect configuration and receipts, or capture/resume and verify original audit evidence."
+     }
+    },
+    "required": [
+     "dir",
+     "action"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "mason_complete_init",
+   "description": "Record assistant instruction setup locally in ignored .mason/local/project.json, with feature settings in shared .mason/config.json. Other tools work without this marker. Repeated calls preserve the original setup time and existing settings.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "dir": {
+      "type": "string",
+      "description": "Absolute path to the project root directory"
+     }
+    },
+    "required": [
+     "dir"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "get_snapshot",
+   "description": "Return the optional feature-to-file architecture map with drift and trust evidence. Map verification is rechecked against sampled source contents; stale or unknown verification requires a fresh review, and recordedVerdict preserves the historical verdict. If no map exists, returns exists:false and points to decision context. Decision capture, get_context, and get_impact still work. No initialization required.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "dir": {
+      "type": "string",
+      "description": "Absolute path to the project root directory"
+     }
+    },
+    "required": [
+     "dir"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "get_context",
+   "description": "Assemble task context: matching decisions with rationale, approval, owner, sources, last review, and freshness, plus related tests, file impact, and any available map entries. Map verification is rechecked against sampled source contents; stale or unknown verification requires a fresh review, and recordedVerdict preserves the historical verdict. Proposals are suggestions; legacy records are unreviewed; accepted decisions are constraints subject to freshness. No initialization or map required. Pass task and optional files. map.status and diagnostics preserve missing or invalid knowledge. Impact covers up to three unique files, expanding directory anchors.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "dir": {
+      "type": "string",
+      "description": "Absolute path to the project root directory"
+     },
+     "task": {
+      "type": "string",
+      "description": "The task, bug, or change request in natural language \u2014 e.g. 'add rate limiting to the API client' or a ticket description"
+     },
+     "files": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Optional file paths already known to be involved (e.g. from a diff or stack trace). Entries containing them are boosted above pure text matches."
+     }
+    },
+    "required": [
+     "dir",
+     "task"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "save_snapshot",
+   "description": "Save a concept-to-files map as a persistent project snapshot. Maps feature names and data flows to the files that implement them. Retained for direct maintenance of legacy maps; the managed map-build workflow has been removed. Persists across conversations \u2014 future sessions can call get_snapshot to instantly find relevant files. No API key needed \u2014 you are the LLM generating the map.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "dir": {
+      "type": "string",
+      "description": "Absolute path to the project root directory"
+     },
+     "features": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "object",
+       "properties": {
+        "description": {
+         "type": "string",
+         "description": "One-line description of the feature"
+        },
+        "files": {
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "description": "File paths that implement this feature"
+        },
+        "tests": {
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "description": "Test file paths for this feature"
+        },
+        "type": {
+         "type": "string",
+         "enum": [
+          "capability",
+          "infrastructure"
+         ],
+         "description": "Classification: \"capability\" for user-facing functionality, \"infrastructure\" for internal plumbing with no end user (DI/service wiring, config, logging, adapters). Defaults to \"capability\"."
+        }
+       },
+       "required": [
+        "description",
+        "files"
+       ],
+       "additionalProperties": false
+      },
+      "description": "Map of feature names to their implementing files"
+     },
+     "flows": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "object",
+       "properties": {
+        "description": {
+         "type": "string",
+         "description": "One-line description of the flow"
+        },
+        "chain": {
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "description": "Ordered list of file paths showing data/call flow"
+        }
+       },
+       "required": [
+        "description",
+        "chain"
+       ],
+       "additionalProperties": false
+      },
+      "description": "Map of flow names to ordered file chains"
+     },
+     "removeFeatures": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Feature names to delete from the existing map \u2014 for features that were renamed or no longer exist. Applied before merging; only meaningful on incremental saves."
+     },
+     "removeFlows": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Flow names to delete from the existing map. Applied before merging; only meaningful on incremental saves."
+     }
+    },
+    "required": [
+     "dir",
+     "features",
+     "flows"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "save_decision",
+   "description": "Capture or revise a decision proposal as soon as the lesson is supported by evidence, without waiting for implementation or merge. Keep unimplemented remedies tentative. Include rationale, anchors, optional owner, sources, and a known actor. Compare matching get_context records and pending proposals before saving. When new evidence changes the same lesson's assumptions, scope, or recommended action, pass its existing id, including for accepted records. Preserve supported rationale and sources and replace obsolete instructions. Create a new record for a genuinely distinct lesson; skip unchanged restatements. No setup or map required. Writes a local record and preserves content history. Changes create a pending proposal while the last accepted revision remains operative; unchanged content does not re-verify or refresh it. Use review_decision for authorized acceptance or reaffirmation. A proposal cannot supersede a record with an operative accepted revision; review its replacement and retire the original separately.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "dir": {
+      "type": "string",
+      "description": "Absolute path to the project root directory"
+     },
+     "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Short, specific headline (max 80 characters). Generates a stable id on creation; revising the title keeps the existing id."
+     },
+     "body": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 2500,
+      "description": "The knowledge itself: what was tried/decided, why, and what to avoid. Must contain information NOT derivable by reading the code. Aim for 1500 characters or fewer; up to 2500 is accepted with a warning above the target. Matching context and hooks include the full body. Preserve exceptions; use sources for supporting references. Name the functions, types, or settings the decision constrains in backticks, such as `refresh()`; drift notices use those names to judge whether a change is relevant."
+     },
+     "category": {
+      "type": "string",
+      "enum": [
+       "decision",
+       "gotcha",
+       "deprecation",
+       "convention"
+      ]
+     },
+     "files": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Repo-relative files or directory prefixes this applies to. Matching is shared by retrieval, hooks, review, and drift checking; changes flag the decision for re-verification."
+     },
+     "id": {
+      "type": "string",
+      "description": "Pass the matching record's existing id when evidence changes that lesson's assumptions, scope, or recommended action, including for accepted records. Changed content becomes a proposal while the accepted version remains operative; unchanged content leaves review and freshness untouched."
+     },
+     "supersedes": {
+      "type": "string",
+      "description": "Id of an unreviewed record or proposal with no accepted revision to replace. Operative accepted decisions require separate review and retirement."
+     },
+     "owner": {
+      "anyOf": [
+       {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "description": "Responsible person or team, when known. Null clears it. Required for acceptance."
+     },
+     "sources": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "kind": {
+         "type": "string",
+         "enum": [
+          "pull_request",
+          "issue",
+          "incident",
+          "discussion",
+          "document",
+          "other"
+         ]
+        },
+        "reference": {
+         "type": "string",
+         "minLength": 1,
+         "maxLength": 1000
+        },
+        "note": {
+         "type": "string",
+         "minLength": 1,
+         "maxLength": 500
+        }
+       },
+       "required": [
+        "kind",
+        "reference"
+       ],
+       "additionalProperties": false
+      },
+      "maxItems": 20,
+      "description": "Known PR, issue, incident, discussion, or document references. Omit to preserve; [] clears. At least one is required for acceptance."
+     },
+     "actor": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Known person or agent recording this revision. Omit if unknown; do not infer from Git identity."
+     },
+     "force": {
+      "type": "boolean",
+      "description": "Save even when a near-duplicate was detected"
+     }
+    },
+    "required": [
+     "dir",
+     "title",
+     "body",
+     "category"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "review_decision",
+   "description": "Prepare a decision review: returns the claim and any operative accepted revision, provenance, the latest inspection and history event (notes shortened), changed files with hunk and line counts and anchor commits since the latest valid inspection for both sets of anchors, and a reviewToken. Request the diff (optionally for specific diffFiles), source previews or full history with include; the token is unchanged. For accepted-guidance inspection use inspectionScope operative on both prepare and inspect; pending proposals remain unassessed. Default all scope covers both revisions. After source inspection, record inspect with inspector, note and token to report no contradiction found without human acceptance. For human review, prepare with all scope, then record accept, reaffirm, or retire with its token, the authorized reviewer, and a reason. Acceptance replaces the operative revision; retirement withdraws the entire record including its proposal. Acceptance requires owner, source, readable Git HEAD, and committed anchor changes. Changed records or code invalidate the token. Identities and approvals are recorded assertions for normal PR review, not authenticated proof.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "dir": {
+      "type": "string",
+      "description": "Absolute path to the project root directory"
+     },
+     "id": {
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9_-]+$",
+      "description": "Decision id from get_context or save_decision"
+     },
+     "action": {
+      "type": "string",
+      "enum": [
+       "prepare",
+       "inspect",
+       "accept",
+       "reaffirm",
+       "retire"
+      ],
+      "default": "prepare",
+      "description": "Prepare is read-only. Inspect records an agent assessment without approval; accept, reaffirm and retire require an authorized review."
+     },
+     "inspectionScope": {
+      "type": "string",
+      "enum": [
+       "all",
+       "operative"
+      ],
+      "default": "all",
+      "description": "For prepare/inspect only: all covers the full record and both anchor sets (default); operative covers only an active accepted revision, leaving a pending draft unassessed. Use the same scope when submitting its token."
+     },
+     "diffFrom": {
+      "type": "string",
+      "enum": [
+       "lastReview",
+       "capture"
+      ],
+      "default": "lastReview",
+      "description": "For prepare only: lastReview previews changes since the latest inspection still valid for this record and scope (default); capture previews the full history since the evidence baseline."
+     },
+     "inspector": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Actual agent or person performing inspection; required for inspect. Does not claim human approval."
+     },
+     "reviewer": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Identity of the actual reviewer; required for a verdict. Never invent one."
+     },
+     "note": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 1500,
+      "description": "Review rationale; required for a verdict. Cite evidence for the decision."
+     },
+     "reviewToken": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Token from the prepared review; rejects stale record or code revisions"
+     },
+     "include": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "enum": [
+        "diff",
+        "files",
+        "history"
+       ]
+      },
+      "maxItems": 3,
+      "description": "For prepare only: diff returns the bounded diff since the latest valid inspection, files returns source previews, history returns all review events and the latest two inspections. Omit for a compact preparation."
+     },
+     "diffFiles": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 500
+      },
+      "maxItems": 20,
+      "description": "For prepare with include diff: limit the diff to these changed files."
+     }
+    },
+    "required": [
+     "dir",
+     "id"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "mason_check_drift",
+   "description": "Check how far the concept map has drifted from HEAD. Deterministic (git + filesystem, no LLM). Returns which features/flows are stale and the changed files behind them, new source files not yet mapped, ghost files (mapped but deleted), renames, and a `recommendation`: `up-to-date` (nothing to do), `incremental` (update just the stale entries via save_snapshot), or `full-rebuild` (broad source review required). Call this before trusting the map in a long session, or when maintaining an existing map.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "dir": {
+      "type": "string",
+      "description": "Absolute path to the project root directory"
+     }
+    },
+    "required": [
+     "dir"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "verify_snapshot",
+   "description": "Spot-check the concept map's CORRECTNESS (drift checks freshness; this checks entries were right to begin with). Returns a sample of entries \u2014 always the never-verified and least-recently-verified first \u2014 with skeletons of their claimed files, for you to judge whether the files actually implement what the entry claims. Report verdicts back via save_verification with each entry\u2019s kind and reviewToken. Tokens bind the entry and bounded source evidence; changed evidence requires a fresh review. Run periodically, or after an automated refresh wrote entries no human reviewed.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "dir": {
+      "type": "string",
+      "description": "Absolute path to the project root directory"
+     },
+     "sample": {
+      "type": "integer",
+      "description": "Entries to sample (default 5)"
+     }
+    },
+    "required": [
+     "dir"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "save_verification",
+   "description": "Record verify_snapshot verdicts using each entry\u2019s kind and reviewToken. Missing tokens request a fresh review; changed or deleted entries return conflicts without being stamped. Entries judged ok are stamped verifiedAt; failures are flagged verificationFailed with your note and surface in get_context, get_snapshot, and mason_check_drift until corrected. Verdict notes are required for failures.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "dir": {
+      "type": "string",
+      "description": "Absolute path to the project root directory"
+     },
+     "verdicts": {
+      "type": "object",
+      "additionalProperties": {
+       "type": "object",
+       "properties": {
+        "kind": {
+         "type": "string",
+         "enum": [
+          "feature",
+          "flow"
+         ],
+         "description": "Entry kind returned by verify_snapshot; required to record a verdict"
+        },
+        "reviewToken": {
+         "type": "string",
+         "description": "Copy the reviewToken from verify_snapshot after inspecting its evidence; required to record a verdict"
+        },
+        "ok": {
+         "type": "boolean"
+        },
+        "note": {
+         "type": "string",
+         "description": "One line on what's wrong \u2014 required when ok is false"
+        }
+       },
+       "required": [
+        "ok"
+       ],
+       "additionalProperties": false
+      },
+      "description": "Entry name \u2192 verdict, exactly as returned by verify_snapshot"
+     }
+    },
+    "required": [
+     "dir",
+     "verdicts"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "get_impact",
+   "description": "Trace historical co-change partners, related tests, and references with evidence: resolved imports, explicit paths, or uncertain name candidates. Candidates are not proven dependencies. Deterministic and read-only; no initialization or concept map required.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "dir": {
+      "type": "string",
+      "description": "Absolute path to the project root directory"
+     },
+     "files": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "File paths or names to analyze (e.g., ['WeatherRepository.kt'] or ['src/services/auth.ts'])"
+     }
+    },
+    "required": [
+     "dir",
+     "files"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  }
+ ]
+}

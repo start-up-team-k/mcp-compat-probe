@@ -1,0 +1,945 @@
+{
+ "tools": [
+  {
+   "name": "modelfinder_audit_models",
+   "description": "List AI model IDs (quoted literals) and AI SDKs used in the repository, with file:line locations, provider family, route hints (Bedrock, Vertex AI, Azure, OpenRouter), usage counts and whether each ID is hard-coded or an environment-variable default. Read-only; skips secret-like files and dependency folders; never returns line content. Results are sorted by usage and paginated.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "path": {
+      "type": "string",
+      "description": "Directory inside the workspace, relative to the project root (e.g. \"services/api\"). Defaults to the project root. If a call fails because the project is unknown, pass the absolute path of the project (your current working directory)."
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200,
+      "default": 50,
+      "description": "Items per page (1-200, default 50)."
+     },
+     "offset": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Items to skip; use next_offset from the previous page."
+     },
+     "provider_family": {
+      "type": "string",
+      "enum": [
+       "anthropic",
+       "openai",
+       "google",
+       "meta",
+       "mistral",
+       "deepseek",
+       "alibaba",
+       "xai",
+       "cohere"
+      ],
+      "description": "Only models from this family, e.g. \"anthropic\"."
+     },
+     "hard_coded_only": {
+      "type": "boolean",
+      "default": false,
+      "description": "Only IDs not read from configuration or environment."
+     },
+     "response_format": {
+      "type": "string",
+      "enum": [
+       "markdown",
+       "json"
+      ],
+      "default": "markdown",
+      "description": "markdown (default) for a readable summary, json for the full machine-readable result."
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Audit AI models in the repo",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+   },
+   "title": "Audit AI models in the repo",
+   "outputSchema": {
+    "type": "object",
+    "required": [
+     "root",
+     "models",
+     "sdks",
+     "summary",
+     "pagination"
+    ],
+    "properties": {
+     "models": {
+      "type": "array"
+     },
+     "sdks": {
+      "type": "array"
+     },
+     "summary": {
+      "type": "object"
+     },
+     "pagination": {
+      "type": "object",
+      "properties": {
+       "total": {
+        "type": "integer"
+       },
+       "count": {
+        "type": "integer"
+       },
+       "offset": {
+        "type": "integer"
+       },
+       "has_more": {
+        "type": "boolean"
+       },
+       "next_offset": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "modelfinder_draft_eval_examples",
+   "description": "Draft eval examples from prompt files and fixtures (prompts/, evals/, fixtures/, *.prompt.md, and JSON/JSONL with input, prompt or chat messages). Drops any candidate with detected personal data or secrets and reports only categories and counts. Drafts have empty checks: agree checks with the user before modelfinder_create_eval_config. Paginated; ids are stable across pages.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "path": {
+      "type": "string",
+      "description": "Directory inside the workspace, relative to the project root (e.g. \"services/api\"). Defaults to the project root. If a call fails because the project is unknown, pass the absolute path of the project (your current working directory)."
+     },
+     "limit": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200,
+      "default": 30,
+      "description": "Items per page (1-200, default 30)."
+     },
+     "offset": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 0,
+      "description": "Items to skip; use next_offset from the previous page."
+     },
+     "response_format": {
+      "type": "string",
+      "enum": [
+       "markdown",
+       "json"
+      ],
+      "default": "markdown",
+      "description": "markdown (default) for a readable summary, json for the full machine-readable result."
+     }
+    },
+    "required": [],
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Draft eval examples from the repo",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+   },
+   "title": "Draft eval examples from the repo",
+   "outputSchema": {
+    "type": "object",
+    "required": [
+     "drafts",
+     "excluded",
+     "pagination"
+    ],
+    "properties": {
+     "drafts": {
+      "type": "array"
+     },
+     "excluded": {
+      "type": "object"
+     },
+     "pagination": {
+      "type": "object",
+      "properties": {
+       "total": {
+        "type": "integer"
+       },
+       "count": {
+        "type": "integer"
+       },
+       "offset": {
+        "type": "integer"
+       },
+       "has_more": {
+        "type": "boolean"
+       },
+       "next_offset": {
+        "type": [
+         "integer",
+         "null"
+        ]
+       }
+      }
+     }
+    }
+   }
+  },
+  {
+   "name": "modelfinder_create_eval_config",
+   "description": "Assemble an eval config from candidate models, examples with checks, and settings; validate it and screen the examples for personal data and secrets. Returns the config to save as JSON for eval_models.py. Keys are referenced by environment variable name only.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "task": {
+      "type": "string",
+      "description": "One-line description of what the model must do."
+     },
+     "candidates": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+       "type": "object",
+       "required": [
+        "id",
+        "provider",
+        "model"
+       ],
+       "properties": {
+        "id": {
+         "type": "string",
+         "description": "Short unique label, e.g. \"gemini-lite\"."
+        },
+        "provider": {
+         "type": "string",
+         "enum": [
+          "anthropic",
+          "openai",
+          "gemini",
+          "openai_compatible"
+         ],
+         "description": "API format. Use openai_compatible for OpenRouter, Ollama, vLLM or gateways."
+        },
+        "model": {
+         "type": "string",
+         "description": "Exact provider model ID, verified from official docs."
+        },
+        "api_key_env": {
+         "type": "string",
+         "description": "Name of the environment variable holding the key, never the key."
+        },
+        "base_url": {
+         "type": "string",
+         "description": "HTTPS endpoint (http only for localhost). Required for openai_compatible."
+        },
+        "price_per_million": {
+         "type": [
+          "object",
+          "null"
+         ],
+         "description": "{input, output, cached_input?, source, checked} in USD per million tokens from the official pricing page, or null if not verified."
+        }
+       }
+      },
+      "description": "1-10 models to compare."
+     },
+     "examples": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 500,
+      "description": "Inputs with the checks each reply must pass.",
+      "items": {
+       "type": "object",
+       "required": [
+        "input",
+        "checks"
+       ],
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "input": {
+         "type": "string"
+        },
+        "checks": {
+         "type": "array",
+         "minItems": 1,
+         "maxItems": 50,
+         "description": "Deterministic checks; all must pass. Types: contains, not_contains, exact (value, ignore_case?), regex (pattern), json_keys (keys), max_chars (value). Example: [{\"type\": \"json_keys\", \"keys\": [\"category\"]}, {\"type\": \"contains\", \"value\": \"refund\"}]",
+         "items": {
+          "type": "object",
+          "required": [
+           "type"
+          ],
+          "properties": {
+           "type": {
+            "type": "string",
+            "enum": [
+             "contains",
+             "not_contains",
+             "exact",
+             "regex",
+             "json_keys",
+             "max_chars"
+            ]
+           },
+           "value": {
+            "description": "String for contains/not_contains/exact; positive integer for max_chars."
+           },
+           "pattern": {
+            "type": "string",
+            "description": "Regular expression for regex (max 500 chars)."
+           },
+           "keys": {
+            "type": "array",
+            "items": {
+             "type": "string"
+            },
+            "description": "Required top-level JSON keys for json_keys."
+           },
+           "ignore_case": {
+            "type": "boolean",
+            "description": "Case-insensitive contains/not_contains/exact."
+           }
+          }
+         }
+        }
+       }
+      }
+     },
+     "settings": {
+      "type": "object",
+      "description": "max_output_tokens (default 1024), timeout_s (default 60), temperature, system (system prompt)."
+     },
+     "pass_threshold": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0.9,
+      "description": "Share of calls that must pass every check (0-1)."
+     },
+     "repeats": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "default": 1,
+      "description": "Runs per example (3+ for noisy tasks)."
+     },
+     "response_format": {
+      "type": "string",
+      "enum": [
+       "markdown",
+       "json"
+      ],
+      "default": "markdown",
+      "description": "markdown (default) for a readable summary, json for the full machine-readable result."
+     }
+    },
+    "required": [
+     "candidates",
+     "examples"
+    ],
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Create an eval config",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+   },
+   "title": "Create an eval config",
+   "outputSchema": {
+    "type": "object",
+    "required": [
+     "config",
+     "valid"
+    ],
+    "properties": {
+     "config": {
+      "type": "object"
+     },
+     "valid": {
+      "type": "boolean"
+     }
+    }
+   }
+  },
+  {
+   "name": "modelfinder_validate_eval_config",
+   "description": "Check an eval config before running: schema, no keys in the config, HTTPS endpoints, no template placeholders, valid checks. Reports API call count, required environment variable names, unpriced models, and whether the personal-data guard would block the run. Makes no network calls.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "config": {
+      "type": "object",
+      "description": "The eval config object (as saved for eval_models.py)."
+     },
+     "response_format": {
+      "type": "string",
+      "enum": [
+       "markdown",
+       "json"
+      ],
+      "default": "markdown",
+      "description": "markdown (default) for a readable summary, json for the full machine-readable result."
+     }
+    },
+    "required": [
+     "config"
+    ],
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Validate an eval config",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+   },
+   "title": "Validate an eval config",
+   "outputSchema": {
+    "type": "object",
+    "required": [
+     "valid"
+    ],
+    "properties": {
+     "valid": {
+      "type": "boolean"
+     }
+    }
+   }
+  },
+  {
+   "name": "modelfinder_check_output",
+   "description": "Run deterministic checks on one model reply. Use it to design eval checks and routing guards before spending money on a run.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "text": {
+      "type": "string",
+      "description": "The model reply to test."
+     },
+     "checks": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 50,
+      "description": "Deterministic checks; all must pass. Types: contains, not_contains, exact (value, ignore_case?), regex (pattern), json_keys (keys), max_chars (value). Example: [{\"type\": \"json_keys\", \"keys\": [\"category\"]}, {\"type\": \"contains\", \"value\": \"refund\"}]",
+      "items": {
+       "type": "object",
+       "required": [
+        "type"
+       ],
+       "properties": {
+        "type": {
+         "type": "string",
+         "enum": [
+          "contains",
+          "not_contains",
+          "exact",
+          "regex",
+          "json_keys",
+          "max_chars"
+         ]
+        },
+        "value": {
+         "description": "String for contains/not_contains/exact; positive integer for max_chars."
+        },
+        "pattern": {
+         "type": "string",
+         "description": "Regular expression for regex (max 500 chars)."
+        },
+        "keys": {
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "description": "Required top-level JSON keys for json_keys."
+        },
+        "ignore_case": {
+         "type": "boolean",
+         "description": "Case-insensitive contains/not_contains/exact."
+        }
+       }
+      }
+     },
+     "response_format": {
+      "type": "string",
+      "enum": [
+       "markdown",
+       "json"
+      ],
+      "default": "markdown",
+      "description": "markdown (default) for a readable summary, json for the full machine-readable result."
+     }
+    },
+    "required": [
+     "text",
+     "checks"
+    ],
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Test a reply against checks",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+   },
+   "title": "Test a reply against checks",
+   "outputSchema": {
+    "type": "object",
+    "required": [
+     "passed",
+     "failures",
+     "checks_run"
+    ],
+    "properties": {
+     "passed": {
+      "type": "boolean"
+     },
+     "failures": {
+      "type": "array"
+     },
+     "checks_run": {
+      "type": "integer"
+     }
+    }
+   }
+  },
+  {
+   "name": "modelfinder_rank_eval_results",
+   "description": "Read a results.json object and return the cheapest model that met the pass threshold, ranked by cost per passing call, plus the cost/reliability cascade and models dropped as dominated.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "results": {
+      "type": "object",
+      "description": "The full results.json object written by eval_models.py."
+     },
+     "response_format": {
+      "type": "string",
+      "enum": [
+       "markdown",
+       "json"
+      ],
+      "default": "markdown",
+      "description": "markdown (default) for a readable summary, json for the full machine-readable result."
+     }
+    },
+    "required": [
+     "results"
+    ],
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Rank eval results",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+   },
+   "title": "Rank eval results",
+   "outputSchema": {
+    "type": "object",
+    "required": [
+     "recommendation",
+     "ranked",
+     "cascade",
+     "dominated"
+    ],
+    "properties": {
+     "recommendation": {
+      "type": "object"
+     },
+     "ranked": {
+      "type": "array"
+     },
+     "cascade": {
+      "type": "array"
+     },
+     "dominated": {
+      "type": "array"
+     }
+    }
+   }
+  },
+  {
+   "name": "modelfinder_generate_routing",
+   "description": "Turn a results.json object into a cheapest-first routing.json (with guards and a personal-data policy) and a LiteLLM proxy config. Returns both; nothing is written or deployed.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "results": {
+      "type": "object",
+      "description": "The full results.json object written by eval_models.py."
+     },
+     "guards": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 50,
+      "description": "Checks applied to every production reply; a failure escalates to the next model.",
+      "items": {
+       "type": "object",
+       "required": [
+        "type"
+       ],
+       "properties": {
+        "type": {
+         "type": "string",
+         "enum": [
+          "contains",
+          "not_contains",
+          "exact",
+          "regex",
+          "json_keys",
+          "max_chars"
+         ]
+        },
+        "value": {
+         "description": "String for contains/not_contains/exact; positive integer for max_chars."
+        },
+        "pattern": {
+         "type": "string",
+         "description": "Regular expression for regex (max 500 chars)."
+        },
+        "keys": {
+         "type": "array",
+         "items": {
+          "type": "string"
+         },
+         "description": "Required top-level JSON keys for json_keys."
+        },
+        "ignore_case": {
+         "type": "boolean",
+         "description": "Case-insensitive contains/not_contains/exact."
+        }
+       }
+      }
+     },
+     "chain": {
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "Explicit model order (candidate ids), overriding cost order."
+     },
+     "include_unknown_cost": {
+      "type": "boolean",
+      "default": false,
+      "description": "Append passing models whose price is unknown."
+     },
+     "pii_policy": {
+      "type": "string",
+      "enum": [
+       "block",
+       "warn",
+       "off"
+      ],
+      "default": "warn",
+      "description": "block: never send prompts with personal data or secrets; warn: send and report; off: no check."
+     },
+     "response_format": {
+      "type": "string",
+      "enum": [
+       "markdown",
+       "json"
+      ],
+      "default": "markdown",
+      "description": "markdown (default) for a readable summary, json for the full machine-readable result."
+     }
+    },
+    "required": [
+     "results"
+    ],
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Generate cheapest-first routing",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+   },
+   "title": "Generate cheapest-first routing",
+   "outputSchema": {
+    "type": "object",
+    "required": [
+     "routing_json",
+     "litellm_config_yaml",
+     "chain",
+     "notes"
+    ],
+    "properties": {
+     "routing_json": {
+      "type": "object"
+     },
+     "litellm_config_yaml": {
+      "type": "string"
+     },
+     "chain": {
+      "type": "array"
+     },
+     "notes": {
+      "type": "array"
+     }
+    }
+   }
+  },
+  {
+   "name": "modelfinder_estimate_cost",
+   "description": "Planning estimate of monthly token cost from requests, average tokens per request and USD-per-million prices, with optional cached-input share and pass rate (cost per accepted result, counting retries). Prices must come from the provider's official pricing page.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "requests_per_month": {
+      "type": "number",
+      "minimum": 0,
+      "description": "e.g. 100000"
+     },
+     "input_tokens": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Average input tokens per request."
+     },
+     "output_tokens": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Average output tokens per request (include reasoning tokens)."
+     },
+     "input_price_per_million": {
+      "type": "number",
+      "minimum": 0,
+      "description": "USD per 1M input tokens."
+     },
+     "output_price_per_million": {
+      "type": "number",
+      "minimum": 0,
+      "description": "USD per 1M output tokens."
+     },
+     "cached_fraction": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0,
+      "description": "Share of input tokens billed at the cached rate (0-1)."
+     },
+     "cached_input_price_per_million": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Required when cached_fraction > 0."
+     },
+     "pass_rate": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "description": "Optional eval pass rate; failures are assumed retried."
+     },
+     "response_format": {
+      "type": "string",
+      "enum": [
+       "markdown",
+       "json"
+      ],
+      "default": "markdown",
+      "description": "markdown (default) for a readable summary, json for the full machine-readable result."
+     }
+    },
+    "required": [
+     "requests_per_month",
+     "input_tokens",
+     "output_tokens",
+     "input_price_per_million",
+     "output_price_per_million"
+    ],
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Estimate monthly token cost",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+   },
+   "title": "Estimate monthly token cost",
+   "outputSchema": {
+    "type": "object",
+    "required": [
+     "cost_per_request_usd",
+     "monthly_cost_usd",
+     "assumptions"
+    ],
+    "properties": {
+     "cost_per_request_usd": {
+      "type": "number"
+     },
+     "monthly_cost_usd": {
+      "type": "number"
+     },
+     "assumptions": {
+      "type": "array"
+     }
+    }
+   }
+  },
+  {
+   "name": "modelfinder_estimate_memory",
+   "description": "Estimate memory to run an open-weight model locally: weights at a precision plus KV cache for a context length and concurrency (standard MHA/GQA attention only), with headroom against available memory. Give all four of layers, kv_heads, head_dim and context to include the KV cache.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "params_b": {
+      "type": "number",
+      "description": "Total stored parameters in billions (for MoE, all experts)."
+     },
+     "bits": {
+      "type": "number",
+      "description": "Effective bits per weight: 16, 8, about 4.5 for common 4-bit formats."
+     },
+     "overhead_pct": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 200,
+      "default": 0,
+      "description": "Allowance on top, in percent."
+     },
+     "layers": {
+      "type": "integer",
+      "description": "num_hidden_layers from the model config."
+     },
+     "kv_heads": {
+      "type": "integer",
+      "description": "num_key_value_heads (or num_attention_heads if absent)."
+     },
+     "head_dim": {
+      "type": "integer",
+      "description": "head_dim, or hidden_size / num_attention_heads."
+     },
+     "context": {
+      "type": "integer",
+      "description": "Context tokens per sequence actually used."
+     },
+     "concurrency": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1,
+      "description": "Sequences served at once."
+     },
+     "kv_bits": {
+      "type": "number",
+      "default": 16,
+      "description": "KV cache precision in bits."
+     },
+     "available_gib": {
+      "type": "number",
+      "minimum": 0,
+      "description": "GPU or unified memory available, in GiB."
+     },
+     "response_format": {
+      "type": "string",
+      "enum": [
+       "markdown",
+       "json"
+      ],
+      "default": "markdown",
+      "description": "markdown (default) for a readable summary, json for the full machine-readable result."
+     }
+    },
+    "required": [
+     "params_b",
+     "bits"
+    ],
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Estimate local model memory",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+   },
+   "title": "Estimate local model memory",
+   "outputSchema": {
+    "type": "object",
+    "required": [
+     "weights_gib",
+     "total_gib",
+     "caveats"
+    ],
+    "properties": {
+     "weights_gib": {
+      "type": "number"
+     },
+     "total_gib": {
+      "type": "number"
+     },
+     "caveats": {
+      "type": "array"
+     }
+    }
+   }
+  },
+  {
+   "name": "modelfinder_scan_sensitive_data",
+   "description": "Detect Aadhaar (Verhoeff checked), PAN, payment cards (Luhn checked), email addresses, UPI IDs, Indian mobile numbers and API or private keys in text. Returns categories and counts only, never the values.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "text": {
+      "type": "string",
+      "description": "Text to scan, up to 1,000,000 characters."
+     },
+     "response_format": {
+      "type": "string",
+      "enum": [
+       "markdown",
+       "json"
+      ],
+      "default": "markdown",
+      "description": "markdown (default) for a readable summary, json for the full machine-readable result."
+     }
+    },
+    "required": [
+     "text"
+    ],
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Scan text for personal data and secrets",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+   },
+   "title": "Scan text for personal data and secrets",
+   "outputSchema": {
+    "type": "object",
+    "required": [
+     "personal_data",
+     "secrets",
+     "clean"
+    ],
+    "properties": {
+     "personal_data": {
+      "type": "object"
+     },
+     "secrets": {
+      "type": "integer"
+     },
+     "clean": {
+      "type": "boolean"
+     }
+    }
+   }
+  }
+ ]
+}

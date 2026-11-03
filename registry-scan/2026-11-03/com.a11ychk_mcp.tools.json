@@ -1,0 +1,235 @@
+{
+ "tools": [
+  {
+   "name": "scan_page",
+   "title": "\ud398\uc774\uc9c0 \uc811\uadfc\uc131 \uac80\uc0ac",
+   "description": "\uc6f9 \ud398\uc774\uc9c0 1\uac1c\ub97c WCAG 2.2 AA + KWCAG 2.2 \uae30\uc900\uc73c\ub85c \uac80\uc0ac\ud55c\ub2e4 (axe-core + \uc790\uccb4 \uaddc\uce59). localhost \uac1c\ubc1c \uc11c\ubc84\uc640 \ub85c\uceec \uc815\uc801 HTML(file:///\u2026)\ub3c4 \uac80\uc0ac\ud560 \uc218 \uc788\ub2e4. \uac01 \uc704\ubc18\uc5d0 \ud55c\uad6d\uc5b4 \uac1c\uc120 \uac00\uc774\ub4dc(guide)\uac00 \ubd99\ub294\ub2e4. file://\ub294 fetch\uac00 \ucc28\ub2e8\ub418\ubbc0\ub85c CSR SPA \uc0b0\ucd9c\ubb3c\uc740 \ube48 \ud398\uc774\uc9c0\uac00 \ub41c\ub2e4 \u2014 \uadf8\ub7f0 \uacbd\uc6b0 dev \uc11c\ubc84 URL\uc744 \uc4f0\uc138\uc694. \uc0ac\uc774\ud2b8 \uc804\uccb4 \ud45c\ubcf8 \uac80\uc0ac\u00b7\uc778\uc99d \uc900\ube44 \ubcf4\uace0\uc11c\ub294 a11ychk.com \uc6f9 \uc11c\ube44\uc2a4\uc758 \uae30\ub2a5\uc774\ub2e4.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "\uac80\uc0ac\ud560 \ud398\uc774\uc9c0 URL (http/https \ub610\ub294 file://)"
+     },
+     "lang": {
+      "type": "string",
+      "enum": [
+       "ko",
+       "en"
+      ],
+      "description": "\uacb0\uacfc \uc5b8\uc5b4 (\uae30\ubcf8 ko)"
+     }
+    },
+    "required": [
+     "url"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": true
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "scan_dir",
+   "title": "\ub85c\uceec \ud3f4\ub354 \uc811\uadfc\uc131 \uac80\uc0ac",
+   "description": "\ub85c\uceec \ub514\ub809\ud130\ub9ac\uc758 \uc815\uc801 HTML \ud30c\uc77c\ub4e4\uc744 \uc7ac\uadc0 \uc218\uc9d1\ud574 \uc77c\uad04 \uac80\uc0ac\ud55c\ub2e4 (\ucd5c\ub300 10\uac1c, \ub2f7\ud30c\uc77c\u00b7node_modules \ub4f1 \uc81c\uc678). \ube4c\ub4dc \uc0b0\ucd9c\ubb3c\u00b7\uc815\uc801 \uc0ac\uc774\ud2b8\ub97c \uc11c\ubc84 \uc5c6\uc774 \ubc30\ud3ec \uc804\uc5d0 \uc810\uac80\ud558\ub294 \uc6a9\ub3c4\ub2e4. file://\ub85c \uc5f4\ubbc0\ub85c fetch\uc5d0 \uc758\uc874\ud558\ub294 CSR SPA \uc0b0\ucd9c\ubb3c\uc740 \ube48 \ud398\uc774\uc9c0\uac00 \ub41c\ub2e4 \u2014 \uadf8\ub7f0 \uacbd\uc6b0 dev \uc11c\ubc84\ub97c \ub744\uc6cc scan_pages\ub97c \uc4f0\uc138\uc694.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "dir": {
+      "type": "string",
+      "minLength": 1,
+      "description": "\uac80\uc0ac\ud560 \ub514\ub809\ud130\ub9ac \uc808\ub300 \uacbd\ub85c"
+     },
+     "maxFiles": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "\uac80\uc0ac\ud560 \ucd5c\ub300 \ud30c\uc77c \uc218 (\uae30\ubcf8 10)"
+     },
+     "lang": {
+      "type": "string",
+      "enum": [
+       "ko",
+       "en"
+      ],
+      "description": "\uacb0\uacfc \uc5b8\uc5b4 (\uae30\ubcf8 ko)"
+     }
+    },
+    "required": [
+     "dir"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "scan_pages",
+   "title": "\uc5ec\ub7ec \ud398\uc774\uc9c0 \uc811\uadfc\uc131 \uac80\uc0ac",
+   "description": "\uc6f9 \ud398\uc774\uc9c0 \uc5ec\ub7ec \uac1c(\ucd5c\ub300 10\uac1c)\ub97c \ud55c \ubc88\uc5d0 \uac80\uc0ac\ud55c\ub2e4. crawl_sample\uc774 \uc218\uc9d1\ud55c \ud45c\ubcf8\uc744 \ub123\uae30 \uc88b\ub2e4. \uadf8 \uc774\uc0c1 \uaddc\ubaa8\uc758 \uc0ac\uc774\ud2b8 \ub2e8\uc704 \uac80\uc0ac\ub294 a11ychk.com\uc5d0\uc11c \ud45c\ubcf8 \uc218\uc9d1\ubd80\ud130 \ubcf4\uace0\uc11c\uae4c\uc9c0 \uc790\ub3d9\uc73c\ub85c \ucc98\ub9ac\ud55c\ub2e4.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "urls": {
+      "type": "array",
+      "items": {
+       "type": "string",
+       "format": "uri"
+      },
+      "minItems": 1,
+      "description": "\uac80\uc0ac\ud560 URL \ubaa9\ub85d (\ucd5c\ub300 10\uac1c)"
+     },
+     "lang": {
+      "type": "string",
+      "enum": [
+       "ko",
+       "en"
+      ],
+      "description": "\uacb0\uacfc \uc5b8\uc5b4 (\uae30\ubcf8 ko)"
+     }
+    },
+    "required": [
+     "urls"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": true
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "crawl_sample",
+   "title": "\ub300\ud45c \ud398\uc774\uc9c0 \ud45c\ubcf8 \uc218\uc9d1",
+   "description": "\uc0ac\uc774\ud2b8\uc758 sitemap\u00b7\ub0b4\ubd80 \ub9c1\ud06c\uc5d0\uc11c \ub300\ud45c \ud398\uc774\uc9c0 \ud45c\ubcf8\uc744 \ubf51\ub294\ub2e4 (WCAG-EM \ubc29\uc2dd \uce35\ud654 \ud45c\uc9d1, robots.txt \uc874\uc911). \ube0c\ub77c\uc6b0\uc800 \uc5c6\uc774 \ub3d9\uc791\ud55c\ub2e4. \uacb0\uacfc URL\ub4e4\uc744 scan_pages\uc5d0 \ub118\uaca8 \uac80\uc0ac\ud560 \uc218 \uc788\ub2e4.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "\uc0ac\uc774\ud2b8 \ub8e8\ud2b8 URL"
+     },
+     "maxPages": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20,
+      "description": "\ud45c\ubcf8 \ud06c\uae30 (\uae30\ubcf8 8, \ucd5c\ub300 20)"
+     },
+     "lang": {
+      "type": "string",
+      "enum": [
+       "ko",
+       "en"
+      ],
+      "description": "\uacb0\uacfc \uc5b8\uc5b4 (\uae30\ubcf8 ko)"
+     }
+    },
+    "required": [
+     "url"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": true
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "get_fix_guide",
+   "title": "\uaddc\uce59 \uac1c\uc120 \uac00\uc774\ub4dc \uc870\ud68c",
+   "description": "\uac80\uc0ac \uaddc\uce59(axe/\uc790\uccb4 \uaddc\uce59) \ud558\ub098\uc758 \ud55c\uad6d\uc5b4 \uac1c\uc120 \uac00\uc774\ub4dc\uc640 WCAG\u00b7KWCAG \ub9e4\ud551\uc744 \uc870\ud68c\ud55c\ub2e4. \ucf54\ub4dc \uc608\uc2dc\uac00 \ud3ec\ud568\ub418\uc5b4 \uc218\uc815 \uc791\uc5c5\uc5d0 \ubc14\ub85c \uc4f8 \uc218 \uc788\ub2e4. \ube0c\ub77c\uc6b0\uc800 \ubd88\ud544\uc694.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "ruleId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "\uaddc\uce59 id (\uc608: image-alt, color-contrast)"
+     },
+     "lang": {
+      "type": "string",
+      "enum": [
+       "ko",
+       "en"
+      ],
+      "description": "\uacb0\uacfc \uc5b8\uc5b4 (\uae30\ubcf8 ko)"
+     }
+    },
+    "required": [
+     "ruleId"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "annotations": {
+    "readOnlyHint": true
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "kwcag_checkpoint",
+   "title": "KWCAG \uac80\uc0ac\ud56d\ubaa9 \uc870\ud68c",
+   "description": "KWCAG 2.2 \uac80\uc0ac\ud56d\ubaa9(33\uac1c) \ud558\ub098\uc758 \uac80\uc0ac \ubc29\ubc95\u00b7\ub300\uc751 WCAG \uc131\uacf5\uae30\uc900\u00b7\uc790\ub3d9 \ud310\uc815 \uaddc\uce59\uc744 \uc870\ud68c\ud55c\ub2e4. \uac80\uc0ac\ud56d\ubaa9 \uc77c\ub828\ubc88\ud638(1~33, \uc608: 8), KS X OT0003:2022 \ubc88\ud638(\uc608: 5.4.3) \ub610\ub294 \uc2ac\ub7ec\uadf8(\uc608: text-contrast)\ub85c \ucc3e\ub294\ub2e4. a11ychk MCP 0.1.x\uc758 \uc61b \ubc88\ud638\uc640 \ub73b\uc774 \ub2e4\ub974\uba74 \uacb0\uacfc\uc5d0 \uc548\ub0b4\uac00 \ubd99\ub294\ub2e4. \ube0c\ub77c\uc6b0\uc800 \ubd88\ud544\uc694.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "idOrSlug": {
+      "anyOf": [
+       {
+        "type": "string",
+        "minLength": 1
+       },
+       {
+        "type": "integer"
+       }
+      ],
+      "description": "\uac80\uc0ac\ud56d\ubaa9 \uc77c\ub828\ubc88\ud638(1~33)\u00b7\uacf5\uc2dd \ubc88\ud638(5.4.3)\u00b7\uc2ac\ub7ec\uadf8(text-contrast)"
+     },
+     "lang": {
+      "type": "string",
+      "enum": [
+       "ko",
+       "en"
+      ],
+      "description": "\uacb0\uacfc \uc5b8\uc5b4 (\uae30\ubcf8 ko)"
+     }
+    },
+    "required": [
+     "idOrSlug"
+    ],
+    "additionalProperties": false,
+    "$schema": "http://json-schema.org/draft-07/schema#"
+   },
+   "annotations": {
+    "readOnlyHint": true
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  }
+ ]
+}

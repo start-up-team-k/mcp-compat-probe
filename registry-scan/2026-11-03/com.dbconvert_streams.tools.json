@@ -1,0 +1,304 @@
+{
+ "tools": [
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "idempotentHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true
+   },
+   "description": "Get credential-free details for one connection: host, port, username, default database, SSL/SSH topology, cloud provider. Passwords, SSH private keys, and cloud access keys/tokens are never included \u2014 they are structurally absent, not redacted, so there is no way to retrieve them through MCP. Report only the fields present in the response.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "connectionId": {
+      "type": "string",
+      "description": "Stored DBConvert connection ID"
+     }
+    },
+    "required": [
+     "connectionId"
+    ],
+    "additionalProperties": false
+   },
+   "name": "dbconvert_get_connection",
+   "outputSchema": {
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string"
+     },
+     "name": {
+      "type": "string"
+     },
+     "type": {
+      "type": "string"
+     },
+     "cloudProvider": {
+      "type": "string"
+     },
+     "created": {
+      "type": "integer"
+     },
+     "spec": {
+      "type": [
+       "null",
+       "object"
+      ],
+      "properties": {
+       "database": {
+        "type": [
+         "null",
+         "object"
+        ],
+        "properties": {
+         "host": {
+          "type": "string"
+         },
+         "port": {
+          "type": "integer"
+         },
+         "username": {
+          "type": "string"
+         },
+         "database": {
+          "type": "string"
+         }
+        },
+        "additionalProperties": false
+       },
+       "s3": {
+        "type": [
+         "null",
+         "object"
+        ],
+        "properties": {
+         "region": {
+          "type": "string"
+         },
+         "endpoint": {
+          "type": "string"
+         },
+         "bucket": {
+          "type": "string"
+         },
+         "prefix": {
+          "type": "string"
+         }
+        },
+        "additionalProperties": false
+       },
+       "gcs": {
+        "type": [
+         "null",
+         "object"
+        ],
+        "properties": {
+         "region": {
+          "type": "string"
+         },
+         "endpoint": {
+          "type": "string"
+         },
+         "bucket": {
+          "type": "string"
+         },
+         "prefix": {
+          "type": "string"
+         }
+        },
+        "additionalProperties": false
+       },
+       "azure": {
+        "type": [
+         "null",
+         "object"
+        ],
+        "properties": {
+         "accountName": {
+          "type": "string"
+         },
+         "endpoint": {
+          "type": "string"
+         },
+         "container": {
+          "type": "string"
+         },
+         "prefix": {
+          "type": "string"
+         }
+        },
+        "additionalProperties": false
+       },
+       "files": {
+        "type": [
+         "null",
+         "object"
+        ],
+        "properties": {
+         "basePath": {
+          "type": "string"
+         }
+        },
+        "additionalProperties": false
+       },
+       "snowflake": {
+        "type": [
+         "null",
+         "object"
+        ],
+        "properties": {
+         "account": {
+          "type": "string"
+         },
+         "username": {
+          "type": "string"
+         },
+         "database": {
+          "type": "string"
+         },
+         "schema": {
+          "type": "string"
+         },
+         "warehouse": {
+          "type": "string"
+         },
+         "role": {
+          "type": "string"
+         }
+        },
+        "additionalProperties": false
+       }
+      },
+      "additionalProperties": false
+     },
+     "ssl": {
+      "type": [
+       "null",
+       "object"
+      ],
+      "properties": {
+       "mode": {
+        "type": "string"
+       },
+       "hasCA": {
+        "type": "boolean"
+       },
+       "hasClientCert": {
+        "type": "boolean"
+       },
+       "hasClientKey": {
+        "type": "boolean"
+       }
+      },
+      "additionalProperties": false
+     },
+     "ssh": {
+      "type": [
+       "null",
+       "object"
+      ],
+      "properties": {
+       "enabled": {
+        "type": "boolean"
+       },
+       "host": {
+        "type": "string"
+       },
+       "port": {
+        "type": "integer"
+       },
+       "user": {
+        "type": "string"
+       },
+       "authMethod": {
+        "type": "string"
+       }
+      },
+      "required": [
+       "enabled"
+      ],
+      "additionalProperties": false
+     }
+    },
+    "required": [
+     "id",
+     "name",
+     "type",
+     "created"
+    ],
+    "additionalProperties": false
+   }
+  },
+  {
+   "annotations": {
+    "destructiveHint": false,
+    "idempotentHint": false,
+    "openWorldHint": true,
+    "readOnlyHint": true
+   },
+   "description": "List DBConvert Streams connections. Each item has exactly id, name, type, and (optionally) cloudProvider \u2014 nothing else. For host/port/username and other connection details use get_connection. Passwords and cloud keys are never exposed by any tool. Report connections using only the fields present; do not add invented fields like used_for or row_counts.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "limit": {
+      "type": "integer",
+      "description": "Maximum items to return, default 100, max 500"
+     }
+    },
+    "additionalProperties": false
+   },
+   "name": "dbconvert_list_data_sources",
+   "outputSchema": {
+    "type": "object",
+    "properties": {
+     "items": {
+      "type": [
+       "null",
+       "array"
+      ],
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string",
+         "description": "Stable connection ID used as connectionId in other tools"
+        },
+        "name": {
+         "type": "string",
+         "description": "User-assigned connection name"
+        },
+        "type": {
+         "type": "string",
+         "description": "Connection type: mysql, postgresql, snowflake, files, or s3"
+        },
+        "cloudProvider": {
+         "type": "string",
+         "description": "Cloud provider for the host when detected (e.g. aws, gcp, azure); empty for self-hosted or local connections"
+        }
+       },
+       "required": [
+        "id",
+        "name",
+        "type"
+       ],
+       "additionalProperties": false
+      }
+     },
+     "limitApplied": {
+      "type": "integer"
+     },
+     "truncated": {
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "items",
+     "limitApplied",
+     "truncated"
+    ],
+    "additionalProperties": false
+   }
+  }
+ ]
+}

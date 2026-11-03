@@ -1,0 +1,342 @@
+{
+ "tools": [
+  {
+   "name": "decionis_read_policy",
+   "title": "Read Repository Policy",
+   "description": "Read and compile the repo's DECIONIS_POLICY.md execution policy: path, sha256, and the enforceable rules (name, verdict, priority, domain) or compile errors. Use this to learn what this repository allows, blocks, restrains, or escalates.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "path": {
+      "type": "string",
+      "description": "Policy file path (default: $DECIONIS_POLICY_PATH or ./DECIONIS_POLICY.md)"
+     }
+    },
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Read Repository Policy",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+   }
+  },
+  {
+   "name": "decionis_evaluate",
+   "title": "Evaluate Candidate Action Locally",
+   "description": "Evaluate a candidate action against the repo's DECIONIS_POLICY.md \u2014 or, with policy_pack, against one of the Decionis policy packs (decionis_list_policy_packs) \u2014 through the real Decionis protocol evaluator, entirely locally (no network, no credentials, nothing recorded). The exact policy version is pinned on every call; an unavailable version fails closed rather than silently deciding under another bundle. Call this BEFORE committing, deploying, migrating, or any risky action, and abide by the verdict: allow \u2192 proceed; block \u2192 do not proceed; review/escalate \u2192 stop and involve a human (an ESCALATE in enforce mode returns an evaluation_id that decionis_request_presence_verification can resolve when Presence is configured).",
+   "inputSchema": {
+    "type": "object",
+    "required": [
+     "payload"
+    ],
+    "properties": {
+     "payload": {
+      "type": "object",
+      "description": "The candidate action, e.g. {\"action\": \"production-deploy\", \"change_freeze\": true, \"agent_generated\": true}"
+     },
+     "workflow_key": {
+      "type": "string",
+      "description": "Optional workflow key for the gated surface."
+     },
+     "mode": {
+      "type": "string",
+      "enum": [
+       "shadow",
+       "enforce"
+      ],
+      "description": "Default: shadow."
+     },
+     "path": {
+      "type": "string",
+      "description": "Policy file path override."
+     },
+     "policy_pack": {
+      "type": "string",
+      "description": "Evaluate under a named Decionis policy pack (a key from decionis_list_policy_packs, e.g. finance, devops, sap) instead of the repository policy file. The pack's bundle is seeded into the local evaluator once and its exact version is pinned."
+     }
+    },
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Evaluate Candidate Action Locally",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+   }
+  },
+  {
+   "name": "decionis_list_policy_packs",
+   "title": "List Decionis Policy Packs",
+   "description": "List the policy packs the Decionis evaluator ships \u2014 finance, devops, sap, salesforce, workday, hospitality and the workflow overlays \u2014 with each pack's key, description, default decision domain and exact bundle version. Pass a key as policy_pack to decionis_evaluate to decide under that pack instead of the repository policy file. Entirely local: the catalogue is read from the in-process protocol, nothing is fetched.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "List Decionis Policy Packs",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+   }
+  },
+  {
+   "name": "decionis_demo",
+   "title": "Run the One-Minute Demo",
+   "description": "See Decionis work in under a minute: runs four canned intents (refund within limit, refund over limit, deploy during a change freeze, an action no rule covers) through the real protocol evaluator with a built-in sample policy. Entirely local \u2014 no account, no API key, no network, no policy file needed, nothing recorded. Call this on first contact with Decionis; use decionis_evaluate to gate this repo's own actions afterwards.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Run the One-Minute Demo",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+   }
+  },
+  {
+   "name": "decionis_verdict_help",
+   "title": "Explain Decionis Verdicts",
+   "description": "Reference for Decionis verdicts (allow/block/restrain/escalate), the rules-block grammar and operators, and how an agent should behave on each verdict.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Explain Decionis Verdicts",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": false
+   }
+  },
+  {
+   "name": "shield.pair",
+   "title": "Pair with the user's Shield",
+   "description": "Bind this assistant to the user's Decionis Shield with the six-character pairing code shown in the Shield app (AI spending allowance \u2192 Bind your own agent). Ask the user for the code; never guess one. After pairing, shield.request_purchase and the other shield.* tools ask the user's own spending rules.",
+   "inputSchema": {
+    "type": "object",
+    "required": [
+     "code"
+    ],
+    "properties": {
+     "code": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9]{6,8}$",
+      "description": "The code from the Shield app."
+     },
+     "displayName": {
+      "type": "string",
+      "maxLength": 120,
+      "description": "How the Shield app should list this assistant (default: the client and this computer)."
+     }
+    },
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Pair with the user's Shield",
+    "readOnlyHint": false,
+    "destructiveHint": false,
+    "idempotentHint": false,
+    "openWorldHint": true
+   }
+  },
+  {
+   "name": "shield.request_purchase",
+   "title": "Request Shield Purchase Authorization",
+   "description": "Ask the user's Shield for ALLOW, ASK, or BLOCK before a purchase. Execute only on ALLOW.",
+   "inputSchema": {
+    "type": "object",
+    "required": [
+     "amount",
+     "currency",
+     "purpose"
+    ],
+    "properties": {
+     "amount": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Amount in major currency units."
+     },
+     "currency": {
+      "type": "string",
+      "pattern": "^[A-Za-z]{3}$",
+      "description": "ISO 4217 currency code."
+     },
+     "purpose": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Clear user-facing reason for spending."
+     },
+     "merchant": {
+      "type": "string"
+     },
+     "category": {
+      "type": "string"
+     },
+     "agentId": {
+      "type": "string",
+      "description": "Registered agent identity, when an agent is spending."
+     },
+     "transactionType": {
+      "type": "string",
+      "enum": [
+       "PURCHASE",
+       "SUBSCRIPTION",
+       "RENEWAL",
+       "TRANSFER",
+       "REFUND",
+       "OTHER"
+      ]
+     },
+     "metadata": {
+      "type": "object"
+     }
+    },
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Request Shield Purchase Authorization",
+    "readOnlyHint": false,
+    "destructiveHint": false,
+    "idempotentHint": false,
+    "openWorldHint": true
+   }
+  },
+  {
+   "name": "shield.check_spending_authority",
+   "title": "Check Shield Spending Authority",
+   "description": "Check spending authority for an app or AI agent before taking the consequential action.",
+   "inputSchema": {
+    "type": "object",
+    "required": [
+     "amount",
+     "currency",
+     "purpose"
+    ],
+    "properties": {
+     "amount": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Amount in major currency units."
+     },
+     "currency": {
+      "type": "string",
+      "pattern": "^[A-Za-z]{3}$",
+      "description": "ISO 4217 currency code."
+     },
+     "purpose": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Clear user-facing reason for spending."
+     },
+     "merchant": {
+      "type": "string"
+     },
+     "category": {
+      "type": "string"
+     },
+     "agentId": {
+      "type": "string",
+      "description": "Registered agent identity, when an agent is spending."
+     },
+     "transactionType": {
+      "type": "string",
+      "enum": [
+       "PURCHASE",
+       "SUBSCRIPTION",
+       "RENEWAL",
+       "TRANSFER",
+       "REFUND",
+       "OTHER"
+      ]
+     },
+     "metadata": {
+      "type": "object"
+     }
+    },
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Check Shield Spending Authority",
+    "readOnlyHint": false,
+    "destructiveHint": false,
+    "idempotentHint": false,
+    "openWorldHint": true
+   }
+  },
+  {
+   "name": "shield.get_permission",
+   "title": "Get Shield Permission",
+   "description": "Read the spender identity and user-owned limits bound to this Shield credential.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Get Shield Permission",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": true
+   }
+  },
+  {
+   "name": "shield.request_approval",
+   "title": "Request Shield Approval",
+   "description": "Start or poll Presence approval for an ASK decision. Do not execute while the verdict remains ASK.",
+   "inputSchema": {
+    "type": "object",
+    "required": [
+     "decisionId"
+    ],
+    "properties": {
+     "decisionId": {
+      "type": "string"
+     }
+    },
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Request Shield Approval",
+    "readOnlyHint": false,
+    "destructiveHint": false,
+    "idempotentHint": false,
+    "openWorldHint": true
+   }
+  },
+  {
+   "name": "shield.get_decision",
+   "title": "Get Shield Decision",
+   "description": "Retrieve the current ALLOW, ASK, or BLOCK decision and its evidence identifiers.",
+   "inputSchema": {
+    "type": "object",
+    "required": [
+     "decisionId"
+    ],
+    "properties": {
+     "decisionId": {
+      "type": "string"
+     }
+    },
+    "additionalProperties": false
+   },
+   "annotations": {
+    "title": "Get Shield Decision",
+    "readOnlyHint": true,
+    "destructiveHint": false,
+    "idempotentHint": true,
+    "openWorldHint": true
+   }
+  }
+ ]
+}

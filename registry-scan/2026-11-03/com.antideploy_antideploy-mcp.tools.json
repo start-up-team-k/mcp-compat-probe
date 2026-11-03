@@ -1,0 +1,1121 @@
+{
+ "tools": [
+  {
+   "name": "login",
+   "title": "Sign in to Antideploy",
+   "description": "Connect this machine to the user's Antideploy account. First call: returns a link and a short code; show both to the user, who opens the link, checks the code matches and clicks Approve (that is the only thing they do; if they have no account the same link creates one). Then call `login` again: it waits for the approval, saves the login in ~/.antideploy and tells you which account was connected, which you must tell the user. Later calls just confirm the connection. The login can be revoked any time at https://antideploy.com/tokens. If the user declines, stop and do not start another unless they ask. The token is never shown to you.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "force": {
+      "description": "Start a new login even if one is saved, to switch to a different account.",
+      "type": "boolean"
+     }
+    }
+   },
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "logout",
+   "title": "Forget the saved login",
+   "description": "Delete the account token saved on this machine, only when the user asked to sign out. It does not revoke the token on the server; for that the user opens https://antideploy.com/tokens. A project key in ANTIDEPLOY_API_KEY is not affected.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "destructiveHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "list_applications",
+   "title": "The account's applications",
+   "description": "Every application on the account (or the one this server's key belongs to), with its id, name and address, and which account this is. Use it to pick an id for `link_application`.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "create_application",
+   "title": "Create the application for this project",
+   "description": "Create an Antideploy application for the project in this folder and record it in .antideploy.json, so every later call knows which application it is about. This is the step the dashboard used to be for: there is no application or key to make by hand. Do it once per project, before `database_create` and `deploy`. A name already in use answers with the existing application, which is then linked instead of duplicated and marked `reusedExisting`: that application may belong to another project, and a deploy replaces what is live there, so ask the user before deploying to it. The address is the user's to choose: if they have said what they want, pass it as `subdomain` after `check_address`; otherwise leave it out and settle it with `update_app_settings` before the first deploy. A 402 means the plan's limit is reached: that is not a rate limit, so do not retry, say what it says and let the user choose. Needs `login`.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "name": {
+      "description": "Letters, digits and hyphens. Defaults to the folder's name.",
+      "type": "string"
+     },
+     "subdomain": {
+      "description": "The address label the user chose, like my-app.",
+      "type": "string"
+     },
+     "directory": {
+      "description": "The project folder. Defaults to this server's working directory.",
+      "type": "string"
+     }
+    }
+   },
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "link_application",
+   "title": "Use an existing application for this folder",
+   "description": "Record an application the user already has in .antideploy.json for this folder, so deploys and the other tools act on it. Take the id from `list_applications`. Only when the user said which one; never guess, because deploying a project over another application replaces what is live there.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "applicationId": {
+      "type": "string",
+      "description": "An id from `list_applications`."
+     },
+     "directory": {
+      "description": "The project folder. Defaults to this server's working directory.",
+      "type": "string"
+     }
+    },
+    "required": [
+     "applicationId"
+    ]
+   },
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "check_address",
+   "title": "Is this address free?",
+   "description": "Check whether an address label such as my-app is free to use as my-app.antideploy.app, before creating the application with it. The address is the link the user shares, so it is theirs to choose.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "label": {
+      "type": "string",
+      "description": "The label to check, like my-app."
+     }
+    },
+    "required": [
+     "label"
+    ]
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "deploy",
+   "title": "Deploy the project",
+   "description": "Package a project directory and deploy it. Sends the whole directory, not just an entry point: a deploy containing one file builds successfully and then serves a page whose assets all 404. Returns a taskId to poll with `deployment_status`. A .env file is never uploaded, and neither are node_modules, build output, private keys or Python virtualenvs; the result names any .env files that were left out. The application's variables come from `set_env`, `set_env_from_file` or the `env` argument here, and the platform sets the database, storage, sign-in and email ones itself. The folder must be linked to an application (`create_application`) unless this server has a project key. When it succeeds, tell the user where it is live and on which account.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "directory": {
+      "description": "Project directory. Defaults to the working directory of this server.",
+      "type": "string"
+     },
+     "env": {
+      "description": "Variables to store with this deploy. Write-only; never readable back.",
+      "type": "object",
+      "propertyNames": {
+       "type": "string"
+      },
+      "additionalProperties": {
+       "type": "string"
+      }
+     },
+     "force": {
+      "description": "Rebuild even when the content is byte-for-byte identical to the last deploy.",
+      "type": "boolean"
+     },
+     "applicationId": {
+      "description": "Deploy to this application instead of the one the folder is linked to.",
+      "type": "string"
+     }
+    }
+   },
+   "annotations": {
+    "destructiveHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "deployment_status",
+   "title": "Check a deployment",
+   "description": "Progress for one deployment: status, per-step detail, the analyzed spec, warnings and hazards. The call waits up to 20 seconds for the deploy to finish, so call it again straight away until the status is succeeded or failed; do not add pauses or your own polling loop. A first deploy usually takes one to three minutes. Once it is live, `summary` is the sentence to tell the user: the address and the account. On a failure read `error`, `failedStep` and the logs, fix the cause, and only then deploy again; an unchanged redeploy fails the same way.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "taskId": {
+      "type": "string",
+      "description": "The taskId returned by `deploy`."
+     },
+     "waitSeconds": {
+      "description": "How long to wait for the deploy to finish before answering. Default 20. 0 answers at once.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 40
+     }
+    },
+    "required": [
+     "taskId"
+    ]
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "list_env",
+   "title": "List environment variable names",
+   "description": "Names only. The platform never returns values, by design.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "set_env",
+   "title": "Set environment variables",
+   "description": "Store or replace environment variables for this application. Write-only. Do not pass DATABASE_URL, PG*, storage, sign-in or email variables: the platform sets those itself. To take values from a local .env without them passing through this conversation, use `set_env_from_file`.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "env": {
+      "type": "object",
+      "propertyNames": {
+       "type": "string"
+      },
+      "additionalProperties": {
+       "type": "string"
+      },
+      "description": "Variables to store, as name/value pairs."
+     }
+    },
+    "required": [
+     "env"
+    ]
+   },
+   "annotations": {
+    "destructiveHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "set_env_from_file",
+   "title": "Store variables from a local .env file",
+   "description": "Read the named variables out of a .env file in the project directory and store them for the application, so the values go from the file to Antideploy and never through this conversation. Only the names you list are sent. Names the platform fills in itself (the database, storage, sign-in and email variables, the application's own address and generated signing secrets) are refused with the reason, and so are empty values and template placeholders like your-key-here. The result names what was stored and what was skipped, never a value. Redeploy afterwards for the running app to pick them up.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "names": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "The variable names to store, such as STRIPE_SECRET_KEY."
+     },
+     "file": {
+      "description": "A .env file inside the project directory. Default .env.",
+      "type": "string"
+     },
+     "directory": {
+      "description": "The project folder. Defaults to this server's working directory.",
+      "type": "string"
+     }
+    },
+    "required": [
+     "names"
+    ]
+   },
+   "annotations": {
+    "destructiveHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "request_keys",
+   "title": "Ask the user for keys only they have",
+   "description": "For a value that is not in the project, such as a Stripe secret key, a bot token or an AI provider's key: get a link where the user pastes it on an Antideploy page, so it goes straight into the application's encrypted variables and never passes through this conversation. Show the user the `url`, say where they find the value in that provider's dashboard, then poll `list_env` until every name appears, and `redeploy`. Never ask the user to paste a key into the chat. Do not ask for what the platform fills in itself (the database, storage, sign-in and email variables, the application's own address and signing secrets).",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "names": {
+      "minItems": 1,
+      "type": "array",
+      "items": {
+       "type": "string"
+      },
+      "description": "The variable names to collect, such as STRIPE_SECRET_KEY."
+     }
+    },
+    "required": [
+     "names"
+    ]
+   },
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "api_info",
+   "title": "Read the API's own manual",
+   "description": "The platform's self-description: endpoints, limits and current behaviour. Worth reading whenever something here disagrees with what the server does.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "redeploy",
+   "title": "Deploy again without sending the code",
+   "description": "Build and release the application again without uploading it. By default that is the version last sent, with the current environment variables: this is how a changed variable or a new AI key reaches the running app. For an application built from GitHub, `latest` deploys the newest commit on its default branch instead. Returns a taskId to poll with `deployment_status`.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "latest": {
+      "description": "GitHub applications only: deploy the branch's newest commit.",
+      "type": "boolean"
+     }
+    }
+   },
+   "annotations": {
+    "destructiveHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "deployment_history",
+   "title": "Recent deployments",
+   "description": "Recent deploys, newest first: status, commit, address, and the full failure sentence in `error`. Read this before redeploying after a failure; an unchanged redeploy fails the same way.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "limit": {
+      "description": "How many. Default 10.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 50
+     }
+    }
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "logs",
+   "title": "Read the application's logs",
+   "description": "What the running container has printed, newest last.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "limit": {
+      "description": "How many lines. Default 100.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 300
+     }
+    }
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "health",
+   "title": "Is it serving?",
+   "description": "Last observed state (healthy, degraded, down or unknown) and when it was checked. A sweep every five minutes, not a probe taken now: compare `checkedAt` with your deploy.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "metrics",
+   "title": "Traffic, errors and speed",
+   "description": "Requests, server errors and their rate, p50 and p95 response times, and requests per day. Check it when the user says the site is slow or failing: logs show what happened, this shows how often. Requests include bots and every asset on a page, so they are not visitors.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "days": {
+      "description": "Window in days. Default 7.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 30
+     }
+    }
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "rollback",
+   "title": "Put back the previous version",
+   "description": "Put back the last version that went live before the one serving now, or a specific deployment from `deployment_history`. It is built again from its source, so it takes as long as a deploy; poll `deployment_status` with the returned taskId.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "deploymentId": {
+      "description": "A specific earlier deployment.",
+      "type": "string"
+     }
+    }
+   },
+   "annotations": {
+    "destructiveHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "remove_env",
+   "title": "Remove an environment variable",
+   "description": "Remove one variable. The running app keeps it until the next deploy; `redeploy` applies it. A removed value cannot be shown again, only set again.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "key": {
+      "type": "string",
+      "description": "The variable's name."
+     }
+    },
+    "required": [
+     "key"
+    ]
+   },
+   "annotations": {
+    "destructiveHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "app_settings",
+   "title": "The application's settings",
+   "description": "Its address, source, repository and branch, whether a push deploys it (`deployOnPush`), and its root directory.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "update_app_settings",
+   "title": "Change the application's settings",
+   "description": "Change any of: the address (`subdomain`, which stops the old one working at once; ask the user first and show them the full URL), whether a push to a GitHub repository deploys by itself (`deployOnPush`), and which directory holds the application inside the project (`rootDirectory`, null for the whole project). Changing the directory analyzes the project again and reports what it found; the running app changes on the next deploy.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "subdomain": {
+      "description": "The new address label, like my-app.",
+      "type": "string"
+     },
+     "deployOnPush": {
+      "description": "GitHub applications only.",
+      "type": "boolean"
+     },
+     "rootDirectory": {
+      "description": "A path like services/api, or null.",
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    }
+   },
+   "annotations": {
+    "destructiveHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "list_schedules",
+   "title": "Scheduled jobs",
+   "description": "The application's scheduled jobs, each with its next and last run, last status and error, plus the rules: UTC, a few jobs per application, runs at least five minutes apart.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "add_schedule",
+   "title": "Schedule a job",
+   "description": "Call a path on the application on a schedule, such as a nightly cleanup. Anyone can send the x-antideploy-cron header the call carries, so an endpoint that does real work should also check a secret of the app's own.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "schedule": {
+      "type": "string",
+      "description": "Five-field cron in UTC, like \"0 3 * * *\", or @hourly, @daily, @weekly, @monthly."
+     },
+     "path": {
+      "type": "string",
+      "description": "A path on this application, starting with a slash."
+     },
+     "method": {
+      "description": "Default POST.",
+      "type": "string",
+      "enum": [
+       "GET",
+       "POST"
+      ]
+     }
+    },
+    "required": [
+     "schedule",
+     "path"
+    ]
+   },
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "set_schedule_enabled",
+   "title": "Pause or resume a scheduled job",
+   "description": "Resuming also resets the job's failure count, which pauses it after ten in a row.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "The job's id from `list_schedules`."
+     },
+     "enabled": {
+      "type": "boolean",
+      "description": "false pauses it, true resumes it."
+     }
+    },
+    "required": [
+     "id",
+     "enabled"
+    ]
+   },
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "remove_schedule",
+   "title": "Remove a scheduled job",
+   "description": "To change a job's schedule or path, remove it and add it again.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "The job's id from `list_schedules`."
+     }
+    },
+    "required": [
+     "id"
+    ]
+   },
+   "annotations": {
+    "destructiveHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "database_info",
+   "title": "The application's database",
+   "description": "Its state, size and tables, with the connection string masked. The platform creates a Postgres database and sets DATABASE_URL by itself when the project needs one, or earlier when `database_create` asks: do not send the user to sign up for another.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "database_create",
+   "title": "Create the application's database now",
+   "description": "Create this application's Postgres database now, while the project is still being written, so it is built and tested against the real thing instead of SQLite or mock data. A later deploy reuses it, so what was tested is what goes live. Safe to call twice. Skip it when the project stores nothing, or already points at a database the user chose (a DATABASE_URL in .env that is not localhost, or a provider they named): the answer is a 409 own_database. It counts against the plan's allowance; a 402 database_limit is not a rate limit, so do not retry, say what it says and let the user choose. If the call is refused or blocked, do not look for another route: tell the user, who can approve it or press Create database on the application's page in the console, then carry on with `database_env_to_file`. The connection string is not returned: call `database_env_to_file` to put it in .env. Tell the user what was created and on which account.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "database_env_to_file",
+   "title": "Put the database's variables in .env",
+   "description": "Write DATABASE_URL and the PG* variables for this application's database into a .env file in the project directory, and return only the names of what was written. The password goes into the file and never into this conversation, so do not read the file back out to the user. These are the same variables the deployed app receives. Variables already in the file are replaced, everything else is kept, and the file is added to .gitignore. Needs the account token that `login` (or https://antideploy.com/agent.md) saves on this machine: a project key cannot read a connection string. Once the app is live its database holds real data: do not reset, truncate or drop it from here without asking.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "file": {
+      "description": "A .env file inside the project directory. Default .env; .env.local suits Next.js.",
+      "type": "string"
+     },
+     "directory": {
+      "description": "The project folder. Defaults to this server's working directory.",
+      "type": "string"
+     }
+    }
+   },
+   "annotations": {
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "storage_create",
+   "title": "Create the application's file storage now",
+   "description": "Create a private S3 bucket for this application now, while the project is still being written, so uploads are built and tested against real storage instead of the container's disk, which is wiped on every deploy. A later deploy gives the running app the same bucket. Safe to call twice. Only for a project that stores uploads or generated files: skip it otherwise, and skip it when the project already has a storage key of its own (an AWS_ACCESS_KEY_ID in .env that is not ours, or a service the user named, such as Cloudinary or UploadThing): the answer is a 409 own_storage. It counts against the plan's bucket allowance; a 402 storage_limit is not a rate limit, so do not retry, say what it says and let the user choose. If the call is refused or blocked, do not look for another route: tell the user. The key is not returned: call `storage_env_to_file` to put it in .env. Addressing is path style, which current AWS SDKs and boto3 choose by themselves for this bucket's name, so existing code that reads those variables works as it is; in new JavaScript code set forcePathStyle: true anyway. A browser can upload straight to the bucket with a presigned PUT URL. Tell the user what was created and on which account.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "storage_env_to_file",
+   "title": "Put the file storage's variables in .env",
+   "description": "Write the bucket's name, endpoint, region and access key (AWS_S3_BUCKET, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_ENDPOINT_URL_S3, AWS_REGION and the spellings other S3 libraries read) into a .env file in the project directory, and return only the names of what was written. The key goes into the file and never into this conversation, so do not read the file back out to the user. These are the same variables the deployed app receives, so do not copy them into `set_env`. Variables already in the file are replaced, everything else is kept, and the file is added to .gitignore. The bucket has to exist first: `storage_create` makes it. Needs the account token that `login` (or https://antideploy.com/agent.md) saves on this machine: a project key cannot read the access key.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "file": {
+      "description": "A .env file inside the project directory. Default .env; .env.local suits Next.js.",
+      "type": "string"
+     },
+     "directory": {
+      "description": "The project folder. Defaults to this server's working directory.",
+      "type": "string"
+     }
+    }
+   },
+   "annotations": {
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "auth_create",
+   "title": "Switch on sign-in for the application's own users now",
+   "description": "Switch on sign-in (Neon Auth) for this application now, while the project is still being written, so a login page is built and tested against the real thing instead of a library and a table of passwords of your own. The people who sign up are rows in a neon_auth schema of the application's own Postgres, so it makes the database first if there is none, and that counts against the plan's databases. Safe to call twice. Only for a project that has accounts: skip it otherwise, and skip it when the user already chose a service (Clerk, Auth0, Supabase Auth), or when the project connects to a database of its own: the answers are 409 own_auth and own_database. A 402 database_limit is not a rate limit, so do not retry, say what it says and let the user choose. If the call is refused or blocked, do not look for another route: tell the user. The cookie secret is not returned: call `auth_env_to_file` to put the variables in .env. In Next.js, install @neondatabase/auth and follow https://neon.com/docs/auth/quick-start/nextjs (a beta library, so that page is the source of truth for its code). Anywhere else it is Better Auth over HTTP at NEON_AUTH_BASE_URL: POST /sign-up/email and /sign-in/email, GET /get-session, and GET /token for a JWT that verifies against NEON_AUTH_JWKS_URL, every request carrying an Origin that is the application's own address. Localhost works while you build, and the platform registers the application's address and any custom domain itself. Sign-up and sign-in allow about nine attempts per ten seconds, then answer 429, so show a person a try-again message. Tell the user what was created and on which account.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "auth_env_to_file",
+   "title": "Put the sign-in variables in .env",
+   "description": "Write NEON_AUTH_BASE_URL, NEON_AUTH_COOKIE_SECRET, NEON_AUTH_JWKS_URL and VITE_NEON_AUTH_URL into a .env file in the project directory, and return only the names of what was written. The cookie secret goes into the file and never into this conversation, so do not read the file back out to the user. These are the same variables the deployed app receives, so do not copy them into `set_env`. Variables already in the file are replaced, everything else is kept, and the file is added to .gitignore. Sign-in has to exist first: `auth_create` makes it. Needs the account token that `login` (or https://antideploy.com/agent.md) saves on this machine: a project key cannot read the secret.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "file": {
+      "description": "A .env file inside the project directory. Default .env; .env.local suits Next.js.",
+      "type": "string"
+     },
+     "directory": {
+      "description": "The project folder. Defaults to this server's working directory.",
+      "type": "string"
+     }
+    }
+   },
+   "annotations": {
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "email_create",
+   "title": "Let the application send email now",
+   "description": "Let this application send email now, while the project is still being written, so a welcome or a password reset is built and tested against the real thing instead of being left out or sending the user to open a Resend account and verify a domain. There is nothing to sign up for. Safe to call twice. Only for a project that sends mail: skip it otherwise, and skip it when the project already sets a RESEND_API_KEY of its own (409 own_email). A 503 email_unavailable means email is not set up on this server: carry on without it and tell the user. If the call is refused or blocked, do not look for another route: tell the user. The token is not returned: call `email_env_to_file` to put the variables in .env. Send with the `resend` package written as for any Resend account: new Resend(process.env.RESEND_API_KEY), then resend.emails.send({ from: process.env.EMAIL_FROM, to, subject, html }); in Python resend.api_key = os.environ['RESEND_API_KEY']. The package reads RESEND_BASE_URL or RESEND_API_URL, which point at the platform's relay. The message always leaves from the application's own address under the platform's sending domain, whatever `from` says, with the application's name as the display name, and nothing receives replies at that address, so set reply_to (replyTo in Node) to a real one if people may answer. It is transactional mail: at most five addresses on a message, a limited number a day by the owner's plan (fewer for an account only days old), and a 429 with daily_quota_exceeded or rate_limit_exceeded means try later, so show a person a message and do not retry in a loop. Attachments, scheduled sending, templates and resend.batch.send are refused. Never use it for newsletters or bulk mail. Tell the user what was set up and on which account.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "email_env_to_file",
+   "title": "Put the email variables in .env",
+   "description": "Write RESEND_API_KEY, RESEND_BASE_URL, RESEND_API_URL and EMAIL_FROM into a .env file in the project directory, and return only the names of what was written. RESEND_API_KEY here is a token for the platform's relay, not a Resend key, and it goes into the file and never into this conversation, so do not read the file back out to the user. These are the same variables the deployed app receives, so do not copy them into `set_env`. Variables already in the file are replaced, everything else is kept, and the file is added to .gitignore. Email has to be set up first: `email_create` does it. Needs the account token that `login` (or https://antideploy.com/agent.md) saves on this machine: a project key cannot read the token.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "file": {
+      "description": "A .env file inside the project directory. Default .env; .env.local suits Next.js.",
+      "type": "string"
+     },
+     "directory": {
+      "description": "The project folder. Defaults to this server's working directory.",
+      "type": "string"
+     }
+    }
+   },
+   "annotations": {
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "email_status",
+   "title": "How the application's email stands",
+   "description": "Whether this application can send email, from which address, its allowance and what it has sent in the last 24 hours, who stopped it if it is stopped (pausedBy, pausedReason), the last 14 days, when it last sent and how its mail is landing (`health`). Read it before telling the user whether email works. Never returns the token.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "email_activity",
+   "title": "What the application's email has sent",
+   "description": "The relay's log for this application, newest first: when, how many addresses, whether it was handed to Resend or turned away, and what Resend reported afterwards (delivered, bounced, complained, delayed, failed, suppressed) with a reason. Use it to answer \"did my email go out\" and \"why did that one not arrive\". It never has a subject, a body or an address, because none is kept. `outcome` is null until Resend has reported, and always while `reporting` is false. Page with `before` set to the `next` of the last answer.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "limit": {
+      "description": "How many rows, 1 to 200. Default 50.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 200
+     },
+     "before": {
+      "description": "Only rows older than this time: the `next` of the previous answer.",
+      "type": "string"
+     },
+     "status": {
+      "description": "Only messages the relay handed to Resend, or only ones turned away.",
+      "type": "string",
+      "enum": [
+       "accepted",
+       "rejected"
+      ]
+     },
+     "outcome": {
+      "description": "Only messages Resend reported this about.",
+      "type": "string",
+      "enum": [
+       "delivered",
+       "bounced",
+       "complained",
+       "delayed",
+       "failed",
+       "suppressed"
+      ]
+     }
+    }
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "email_deliverability",
+   "title": "How the application's mail is landing",
+   "description": "The last 7 days of this application's mail: delivered, bounced and reported as spam, whether it is healthy or one to watch, the recent problems with the reason Resend gave, and the rules the platform uses to stop an application's email by itself (at least three addresses bouncing that are a fifth of a day's mail, or two spam reports in a week). While `reporting` is false the counts are zero because Resend's reports are not connected: that means unknown, not healthy.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "email_domain",
+   "title": "Where the application's mail comes from",
+   "description": "The platform's sending domain, this application's own address under it, and the From value. Sending from the user's own domain is not offered, so never send the user to add DNS records for email.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "email_overview",
+   "title": "Email across the account's applications",
+   "description": "Every application on the account and where its email stands (state, who paused it, what it sent in the last day against its allowance, how its mail is landing), and which have none. Uses the account token when this machine has one; with only a project key it shows this application alone.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "email_pause",
+   "title": "Stop the application's email now",
+   "description": "Stop this application's email at once, for a leaked token or a loop in the code. Its token is refused (403 suspended_api_key) until `email_resume`. The application itself keeps running. Needs the account token that `login` (or https://antideploy.com/agent.md) saves: a project key cannot do it. Tell the user it is paused.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "email_resume",
+   "title": "Start the application's email again",
+   "description": "Start this application's email again after `email_pause`. A pause the platform made because the mail was bouncing or reported as spam answers 409 paused_for_deliverability and is not lifted from here: tell the user, who replies to the notice they were emailed. Do not remove email and set it up again to get round it. Needs the account token.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "email_test",
+   "title": "Send a test email to the account's own address",
+   "description": "Send one real message to the address of the account that owns this application, through the relay exactly as the application's code would, so the user can see that email works. The recipient is always the account's own address. It counts as one address against the day. Needs the account token.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "email_remove",
+   "title": "Take email away from the application",
+   "description": "Take email away from this application. Its token is refused from then on, and the running app keeps the variables it was given, so its mail fails until `email_create` sets it up again. Only when the user asked for it. Refused with 409 while the platform has it paused. Needs the account token.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "destructiveHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "security_scan",
+   "title": "Scan the live app for vulnerabilities",
+   "description": "Start a scan of the running application: keys shipped to the browser, endpoints open without a login, SQL injection, downloadable config files, open CORS and missing headers. Takes seconds. Poll `security_scan_status` with the returned scanId.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": true
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "security_scan_status",
+   "title": "Result of a security scan",
+   "description": "Status and findings, each with a severity, a plain explanation and a `recommendation`. Poll until completed or failed. Fix each finding at its root, then scan again.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "scanId": {
+      "type": "string",
+      "description": "The scanId returned by `security_scan`."
+     }
+    },
+    "required": [
+     "scanId"
+    ]
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "ai_wallet",
+   "title": "AI wallet balance",
+   "description": "The balance, the rate usage is charged at, and the AI keys on this account. Only the user can add money: give them the `topUpUrl` and wait.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "create_ai_key",
+   "title": "Give the application an AI key",
+   "description": "Create an OpenRouter key (hundreds of models, any OpenAI-compatible client at https://openrouter.ai/api/v1) and save it into the application as OPENROUTER_API_KEY. Then `redeploy` so the running app picks it up. The secret is not returned here: it is in the application's environment, which is where it belongs, and out of this transcript. A key on an empty wallet is disabled until the user tops it up.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "A label for the key, like chatbot."
+     }
+    },
+    "required": [
+     "name"
+    ]
+   },
+   "annotations": {
+    "destructiveHint": false,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  }
+ ]
+}

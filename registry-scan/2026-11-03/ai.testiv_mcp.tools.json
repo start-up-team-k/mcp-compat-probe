@@ -1,0 +1,182 @@
+{
+ "tools": [
+  {
+   "name": "get_visual_results",
+   "title": "Get visual test results",
+   "description": "Read the latest TestivAI visual regression results (visual-report/results.json). Returns a per-snapshot verdict combining the pixel diff with the DOM and computed-style signals. A pixel diff is likely render noise when the DOM and the computed styles both match and the diff is small and scattered; a diff whose DOM and computed styles match but that is concentrated in one area or over 1% of pixels gets its own verdict, not noise: it is a bad capture or a change the style check does not cover (size, overflow, transform, images\u2026), so look at the diff (get_diff) before approving; when the environment the snapshot was captured in changed since the baseline (a browser build, OS or distro, device scale, capture method\u2026) and the DOM and computed styles match, the verdict is rendering drift: the machine changed, not the page, never noise; when a web font or stylesheet failed to load in the current capture or the baseline (captureHealth), the verdict is unhealthy capture, said before anything else: a glitch of the capture or a broken asset, never noise even when the DOM and computed styles match, and never to be approved as a baseline; a style-only change (identical DOM, different computed styles) is a real change, not noise, and so is any DOM change \u2014 both need human review. When the styles were not compared (style check unavailable), the verdict says so and does not call the diff noise: with an identical DOM it could be render noise or a stylesheet-only change, so look at the diff (get_diff) before approving. Missing baselines (committed baselines that got no capture this run: a test removed, renamed or skipped, or one that failed before it captured) get their own line: there is nothing to approve, and an intended removal deletes the baseline directory. Run the test suite first (e.g. `npx playwright test`) if results are stale or missing.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "get_diff",
+   "title": "View snapshot diff images",
+   "description": "Return the baseline, current, and diff images for one changed snapshot so you can see what changed visually: the full page downscaled to fit (it shows where the changes are), then, when it had to be downscaled, each changed region cropped at native scale with 32 px around it and as wide as the page (up to 1280 px), so you can read text, wrapping and clipping there (up to 3 crops, each at most 1280\u00d71024 px and 2,000,000 px in all; nearby regions share a crop, changes come before shifts, a wider area is sampled at 1/2 scale or smaller, and a taller one shows its top rows). Pass `region` (an index the response lists) for another region, or `y` and `height` for any band of the page: those return only that crop; for a missing baseline (no capture this run), only the committed baseline image, since there is no current capture. Use get_report / get_visual_results first to find snapshot names.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Snapshot name from the results"
+     },
+     "region": {
+      "description": "Index of one of the snapshot's regions, as get_diff lists them (results.json order): returns only that region, cropped at native scale",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+     },
+     "y": {
+      "description": "Top of a full-width band of the page, in pixels: returns only that band, at native scale",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+     },
+     "height": {
+      "description": "Rows of the band from y (default: what one crop shows, 1024 at native scale); a taller band shows its top rows and says where to continue",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+     }
+    },
+    "required": [
+     "name"
+    ]
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "get_snapshot_diff",
+   "title": "View snapshot diff images",
+   "description": "Return the baseline, current, and diff images for one changed snapshot so you can see what changed visually: the full page downscaled to fit (it shows where the changes are), then, when it had to be downscaled, each changed region cropped at native scale with 32 px around it and as wide as the page (up to 1280 px), so you can read text, wrapping and clipping there (up to 3 crops, each at most 1280\u00d71024 px and 2,000,000 px in all; nearby regions share a crop, changes come before shifts, a wider area is sampled at 1/2 scale or smaller, and a taller one shows its top rows). Pass `region` (an index the response lists) for another region, or `y` and `height` for any band of the page: those return only that crop; for a missing baseline (no capture this run), only the committed baseline image, since there is no current capture. Use get_report / get_visual_results first to find snapshot names.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Snapshot name from the results"
+     },
+     "region": {
+      "description": "Index of one of the snapshot's regions, as get_diff lists them (results.json order): returns only that region, cropped at native scale",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+     },
+     "y": {
+      "description": "Top of a full-width band of the page, in pixels: returns only that band, at native scale",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 9007199254740991
+     },
+     "height": {
+      "description": "Rows of the band from y (default: what one crop shows, 1024 at native scale); a taller band shows its top rows and says where to continue",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 9007199254740991
+     }
+    },
+    "required": [
+     "name"
+    ]
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "get_report",
+   "title": "Get the raw visual report (results.json)",
+   "description": "Return the machine-readable results.json payload verbatim (summary + per-snapshot status, diff %, DOM signal, and region\u2192selector attribution, plus missingBaselines: committed baselines with no capture this run). Parse this instead of scraping CLI output.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "approve_snapshot",
+   "title": "Approve one snapshot as the new baseline",
+   "description": "Promote .testivai/temp/<name>/ to the committed baseline (same as `testivai approve <name>`). Only approve changes a reviewer has confirmed are intended; then commit .testivai/baselines/.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Snapshot name to approve"
+     }
+    },
+    "required": [
+     "name"
+    ]
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   },
+   "_meta": {
+    "anthropic/requiresUserInteraction": true
+   }
+  },
+  {
+   "name": "approve_all",
+   "title": "Approve all pending snapshots as baselines",
+   "description": "Promote every pending capture under .testivai/temp/ to committed baselines (same as `testivai approve --all`). Only run this after a reviewer has confirmed the changes; then commit .testivai/baselines/.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   },
+   "_meta": {
+    "anthropic/requiresUserInteraction": true
+   }
+  },
+  {
+   "name": "list_baselines",
+   "title": "List committed baselines",
+   "description": "List the snapshot baselines committed under .testivai/baselines/.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "explain_snapshot",
+   "title": "Explain what changed in one snapshot",
+   "description": "Layered evidence for one snapshot: pixel regions with bounding boxes, element attribution (which selectors shifted vs changed, whole-page shift detection), the DOM/style signal, and interpretation guidance. Use this to explain WHY a diff happened \u2014 pair with get_diff for the images. For a missing baseline (no capture this run) it returns status \"missing\", the committed baseline files and what to check instead.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "name": {
+      "type": "string",
+      "description": "Snapshot name from the results"
+     }
+    },
+    "required": [
+     "name"
+    ]
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  }
+ ]
+}

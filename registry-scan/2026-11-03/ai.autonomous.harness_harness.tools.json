@@ -1,0 +1,16 @@
+{
+ "tools": [
+  {
+   "name": "harness_setup",
+   "description": "Harness is not installed here. Call this for how to install it, which gives you tools to start, wait for, read and close other coding agents.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {},
+    "additionalProperties": false
+   },
+   "annotations": {
+    "readOnlyHint": true
+   }
+  }
+ ]
+}

@@ -1,0 +1,54 @@
+{
+ "tools": [
+  {
+   "name": "docfork_search_docs",
+   "title": "Search Documentation",
+   "description": "Search documentation across GitHub repositories or the web. For targeted searches INSIDE a specific library's documentation, use the docforkIdentifier parameter (author/repo format). Extract from GitHub URLs (e.g., github.com/facebook/react \u2192 'facebook/react') and include in ALL subsequent searches about that library for focused, accurate results.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search query. Include language/framework names."
+     },
+     "docforkIdentifier": {
+      "description": "CRITICAL for targeted library searches: Library identifier in author/repo format (e.g., 'facebook/react', 'vercel/next.js'). Use this to search INSIDE a specific library's documentation for focused, accurate results. Extract from URLs in docfork_search_docs results and ALWAYS include in all subsequent searches about that library.",
+      "type": "string"
+     },
+     "tokens": {
+      "description": "Token budget: 'dynamic' or number (100-10000)",
+      "type": "string"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  },
+  {
+   "name": "docfork_read_url",
+   "title": "Read Documentation URL",
+   "description": "Fetches and returns the full content of a documentation page as markdown. This is ESSENTIAL for getting complete, detailed information after searching. Always use this to read URLs from docfork_search_docs results to get the actual documentation content.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "url": {
+      "type": "string",
+      "description": "Full URL to read. Use exact URLs from docfork_search_docs results."
+     }
+    },
+    "required": [
+     "url"
+    ]
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   }
+  }
+ ]
+}

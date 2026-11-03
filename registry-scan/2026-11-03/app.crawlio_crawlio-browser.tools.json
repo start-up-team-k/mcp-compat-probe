@@ -1,0 +1,191 @@
+{
+ "tools": [
+  {
+   "name": "search",
+   "description": "Search available commands by keyword \u2014 both browser automation (via bridge.send) and Crawlio HTTP endpoints (via crawlio.api). Returns matching command names, descriptions, and parameter schemas. Use this to discover what commands are available before writing execute() code.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "description": "Search keyword (e.g. 'screenshot', 'cookie', 'network', 'navigate')"
+     },
+     "limit": {
+      "type": "number",
+      "description": "Max results (default: 10)"
+     }
+    },
+    "required": [
+     "query"
+    ]
+   }
+  },
+  {
+   "name": "execute",
+   "description": "Execute JavaScript code with access to the browser bridge, Crawlio HTTP client, and smart object.\nUse search() first to discover available commands and their parameters.\n\nIMPORTANT WARNINGS:\n- smart.screenshot() does NOT exist. For screenshots: bridge.send({ type: 'take_screenshot' }).\n- For structured page evidence, prefer smart.extractPage() \u2014 runs 7 ops in parallel with typed gaps[].\n- capture_page returns a ~1KB shaped summary. For raw data, use stop_network_capture or get_console_logs.\n- Use smart.waitForIdle() instead of sleep(). Use smart.scrollCapture() instead of manual scroll loops.\n- Scope large snapshots with smart.snapshot({ compact: true, maxDepth: 8, selector: '#main' }); use { interactive: true } for controls only.\n- For cross-page navigation, use smart.navigate(url) \u2014 never location.href = \"...\" (breaks CDP).\n\nAvailable in scope:\n- bridge.send(command, timeout?) \u2014 send command to browser extension via WebSocket\n  command must have a `type` field matching a command name (e.g. { type: 'list_tabs' })\n- crawlio.api(method, path, body?) \u2014 generic HTTP to ControlServer\n  e.g. await crawlio.api('GET', '/status')\n  e.g. await crawlio.api('POST', '/start', { url: 'https://example.com' })\n  e.g. await crawlio.api('POST', '/export', { format: 'zip', destinationPath: '/tmp/site.zip' })\n  e.g. await crawlio.api('PATCH', '/settings', { settings: { maxConcurrent: 8 } })\n  Returns { status: number, data: unknown }\n- crawlio.getStatus() \u2014 shortcut for GET /status\n- crawlio.startCrawl(url) \u2014 shortcut for POST /start\n- crawlio.getEnrichment(url?) \u2014 shortcut for GET /enrichment\n- crawlio.getCrawledURLs(params?) \u2014 shortcut for GET /crawled-urls\n- crawlio.postEnrichment(url, data) \u2014 shortcut for POST /enrichment/bundle\n- sleep(ms) \u2014 async wait (max 30s)\n- TIMEOUTS \u2014 per-command timeout constants\n- compileRecording(session, { name, description? }) \u2014 compile RecordingSession to SKILL.md\n  Returns { skillMarkdown, name, pageCount, interactionCount }\n- ocrScreenshot(opts?) \u2014 extract text from current page via macOS Vision.framework OCR (macOS only)\n  opts: { fullPage?: boolean, selector?: string }\n  Returns { regions: [{ text, confidence, bounds }], regionsLimited? }\n- saveArtifact(name, contents, opts?) \u2014 persist bulk data straight to disk (host-side), bypassing the return value.\n  Use this for large extractions instead of returning megabytes: accumulate rows in the sandbox, then write them.\n  name: safe relative path (e.g. 'hfs/cross_ref.ndjson'); contents: string (objects are JSON-stringified);\n  opts: { append?: boolean } to stream in chunks. Writes under ~/.crawlio/artifacts (CRAWLIO_ARTIFACT_DIR).\n  Returns { path, bytes }. Ideal pattern: authed in-page fetch via bridge \u2192 accumulate \u2192 saveArtifact \u2192 return { path, bytes }.\n- smart \u2014 auto-waiting wrappers and framework-specific data accessors:\n  smart.evaluate(expr) \u2192 {result, type} \u2014 access .result for value. Never JSON.parse() the return directly.\n  smart.click(selector, opts?) \u2014 poll + click + 500ms settle (accepts CSS or snapshot [ref=X])\n  smart.type(selector, text, opts?) \u2014 poll + type + 300ms settle\n  smart.navigate(url, opts?) \u2014 navigate + 1000ms settle\n  smart.waitFor(selector, timeout?) \u2014 poll until actionable\n  smart.snapshot(opts?) \u2014 capture accessibility snapshot. opts: { interactive?: boolean, compact?: boolean, maxDepth?: number, selector?: string }.\n  smart.scrollCapture(opts?) \u2014 state-aware page scroll with screenshots, stops at page bottom\n  smart.waitForIdle(timeout?) \u2014 wait for DOM mutations to settle (500ms quiet window)\n  smart.extractPage(opts?) \u2014 capture_page + perf + security + fonts + meta + accessibility + mobileReadiness. Returns { capture, performance, security, fonts, meta, accessibility, mobileReadiness, gaps[] }. opts: { trace: true } adds _trace.\n  smart.comparePages(urlA, urlB, opts?) \u2014 navigate to each URL, run extractPage(), return { siteA, siteB, scaffold }. scaffold has dimensions[], sharedFields, missingFields, metrics.\n  smart.finding({ claim, evidence, sourceUrl, confidence, method, dimension? }) \u2014 create validated Finding, accumulate in session. Confidence auto-capped if dimension has active gap with reducesConfidence.\n  smart.findings() \u2014 return all accumulated Finding[] from current session.\n  smart.clearFindings() \u2014 reset accumulated findings and session gaps.\n  smart.detectTables(opts?) \u2014 find repeating data patterns in the page. Native <table> elements first (strategy 'table-rows'), then class-frequency div-soup scan with geometric filters (strategy 'sibling-repeated-blocks'). Returns TableCandidate[] (selector, score, rowCount, sampleText, confidence 0..1, strategy, warnings[]).\n  smart.extractTable(selector, opts?) \u2014 extract structured data from a container. Native tables get thead-derived column names + <name>_url companions; div-soup gets semantic link-first naming. Returns { columns, rows, totalRows, truncated }. opts: { maxRows: 200 }.\n  smart.detectSections(opts?) \u2014 perceive page structure: depth-capped SectionNode tree from semantic tags, ARIA landmarks, data-component/testid attrs, and PascalCase/BEM class hints. Each node: role, source, name, selector (+ selectorVerified), box, inViewport, interactiveCount, textLength, headings, children. Emits SELECTORS, never [ref=eN] handles \u2014 compose with bridge.send({ type: 'browser_snapshot', selector }) for fresh interaction refs inside a region. opts: { maxDepth: 2, maxSections: 40 }.\n  smart.waitForNetworkIdle(opts?) \u2014 wait for all network requests to settle (CDP-level, catches fetch/XHR/images/CSS/fonts). Returns { status, elapsed }. opts: { timeout: 15000, idleTime: 500 }.\n  smart.extractData(opts?) \u2014 compound: detectTables + extractTable + JSON-LD. Returns { tables, structuredData, url }.\n  smart.parseTrackingPixels() \u2014 parse captured network data for tracking pixel fires (Facebook, GA4, TikTok, LinkedIn, Pinterest). Returns { totalPixelFires, vendors, pixels, events, unrecognizedTrackingUrls }.\n  smart.validateTracking() \u2014 validate tracking events against per-vendor parameter schemas (Facebook 18 standard + GA4 recommended). Returns { events, issues, errorCount, warningCount, infoCount, isHealthy }. Each issue has severity (error/warning/info), code, message, recommendation, and optional parameter.\n  smart.inspectDataLayer() \u2014 inspect tracker runtime state via CDP (fbq queue, GA4 dataLayer, GTM containers, TikTok ttq). Returns DataLayerState with null for absent trackers. No content script needed.\n  smart.detectDuplicates() \u2014 detect duplicate pixel fires grouped by vendor+pixelId+eventName+URL. Excludes PageView (legitimate SPA behavior). Returns DuplicateCluster[] with count and timestamps.\n  smart.detectTechnologies(opts?) \u2014 detect technologies via fingerprint matching against CDP signals (headers, scripts, JS globals, meta, cookies, URL). Returns TechnographicResult { technologies[], categories, totalDetected, highConfidenceCount, signalsUsed }. Each technology has numeric confidence (0-100, additive), version, matchedSignals[]. opts: { confidenceThreshold: 1 }.\n  smart.diffSnapshots(before?) \u2014 Myers diff current ARIA snapshot against baseline. If before omitted, uses last cached snapshot. Returns { diff, additions, removals, unchanged, changed }.\n  Framework namespaces (injected based on detected framework):\n  smart.react.{getVersion,getRootCount,hasProfiler,isHookInstalled}\n  smart.vue.{getVersion,getAppCount,getConfig,isDevMode}\n  smart.angular.{getVersion,isDebugMode,isIvy,getRootCount,getState}\n  smart.svelte.{getVersion,getMeta,isDetected}\n  smart.redux.{isInstalled,getStoreState}\n  smart.alpine.{getVersion,getStoreKeys,getComponentCount}\n  smart.nextjs.{getData,getRouter,getSSRMode,getRouteManifest}\n  smart.nuxt.{getData,getConfig,isSSR}\n  smart.remix.{getContext,getRouteData}\n  smart.gatsby.{getData,getPageData}\n  smart.shopify.{getShop,getCart}\n  smart.wordpress.{isWP,getRestUrl,getPlugins} | smart.woocommerce.{getParams}\n  smart.laravel.{getCSRF} | smart.django.{getCSRF} | smart.drupal.{getSettings}\n  smart.jquery.{getVersion}\n\nExample (HTTP API):\n  const { data } = await crawlio.api('GET', '/status');\n  return data;\n\nExample (browser):\n  const tabs = await bridge.send({ type: 'list_tabs' }, 5000);\n  return tabs;\n\nExample (smart \u2014 auto-waiting click):\n  await smart.click('#submit-btn');\n  return await smart.snapshot();\n\nExample (smart \u2014 framework data):\n  const nextData = await smart.nextjs?.getData();\n  return { page: nextData?.page, buildId: nextData?.buildId };\n\nExample (session recording + compile):\n  const s = await bridge.send({ type: 'start_recording', maxDurationSec: 120 });\n  // ... interact with page ...\n  const session = await bridge.send({ type: 'stop_recording' });\n  const skill = compileRecording(session, { name: 'my-flow' });\n  return skill;\n\nIMPORTANT: Keep scripts fast (<15s). Each smart.click costs ~1-2s. Never loop 5+ clicks \u2014 use smart.evaluate to read DOM data in bulk instead.\nIMPORTANT: smart.evaluate returns {result, type}. Access .result for the value. Never JSON.stringify inside evaluate then JSON.parse outside \u2014 just return objects directly.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "code": {
+      "type": "string",
+      "description": "Async JavaScript function body. Has bridge, crawlio, sleep, TIMEOUTS, smart, compileRecording, ocrScreenshot, saveArtifact in scope. Must return a value (for bulk data, saveArtifact to disk and return { path, bytes })."
+     },
+     "tabId": {
+      "type": "number",
+      "description": "Target tab id from list_tabs. Every bridge.send in the script that does not name its own tabId runs against this tab (default: the connected tab)."
+     },
+     "background": {
+      "type": "boolean",
+      "description": "Run detached: returns { jobId } immediately and keeps executing server-side up to the sandbox cap (~120s). Poll get_job_result(jobId) for the result. Use for heavy/long runs (e.g. navigate + OCR) that would exceed a normal synchronous tool-call timeout."
+     }
+    },
+    "required": [
+     "code"
+    ]
+   }
+  },
+  {
+   "name": "observe",
+   "description": "Manage extension-resident observation. Actions: training_start, training_status, training_stop, training_clear, training_artifacts; recording_start, recording_status, recording_stop, recording_clear, recording_artifacts (RecordingBundle aliases); monitor_start, monitor_status, monitor_results, monitor_stop, monitor_clear. Training and monitors continue while MCP is disconnected; stop materializes canonical files and confirmed clear deletes only Chrome-retained records.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "action": {
+      "type": "string",
+      "enum": [
+       "training_start",
+       "training_status",
+       "training_stop",
+       "training_clear",
+       "training_artifacts",
+       "recording_start",
+       "recording_status",
+       "recording_stop",
+       "recording_clear",
+       "recording_artifacts",
+       "monitor_start",
+       "monitor_status",
+       "monitor_results",
+       "monitor_stop",
+       "monitor_clear"
+      ]
+     },
+     "url": {
+      "type": "string"
+     },
+     "runId": {
+      "type": "string"
+     },
+     "bundleID": {
+      "type": "string"
+     },
+     "outputDir": {
+      "type": "string"
+     },
+     "monitorId": {
+      "type": "string"
+     },
+     "intervalMinutes": {
+      "type": "number"
+     },
+     "maxDurationSec": {
+      "type": "number"
+     },
+     "maxInteractions": {
+      "type": "number"
+     },
+     "active": {
+      "type": "boolean",
+      "description": "Open the training tab in the foreground (default true)"
+     },
+     "fetchBodies": {
+      "type": "boolean"
+     },
+     "confirm": {
+      "type": "boolean",
+      "description": "Must be true for training_clear/recording_clear"
+     },
+     "closeTab": {
+      "type": "boolean"
+     },
+     "captureStorageValues": {
+      "type": "boolean"
+     },
+     "limit": {
+      "type": "number"
+     },
+     "includeSnapshot": {
+      "type": "boolean"
+     },
+     "label": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "action"
+    ]
+   }
+  },
+  {
+   "name": "get_job_result",
+   "description": "Poll a background execute job by jobId (returned by execute({ background: true })). Returns { status: running|done|error|cancelled, value?, console?, error?, ageMs, runtimeMs? }, or { status: 'not_found' } if unknown/expired (finished jobs are kept ~10 min). phase/percent come from reportPhase(name, percent) calls inside the job; phases is the recent timeline while it is still running.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "jobId": {
+      "type": "string",
+      "description": "Job id from execute({ background: true })"
+     }
+    },
+    "required": [
+     "jobId"
+    ]
+   }
+  },
+  {
+   "name": "list_jobs",
+   "description": "List background execute jobs (running + recently finished). Returns { count, jobs: [{ jobId, status, ageMs, runtimeMs? }] }.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {}
+   }
+  },
+  {
+   "name": "cancel_job",
+   "description": "Cancel a running background execute job by jobId \u2014 terminates its sandbox worker. No-op if the job already finished.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "jobId": {
+      "type": "string",
+      "description": "Job id to cancel"
+     }
+    },
+    "required": [
+     "jobId"
+    ]
+   }
+  },
+  {
+   "name": "connect_tab",
+   "description": "Pin a browser tab for subsequent commands and start CDP capture. Three modes: (1) provide a URL: with the optional tabs grant Crawlio reuses a match, otherwise it creates a fresh owned tab; (2) provide a tabId to adopt a specific existing tab (tabs grant required); (3) no args to discover and pin the active tab (tabs grant required). Pass background:true to avoid stealing the user's active tab/window focus.",
+   "inputSchema": {
+    "type": "object",
+    "properties": {
+     "url": {
+      "type": "string",
+      "description": "URL to open \u2014 reuses a match when tab metadata is granted, otherwise creates a fresh owned tab"
+     },
+     "tabId": {
+      "type": "number",
+      "description": "Specific tab ID to connect to (use list_tabs to discover IDs)"
+     },
+     "background": {
+      "type": "boolean",
+      "description": "Connect + drive the tab without activating it or focusing its window (no focus-steal). The tab opens/loads in the background; input and screenshots use CDP so they work without foreground focus."
+     }
+    }
+   }
+  }
+ ]
+}

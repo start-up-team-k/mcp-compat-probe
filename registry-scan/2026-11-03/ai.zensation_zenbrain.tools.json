@@ -1,0 +1,477 @@
+{
+ "tools": [
+  {
+   "name": "zenbrain_store",
+   "title": "Store a memory",
+   "description": "Write something into long-term memory so it survives this conversation. Routing is automatic by default, first match wins: `steps`, or wording such as \"How to\", \"Steps:\" or \"workflow:\", make a procedure; an emotional weight above 0.5 (detected, or set via `emotionalWeight`) an episode; a `confidence` above 0.9 a pinned core memory; anything else a semantic fact. Set `type` only when you want to override that. Every call adds a new memory, except that storing the same core memory again updates it; the content is also kept in working memory (the most recent seven) while the server runs, so once seven are held each store replaces the oldest copy there. Long-term memory is never changed by a store. Returns the id of the stored memory. If it may already be stored, check with zenbrain_recall first: storing it again adds a duplicate.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "content": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The memory to store, in plain language."
+     },
+     "type": {
+      "description": "Routing hint. 'auto' (default) decides from the content.",
+      "type": "string",
+      "enum": [
+       "auto",
+       "fact",
+       "episode",
+       "procedure",
+       "core"
+      ]
+     },
+     "context": {
+      "description": "Context domain, e.g. 'work', 'personal', 'learning'. Kept with episodes only.",
+      "type": "string"
+     },
+     "confidence": {
+      "description": "How certain this is (0\u20131), kept with facts. Above 0.9 routes to core memory unless an earlier routing rule matched.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+     },
+     "emotionalWeight": {
+      "description": "Emotional significance (0\u20131). Detected from the content when omitted. Above 0.5 routes to episodic memory unless steps or procedural wording matched first. With type 'fact' it is not stored, but lengthens the fact's first review interval (\u00d7(1 + weight)).",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+     },
+     "source": {
+      "description": "Where this came from, e.g. 'user', 'ai', 'import'. Kept with facts and episodes.",
+      "type": "string"
+     },
+     "steps": {
+      "description": "Ordered steps of a procedure. Optional: without them the steps are taken from the content (numbered or bulleted lines, otherwise every line).",
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "tools": {
+      "description": "Tools a procedure uses.",
+      "type": "array",
+      "items": {
+       "type": "string"
+      }
+     },
+     "outcome": {
+      "description": "What the procedure achieves.",
+      "type": "string"
+     }
+    },
+    "required": [
+     "content"
+    ]
+   },
+   "annotations": {
+    "title": "Store a memory",
+    "readOnlyHint": false,
+    "destructiveHint": false,
+    "idempotentHint": false,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   },
+   "outputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "description": "Identifier of the stored memory."
+     }
+    },
+    "required": [
+     "id"
+    ],
+    "additionalProperties": false
+   }
+  },
+  {
+   "name": "zenbrain_recall",
+   "title": "Recall memories",
+   "description": "Search long-term memory for anything relevant to a query. By default it searches the episodic, semantic, procedural and core layers; working memory (the most recent stores, held only while the server runs, up to five results) is searched only when named in `layers`. Returns results sorted by score, each with its id and the layer it came from; zenbrain_forget takes both. The score runs from 0 to 1 and says how well a result matches the query; a layer in which nothing matches returns recent memories (or its most successful procedures) at 0, behind every hit, and minScore above 0 leaves them out. Every core block scores 0.5 or 0.8, so a block can rank above a weak hit. Use this before answering when the user refers to something from an earlier session. To see how much is stored rather than what, use zenbrain_health; to save something, use zenbrain_store.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "query": {
+      "type": "string",
+      "minLength": 1,
+      "description": "What to look for, in plain language."
+     },
+     "layers": {
+      "description": "Restrict the search to these layers. Defaults to episodic, semantic, procedural and core; add 'working' to include the most recent stores held in memory (up to five, ranked by the query).",
+      "type": "array",
+      "items": {
+       "type": "string",
+       "enum": [
+        "working",
+        "episodic",
+        "semantic",
+        "procedural",
+        "core"
+       ]
+      }
+     },
+     "limit": {
+      "description": "How many results to return at most, after ranking (default 10).",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100
+     },
+     "minConfidence": {
+      "description": "Leave out results whose confidence is below this value. Applied before the final ranking, so fewer than `limit` results may come back. Facts use their stored confidence, procedures their success rate; core blocks, episodes and working-memory items count as 1 and are kept.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+     },
+     "minScore": {
+      "description": "Leave out results scoring below this value (default 0 keeps all). Any value above 0 drops the score-0 fallbacks that a layer returns when nothing in it matches.",
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+     }
+    },
+    "required": [
+     "query"
+    ]
+   },
+   "annotations": {
+    "title": "Recall memories",
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   },
+   "outputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "count": {
+      "type": "number",
+      "description": "How many memories were returned."
+     },
+     "results": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string",
+         "description": "Pass it with `layer` to zenbrain_forget to delete this memory."
+        },
+        "content": {
+         "type": "string"
+        },
+        "layer": {
+         "type": "string"
+        },
+        "score": {
+         "type": "number"
+        },
+        "confidence": {
+         "type": "number"
+        },
+        "emotionalWeight": {
+         "type": "number"
+        },
+        "duplicates": {
+         "description": "Memories with (nearly) the same content that recall left out in favour of this one, e.g. the fact consolidated from this episode. Present only when there are any.",
+         "type": "array",
+         "items": {
+          "type": "object",
+          "properties": {
+           "id": {
+            "type": "string"
+           },
+           "layer": {
+            "type": "string"
+           }
+          },
+          "required": [
+           "id",
+           "layer"
+          ],
+          "additionalProperties": false
+         }
+        }
+       },
+       "required": [
+        "id",
+        "content",
+        "layer",
+        "score"
+       ],
+       "additionalProperties": false
+      },
+      "description": "Memories sorted by score (0 to 1), highest first; 0 means nothing in that layer matched."
+     },
+     "skipped": {
+      "type": "number",
+      "description": "Rows without readable content that this server left out of `results`. When recall finds more than one row, the coordinator drops such rows while deduplicating, before they reach this count."
+     }
+    },
+    "required": [
+     "count",
+     "results",
+     "skipped"
+    ],
+    "additionalProperties": false
+   }
+  },
+  {
+   "name": "zenbrain_forget",
+   "title": "Forget a memory",
+   "description": "Permanently delete a memory, addressed by the id and layer that zenbrain_recall returned for it, together with what consolidation linked to it; this cannot be undone. Forgetting an episode also deletes the fact zenbrain_consolidate made from it; forgetting such a fact also deletes every episode consolidated into it; both also delete the working-memory copies of that content. Forgetting a working-memory result deletes only that copy. alsoForgotten lists everything deleted besides the memory itself. A memory stored on its own and never consolidated keeps its long-term entry. Use it when the user asks to forget something or a stored memory is wrong; to correct a memory, forget it and store the corrected version with zenbrain_store. An id the layer does not hold is reported as not forgotten, not as an error.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The id of one result from zenbrain_recall."
+     },
+     "layer": {
+      "type": "string",
+      "enum": [
+       "working",
+       "episodic",
+       "semantic",
+       "procedural",
+       "core"
+      ],
+      "description": "The layer of that same result, exactly as zenbrain_recall reported it."
+     }
+    },
+    "required": [
+     "id",
+     "layer"
+    ]
+   },
+   "annotations": {
+    "title": "Forget a memory",
+    "readOnlyHint": false,
+    "destructiveHint": true,
+    "idempotentHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   },
+   "outputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "forgotten": {
+      "type": "boolean",
+      "description": "True if the memory was deleted, false if the layer held none with that id."
+     },
+     "id": {
+      "type": "string"
+     },
+     "layer": {
+      "type": "string"
+     },
+     "alsoForgotten": {
+      "type": "array",
+      "items": {
+       "type": "object",
+       "properties": {
+        "id": {
+         "type": "string"
+        },
+        "layer": {
+         "type": "string"
+        }
+       },
+       "required": [
+        "id",
+        "layer"
+       ],
+       "additionalProperties": false
+      },
+      "description": "Memories deleted with it: what consolidation linked to it (derived from it, or it from), and working-memory copies."
+     }
+    },
+    "required": [
+     "forgotten",
+     "id",
+     "layer",
+     "alsoForgotten"
+    ],
+    "additionalProperties": false
+   }
+  },
+  {
+   "name": "zenbrain_consolidate",
+   "title": "Consolidate memory",
+   "description": "Run one consolidation pass: among the 100 most recent episodes, each one with an emotional weight above 0.5 becomes a semantic fact \u2014 once, however often the pass runs. Working-memory slots lose relevance with age, and slots whose relevance has dropped to 0.01 or below are removed; that is the only deletion, and nothing in long-term memory is deleted. Run it between sessions or after a batch of zenbrain_store calls, not on every turn; compare zenbrain_health before and after to see the effect.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "title": "Consolidate memory",
+    "readOnlyHint": false,
+    "destructiveHint": true,
+    "idempotentHint": false,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   },
+   "outputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "promoted": {
+      "type": "number",
+      "description": "Episodes promoted to semantic facts in this pass."
+     },
+     "decayed": {
+      "type": "number",
+      "description": "Working-memory slots removed by decay (relevance at or below 0.01)."
+     },
+     "pruned": {
+      "type": "number",
+      "description": "Always 0: consolidation deletes nothing from long-term memory."
+     }
+    },
+    "required": [
+     "promoted",
+     "decayed",
+     "pruned"
+    ],
+    "additionalProperties": false
+   }
+  },
+  {
+   "name": "zenbrain_health",
+   "title": "Inspect memory state",
+   "description": "Report how full the memory layers are: working-memory slots in use, interactions held, episodes, facts and how many are due for review, procedures, core blocks. Read-only and cheap, safe to call at any time. It returns counts only; to read the memories themselves, use zenbrain_recall.",
+   "inputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {}
+   },
+   "annotations": {
+    "title": "Inspect memory state",
+    "readOnlyHint": true,
+    "openWorldHint": false
+   },
+   "execution": {
+    "taskSupport": "forbidden"
+   },
+   "outputSchema": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+     "working": {
+      "type": "object",
+      "properties": {
+       "used": {
+        "type": "number"
+       },
+       "max": {
+        "type": "number"
+       }
+      },
+      "required": [
+       "used",
+       "max"
+      ],
+      "additionalProperties": false,
+      "description": "Working-memory slots in use and the slot limit."
+     },
+     "shortTerm": {
+      "type": "object",
+      "properties": {
+       "interactions": {
+        "type": "number"
+       }
+      },
+      "required": [
+       "interactions"
+      ],
+      "additionalProperties": false,
+      "description": "Interactions held in short-term memory."
+     },
+     "episodic": {
+      "type": "object",
+      "properties": {
+       "count": {
+        "type": "number"
+       }
+      },
+      "required": [
+       "count"
+      ],
+      "additionalProperties": false,
+      "description": "Episodes stored."
+     },
+     "semantic": {
+      "type": "object",
+      "properties": {
+       "count": {
+        "type": "number"
+       },
+       "dueForReview": {
+        "type": "number"
+       }
+      },
+      "required": [
+       "count",
+       "dueForReview"
+      ],
+      "additionalProperties": false,
+      "description": "Facts stored, and how many are due for spaced-repetition review."
+     },
+     "procedural": {
+      "type": "object",
+      "properties": {
+       "count": {
+        "type": "number"
+       }
+      },
+      "required": [
+       "count"
+      ],
+      "additionalProperties": false,
+      "description": "Procedures stored."
+     },
+     "core": {
+      "type": "object",
+      "properties": {
+       "blocks": {
+        "type": "number"
+       }
+      },
+      "required": [
+       "blocks"
+      ],
+      "additionalProperties": false,
+      "description": "Core memory blocks."
+     }
+    },
+    "required": [
+     "working",
+     "shortTerm",
+     "episodic",
+     "semantic",
+     "procedural",
+     "core"
+    ],
+    "additionalProperties": false
+   }
+  }
+ ]
+}
