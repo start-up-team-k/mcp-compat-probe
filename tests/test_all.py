@@ -234,7 +234,7 @@ class Scan(unittest.TestCase):
 
     def test_scan_one_statuses_and_judging(self):
         d = tempfile.mkdtemp()
-        table = check.load_table(DATA)
+        table = check.load_table(DATA_ONLY_EXPECTED)
         base = {"name": "a/b", "command": ["x"]}
         needs = scan.scan_one(dict(base, env=["API_KEY"]), d, table)
         self.assertEqual(needs["status"], "needs config")
