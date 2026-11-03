@@ -19,6 +19,8 @@ def main(argv=None):
     c.add_argument("file", nargs="?", help="JSON file with a tools/list result")
     c.add_argument("--data-dir", default=check.DATA_DIR)
     c.add_argument("--json", action="store_true", help="print machine-readable output")
+    c.add_argument("--gemini", action="store_true",
+                   help="also show Gemini columns (not measured by this project; issue-derived only)")
     p = sub.add_parser("probe", help="measure the probe corpus against live APIs (needs API keys in env)")
     p.add_argument("--only", help="comma-separated probe ids (control always included)")
     p.add_argument("--data-dir", default=check.DATA_DIR)
@@ -54,9 +56,10 @@ def main(argv=None):
     except (OSError, ValueError, stdio.StdioError) as e:
         print("error: %s" % e, file=sys.stderr)
         return 2
-    results, failed = check.run_check(tools, check.load_table(args.data_dir))
+    cfgs = check.CONFIGS + (check.GEMINI_CONFIGS if args.gemini else [])
+    results, failed = check.run_check(tools, check.load_table(args.data_dir), cfgs)
     if args.json:
         print(json.dumps([{"tool": n, "configs": ev} for n, ev in results], indent=1))
     else:
-        print(check.render(results))
+        print(check.render(results, cfgs))
     return 1 if failed else 0

@@ -8,8 +8,9 @@ from .probes import PROBES, match_probes
 
 # Order = table column order. Ids are stable dataset keys.
 CONFIGS = ["anthropic_messages", "anthropic_count_tokens", "openai_chat", "openai_chat_strict",
-           "openai_responses", "openai_responses_strict_true", "openai_responses_strict_false",
-           "gemini_parameters", "gemini_parameters_json_schema"]
+           "openai_responses", "openai_responses_strict_true", "openai_responses_strict_false"]
+# Not measured by this project's workflow (no key); verdicts for these can only be issue-derived. Opt in with --gemini.
+GEMINI_CONFIGS = ["gemini_parameters", "gemini_parameters_json_schema"]
 DATA_DIR = os.environ.get("MCP_COMPAT_PROBE_DATA") or os.path.join(os.path.dirname(__file__), "data")
 
 
@@ -47,11 +48,11 @@ def load_tools(obj):
     return obj
 
 
-def evaluate(tool, table):
+def evaluate(tool, table, configs=CONFIGS):
     """Per config: {"status": FAIL|PASS|UNKNOWN, "source": str, "why": [..]}."""
     ids = ["control"] + match_probes(tool)
     out = {}
-    for cfg in CONFIGS:
+    for cfg in configs:
         entries = [(i, table.get((i, cfg))) for i in ids]
         fails = [(i, e) for i, e in entries if e and e["accepted"] is False]
         if fails:
@@ -65,20 +66,20 @@ def evaluate(tool, table):
     return out
 
 
-def render(results):
+def render(results, configs=CONFIGS):
     """results: [(tool_name, evaluation)] -> printable table + findings."""
     def cell(r):
         return {"measured": "%s (%s)" % (r["status"], r["source"].replace("measured ", "")),
                 "issue-derived": "%s (issue)" % r["status"]}.get(r["source"].split(" ")[0], r["status"])
 
-    head = ["tool"] + CONFIGS
-    rows = [[name] + [cell(ev[c]) for c in CONFIGS] for name, ev in results]
+    head = ["tool"] + configs
+    rows = [[name] + [cell(ev[c]) for c in configs] for name, ev in results]
     widths = [max(len(r[i]) for r in [head] + rows) for i in range(len(head))]
     lines = ["  ".join(v.ljust(w) for v, w in zip(r, widths)).rstrip() for r in [head] + rows]
     lines.insert(1, "  ".join("-" * w for w in widths))
     notes = []
     for name, ev in results:
-        for c in CONFIGS:
+        for c in configs:
             for w in ev[c]["why"]:
                 src = w["url"] or w["source"]
                 notes.append("  %s / %s: probe '%s' rejected [%s] %s" % (
@@ -90,7 +91,7 @@ def render(results):
     return "\n".join(lines + ([""] + ["Findings:"] + notes if notes else []) + ["", legend])
 
 
-def run_check(tools, table):
-    results = [(t.get("name", "?"), evaluate(t, table)) for t in tools]
-    failed = any(r[c]["status"] == "FAIL" for _, r in results for c in CONFIGS)
+def run_check(tools, table, configs=CONFIGS):
+    results = [(t.get("name", "?"), evaluate(t, table, configs)) for t in tools]
+    failed = any(r[c]["status"] == "FAIL" for _, r in results for c in configs)
     return results, failed

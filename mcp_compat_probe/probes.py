@@ -87,9 +87,13 @@ def base(**extra):
 
 
 S = {"type": "string"}
-_ALT = [{"required": ["q"]}, {"required": ["q"]}]
+# Every object below satisfies OpenAI strict rules (type, all properties required, additionalProperties false)
+# so a strict rejection can only come from the keyword under test.
+_QOBJ = {"type": "object", "properties": {"q": S}, "required": ["q"], "additionalProperties": False}
+_ALT = [_QOBJ, _QOBJ]
 _DEFS = {"s": {"type": "string"}}
-_NODE = {"type": "object", "properties": {"children": {"type": "array", "items": {"$ref": "#/$defs/node"}}}}
+_NODE = {"type": "object", "properties": {"children": {"type": "array", "items": {"$ref": "#/$defs/node"}}},
+         "required": ["children"], "additionalProperties": False}
 
 # (id, description, inputSchema, detector, tool-name override, tool-description override)
 _RAW = [
@@ -119,13 +123,13 @@ _RAW = [
     ("type_array_null", "Property type array [string, null] (E-004)", wrap({"type": ["string", "null"]}),
      lambda n, s, d: any(isinstance(x.get("type"), list) for x in nodes(s))),
     ("nullable_keyword", "OpenAPI-style nullable: true", wrap({"type": "string", "nullable": True}), _one("nullable")),
-    ("const", "const", wrap({"const": "a"}), _one("const")),
+    ("const", "const", wrap({"type": "string", "const": "a"}), _one("const")),
     ("enum_numbers", "Numeric enum", wrap({"type": "number", "enum": [1, 2, 3]}),
      _any("enum", lambda v: isinstance(v, list) and v and all(isinstance(i, (int, float)) for i in v))),
     ("empty_properties", "Object with empty properties",
      {"type": "object", "properties": {}, "additionalProperties": False},
      lambda n, s, d: any(x.get("type") == "object" and x.get("properties") == {} for x in nodes(s))),
-    ("object_no_properties", "type object without a properties key", {"type": "object"},
+    ("object_no_properties", "type object without a properties key", {"type": "object", "additionalProperties": False},
      _top_ap(lambda s: "properties" not in s)),
     ("format_uri", "format: uri", wrap({"type": "string", "format": "uri"}), _fmt("uri")),
     ("format_datetime", "format: date-time", wrap({"type": "string", "format": "date-time"}), _fmt("date-time")),
@@ -145,11 +149,10 @@ _RAW = [
     ("not", "not", wrap({"not": {"type": "null"}}), _one("not")),
     ("if_then_else", "if/then/else", base(**{"if": {"required": ["q"]}, "then": {}, "else": {}}), _one("if")),
     ("pattern_properties", "patternProperties",
-     {"type": "object", "patternProperties": {"^a": S}, "additionalProperties": False}, _one("patternProperties")),
-    ("property_names", "propertyNames", base(propertyNames={"pattern": "^[a-z]+$"}), _one("propertyNames")),
-    ("unevaluated_properties", "unevaluatedProperties: false", {"type": "object", "properties": {"q": S},
-     "unevaluatedProperties": False}, _one("unevaluatedProperties")),
-    ("prefix_items", "prefixItems (2020-12 tuples)", wrap({"type": "array", "prefixItems": [S], "items": False}),
+     base(patternProperties={"^a": S}), _one("patternProperties")),
+    ("property_names", "propertyNames", base(propertyNames={"type": "string", "pattern": "^[a-z]+$"}), _one("propertyNames")),
+    ("unevaluated_properties", "unevaluatedProperties: false", base(unevaluatedProperties=False), _one("unevaluatedProperties")),
+    ("prefix_items", "prefixItems (2020-12 tuples)", wrap({"type": "array", "prefixItems": [S], "items": S}),
      _one("prefixItems")),
     ("unique_min_items", "uniqueItems/minItems", wrap({"type": "array", "items": S, "uniqueItems": True, "minItems": 1}),
      lambda n, s, d: any("uniqueItems" in x or "minItems" in x or "maxItems" in x for x in nodes(s))),
@@ -158,7 +161,8 @@ _RAW = [
 _NAMES = [
     ("name_dot", "Tool name containing a dot", "probe.tool", lambda n, s, d: "." in n),
     ("name_hyphen", "Tool name containing a hyphen", "probe-tool", lambda n, s, d: "-" in n),
-    ("name_too_long", "Tool name longer than 64 chars", "t" * 65, lambda n, s, d: len(n) > 64),
+    ("name_too_long", "Tool name longer than 64 chars (65)", "t" * 65, lambda n, s, d: len(n) > 64),
+    ("name_too_long_129", "Tool name longer than 128 chars (129)", "t" * 129, lambda n, s, d: len(n) > 128),
 ]
 
 
@@ -171,10 +175,21 @@ PROBES = [_mk(*r) for r in _RAW]
 PROBES += [_mk(i, d, base(), m, name=nm) for i, d, nm, m in _NAMES]
 PROBES.append(_mk("long_description", "Tool description of 10,000 characters", base(),
                   lambda n, s, d: len(d or "") > 1024, description="Lorem ipsum dolor sit amet. " * 358))
-PROBES.append(_mk("deep_nesting", "Nesting 6 levels deep", wrap(
-    {"type": "object", "properties": {"a": {"type": "object", "properties": {"b": {"type": "object", "properties": {
-        "c": {"type": "object", "properties": {"d": S}}}}}}}}),
-    lambda n, s, d: _depth(s) >= 6))
+
+
+def _nest(levels):
+    """Schema whose _depth() is `levels` (root = level 1, string leaf = last level), strict-compatible."""
+    node = S
+    for i in range(levels - 1, 0, -1):
+        node = {"type": "object", "properties": {"k%d" % i: node}, "required": ["k%d" % i],
+                "additionalProperties": False}
+    return node
+
+
+# OpenAI documents a limit of 10 nesting levels; 10 should pass and 11 should be refused (measured, not assumed).
+for _n in (10, 11):
+    PROBES.append(_mk("deep_nesting_%d" % _n, "Nesting %d levels deep" % _n, _nest(_n),
+                      lambda n, s, d, _n=_n: _depth(s) >= _n))
 
 
 def _depth(s, k=0):

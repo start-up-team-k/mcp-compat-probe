@@ -705,23 +705,6 @@
    }
   },
   {
-   "probe_id": "deep_nesting",
-   "config": "anthropic_messages",
-   "model": "claude-haiku-5-5",
-   "model_returned": "claude-haiku-5-5",
-   "transport": "rest-direct",
-   "endpoint": "POST /v1/messages",
-   "api_version": "anthropic-version: 2023-06-01",
-   "accepted": true,
-   "http_status": 200,
-   "error": null,
-   "measured_at": "2026-11-03T10:49:23Z",
-   "usage": {
-    "input_tokens": 447,
-    "output_tokens": 1
-   }
-  },
-  {
    "probe_id": "control",
    "config": "anthropic_count_tokens",
    "model": "claude-haiku-5-5",
@@ -1383,22 +1366,6 @@
    "measured_at": "2026-11-03T10:49:29Z",
    "usage": {
     "input_tokens": 6104
-   }
-  },
-  {
-   "probe_id": "deep_nesting",
-   "config": "anthropic_count_tokens",
-   "model": "claude-haiku-5-5",
-   "model_returned": null,
-   "transport": "rest-direct",
-   "endpoint": "POST /v1/messages/count_tokens",
-   "api_version": "anthropic-version: 2023-06-01",
-   "accepted": true,
-   "http_status": 200,
-   "error": null,
-   "measured_at": "2026-11-03T10:49:29Z",
-   "usage": {
-    "input_tokens": 447
    }
   },
   {
@@ -2104,23 +2071,6 @@
    }
   },
   {
-   "probe_id": "deep_nesting",
-   "config": "openai_chat",
-   "model": "gpt-5-nano",
-   "model_returned": "gpt-5-nano-2025-08-07",
-   "transport": "rest-direct",
-   "endpoint": "POST /v1/chat/completions (strict omitted)",
-   "api_version": "v1",
-   "accepted": true,
-   "http_status": 200,
-   "error": null,
-   "measured_at": "2026-11-03T10:49:56Z",
-   "usage": {
-    "input_tokens": 138,
-    "output_tokens": 16
-   }
-  },
-  {
    "probe_id": "control",
    "config": "openai_chat_strict",
    "model": "gpt-5-nano",
@@ -2779,20 +2729,6 @@
     "input_tokens": 2270,
     "output_tokens": 16
    }
-  },
-  {
-   "probe_id": "deep_nesting",
-   "config": "openai_chat_strict",
-   "model": "gpt-5-nano",
-   "model_returned": null,
-   "transport": "rest-direct",
-   "endpoint": "POST /v1/chat/completions (strict: true)",
-   "api_version": "v1",
-   "accepted": false,
-   "http_status": 400,
-   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=('properties', 'x'), 'additionalProperties' is required to be supplied and to be false.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
-   "measured_at": "2026-11-03T10:50:13Z",
-   "usage": null
   },
   {
    "probe_id": "control",
@@ -3506,23 +3442,6 @@
    }
   },
   {
-   "probe_id": "deep_nesting",
-   "config": "openai_responses",
-   "model": "gpt-5-nano",
-   "model_returned": "gpt-5-nano-2025-08-07",
-   "transport": "rest-direct",
-   "endpoint": "POST /v1/responses (strict omitted)",
-   "api_version": "v1",
-   "accepted": true,
-   "http_status": 200,
-   "error": null,
-   "measured_at": "2026-11-03T10:50:47Z",
-   "usage": {
-    "input_tokens": 56,
-    "output_tokens": 0
-   }
-  },
-  {
    "probe_id": "control",
    "config": "openai_responses_strict_true",
    "model": "gpt-5-nano",
@@ -4181,20 +4100,6 @@
     "input_tokens": 2188,
     "output_tokens": 0
    }
-  },
-  {
-   "probe_id": "deep_nesting",
-   "config": "openai_responses_strict_true",
-   "model": "gpt-5-nano",
-   "model_returned": null,
-   "transport": "rest-direct",
-   "endpoint": "POST /v1/responses (strict: true)",
-   "api_version": "v1",
-   "accepted": false,
-   "http_status": 400,
-   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=('properties', 'x'), 'additionalProperties' is required to be supplied and to be false.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
-   "measured_at": "2026-11-03T10:51:11Z",
-   "usage": null
   },
   {
    "probe_id": "control",
@@ -4904,23 +4809,6 @@
    "measured_at": "2026-11-03T10:51:44Z",
    "usage": {
     "input_tokens": 2188,
-    "output_tokens": 0
-   }
-  },
-  {
-   "probe_id": "deep_nesting",
-   "config": "openai_responses_strict_false",
-   "model": "gpt-5-nano",
-   "model_returned": "gpt-5-nano-2025-08-07",
-   "transport": "rest-direct",
-   "endpoint": "POST /v1/responses (strict: false)",
-   "api_version": "v1",
-   "accepted": true,
-   "http_status": 200,
-   "error": null,
-   "measured_at": "2026-11-03T10:51:44Z",
-   "usage": {
-    "input_tokens": 56,
     "output_tokens": 0
    }
   }

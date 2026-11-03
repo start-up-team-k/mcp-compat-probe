@@ -8,8 +8,8 @@ import unittest
 import urllib.error
 from unittest import mock
 
-from mcp_compat_probe import check, cli, runner, scan, stdio
-from mcp_compat_probe.probes import BY_ID, PROBES, match_probes
+from mcp_compat_probe import check, cli, probes, runner, scan, stdio
+from mcp_compat_probe.probes import BY_ID, PROBES, match_probes, nodes
 
 HERE = os.path.dirname(__file__)
 ROOT = os.path.dirname(HERE)
@@ -43,11 +43,46 @@ class Corpus(unittest.TestCase):
             if p["id"] != "control":
                 self.assertIn(p["id"], match_probes(t))
 
+    def strict_ok(self, s, path="root"):
+        """OpenAI strict prerequisites: every object has additionalProperties false and all properties required;
+        every schema with const/enum/format etc. has a type (or is a $ref/anyOf holder)."""
+        for n in nodes(s):
+            if n.get("type") == "object" or "properties" in n:
+                self.assertIs(n.get("additionalProperties"), False, path)
+                self.assertEqual(set(n.get("required", [])), set(n.get("properties", {})), path)
+            if not ({"$ref", "anyOf"} & set(n)):
+                self.assertIn("type", n, path)
+
+    def test_probes_are_strict_clean_except_the_keyword_under_test(self):
+        # Probes whose whole point is to violate a strict prerequisite are exempt.
+        exempt = {"additional_props_missing", "additional_props_true", "additional_props_schema",
+                  "required_partial", "type_array_null", "nullable_keyword"}
+        for p in PROBES:
+            s = p["tool"]["inputSchema"]
+            if p["id"] in exempt or "$defs" in s or "definitions" in s or p["id"].startswith("top_"):
+                continue
+            if p["id"] not in ("not", "if_then_else", "prefix_items", "pattern_properties"):  # keyword under test is itself non-strict
+                self.strict_ok(s, p["id"])
+
+    def test_fixed_probes(self):
+        self.assertEqual(BY_ID["const"]["tool"]["inputSchema"]["properties"]["x"]["type"], "string")
+        for k in ("top_anyof", "top_oneof", "top_allof"):
+            for alt in next(v for key, v in BY_ID[k]["tool"]["inputSchema"].items() if key.endswith("Of")):
+                self.assertIs(alt["additionalProperties"], False)
+        node = BY_ID["ref_recursive"]["tool"]["inputSchema"]["$defs"]["node"]
+        self.assertIs(node["additionalProperties"], False)
+        self.assertEqual(node["required"], ["children"])
+        d10, d11 = (probes._depth(BY_ID["deep_nesting_%d" % n]["tool"]["inputSchema"]) for n in (10, 11))
+        self.assertEqual((d10, d11), (10, 11))
+        self.assertNotIn("deep_nesting_11", match_probes(BY_ID["deep_nesting_10"]["tool"]))
+        self.assertIn("deep_nesting_10", match_probes(BY_ID["deep_nesting_11"]["tool"]))
+
     def test_control_matches_nothing(self):
         self.assertEqual(match_probes(BY_ID["control"]["tool"]), [])
 
     def test_name_probes(self):
-        self.assertGreater(len(BY_ID["name_too_long"]["tool"]["name"]), 64)
+        self.assertEqual(len(BY_ID["name_too_long"]["tool"]["name"]), 65)
+        self.assertEqual(len(BY_ID["name_too_long_129"]["tool"]["name"]), 129)
         self.assertGreater(len(BY_ID["long_description"]["tool"]["description"]), 5000)
 
 
@@ -63,10 +98,10 @@ class IssueDerivedExpectations(unittest.TestCase):
             for cfg in ("anthropic_messages", "openai_chat"):
                 self.assertEqual(ev[cfg]["status"], "FAIL")
                 self.assertEqual(ev[cfg]["source"], "issue-derived")
-            self.assertEqual(ev["gemini_parameters"]["status"], "UNKNOWN")
+            self.assertNotIn("gemini_parameters", ev)  # Gemini is not a default column
 
     def test_e004_gemini_type_array(self):
-        ev = check.evaluate(BY_ID["type_array_null"]["tool"], self.table)
+        ev = check.evaluate(BY_ID["type_array_null"]["tool"], self.table, check.CONFIGS + check.GEMINI_CONFIGS)
         self.assertEqual(ev["gemini_parameters"]["status"], "FAIL")
         self.assertEqual(ev["anthropic_messages"]["status"], "UNKNOWN")
 
@@ -99,7 +134,7 @@ class Check(unittest.TestCase):
         self.assertEqual(ev["openai_chat"]["status"], "FAIL")  # still issue-derived
 
     def test_cli_file_fails_with_nonzero_exit(self):
-        code, out, _ = run_cli("check", os.path.join(ROOT, "examples", "tools-list.json"))
+        code, out, _ = run_cli("check", os.path.join(ROOT, "examples", "tools-list.json"), "--data-dir", DATA_ONLY_EXPECTED)
         self.assertEqual(code, 1)
         self.assertIn("FAIL (issue)", out)
         self.assertIn("issue-derived", out)
@@ -124,6 +159,16 @@ class Check(unittest.TestCase):
         code, out, _ = run_cli("check", "--", sys.executable, server)
         self.assertEqual(code, 1)  # tool "a" has a top-level anyOf
         self.assertIn("a ", out)
+
+    def test_gemini_issue_derived_does_not_fail_default_check(self):
+        d = tempfile.mkdtemp()
+        f = os.path.join(d, "t.json")
+        with open(f, "w") as fh:
+            json.dump([BY_ID["type_array_null"]["tool"]], fh)
+        self.assertEqual(run_cli("check", f, "--data-dir", DATA_ONLY_EXPECTED)[0], 0)
+        code, out, _ = run_cli("check", f, "--data-dir", DATA_ONLY_EXPECTED, "--gemini")
+        self.assertEqual(code, 1)
+        self.assertIn("gemini_parameters", out)
 
     def test_stdio_missing_command(self):
         self.assertEqual(run_cli("check", "--", "definitely-not-a-command-xyz")[0], 2)

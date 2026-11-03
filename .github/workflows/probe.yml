@@ -23,11 +23,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-      - name: Probe live APIs (providers without a key are skipped)
+      - name: Probe live APIs (Anthropic and OpenAI; Gemini is not measured)
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python -m mcp_compat_probe probe
       - uses: actions/upload-artifact@v4
         if: always()

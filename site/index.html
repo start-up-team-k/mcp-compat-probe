@@ -30,7 +30,7 @@ Promise.all([get("data/latest.json"), get("data/expected-from-issues.json"), get
   if (!res.length) {
     st.textContent = "No live measurements yet. No API keys have run the probe workflow, so every cell below is unknown. Entries marked issue-derived come from public bug reports, not from our own measurements.";
   } else {
-    st.textContent = "Last updated " + latest.generated_at + ". Cells show the HTTP status and date of the latest measurement.";
+    st.textContent = "Last updated " + latest.generated_at + ". Cells show the HTTP status and date of the latest measurement. Anthropic and OpenAI only; Gemini is not measured by this project's workflow.";
   }
   const cfgs = [...new Set(res.map(r => r.config))], probes = [...new Set(res.map(r => r.probe_id))];
   const by = {}; res.forEach(r => by[r.probe_id + "|" + r.config] = r);
