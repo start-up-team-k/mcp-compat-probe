@@ -3,8 +3,10 @@ from __future__ import annotations
 
 import collections
 import json
+import os
 import queue
 import shutil
+import signal
 import subprocess
 import threading
 import time
@@ -14,12 +16,23 @@ class StdioError(Exception):
     pass
 
 
+def _stop(proc, sig):
+    """Signal the whole process group (npx/uvx spawn children that keep the pipes open)."""
+    try:
+        if hasattr(os, "killpg"):
+            os.killpg(proc.pid, sig)
+        else:
+            proc.terminate()
+    except OSError:
+        pass
+
+
 def list_tools(cmd, timeout=90.0):
     exe = shutil.which(cmd[0])
     if exe is None:
         raise StdioError("command not found: %s" % cmd[0])
     proc = subprocess.Popen([exe] + list(cmd[1:]), stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE, text=True, encoding="utf-8")
+                            stderr=subprocess.PIPE, text=True, encoding="utf-8", start_new_session=True)
     lines = queue.Queue()
 
     def pump():
@@ -77,11 +90,10 @@ def list_tools(cmd, timeout=90.0):
             proc.stdin.close()
         except OSError:
             pass
-        proc.terminate()
+        _stop(proc, signal.SIGTERM)
         try:
             proc.wait(10)
         except subprocess.TimeoutExpired:
-            proc.kill()
+            _stop(proc, getattr(signal, "SIGKILL", signal.SIGTERM))
             proc.wait()
-        proc.stdout.close()
-        proc.stderr.close()
+        # Pipes are not closed here: closing a pipe another thread is reading can block forever.

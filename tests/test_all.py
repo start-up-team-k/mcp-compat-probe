@@ -209,6 +209,13 @@ class Runner(unittest.TestCase):
         self.assertNotIn("SECRETKEY99", url + json.dumps(b))  # key only in headers
 
 
+class StdioHang(unittest.TestCase):
+    @unittest.skipIf(os.name == "nt", "POSIX process groups")
+    def test_timeout_returns_even_if_grandchild_holds_pipe(self):
+        with self.assertRaises(stdio.StdioError):
+            stdio.list_tools(["sh", "-c", "sleep 60 & sleep 60"], timeout=1)
+
+
 class Scan(unittest.TestCase):
     def tool(self, schema):
         return {"name": "t", "description": "d", "inputSchema": schema}
