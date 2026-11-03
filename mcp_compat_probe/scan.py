@@ -101,14 +101,15 @@ def run_scan(targets_path, out_dir, data_dir=check.DATA_DIR, timeout=90, lister=
     os.makedirs(out_dir, exist_ok=True)
     table = check.load_table(data_dir)
     servers = []
+    doc = {"schema_version": 1, "date": os.path.basename(out_dir.rstrip("/")),
+           "measured_data_present": bool(check._load(os.path.join(data_dir, "latest.json"), {}).get("results")),
+           "servers": servers}
     for t in targets:
         r = scan_one(t, out_dir, table, timeout, lister)
         log("%-55s %s%s" % (t["name"], r["status"], " (%d tools)" % r["n_tools"] if r["status"] == "ok" else ""))
         servers.append(r)
-    doc = {"schema_version": 1, "date": os.path.basename(out_dir.rstrip("/")),
-           "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-           "measured_data_present": bool(check._load(os.path.join(data_dir, "latest.json"), {}).get("results")),
-           "servers": servers}
-    with open(os.path.join(out_dir, "results.json"), "w", encoding="utf-8") as f:
-        json.dump(doc, f, indent=1)
+        sys.stdout.flush()
+        doc["generated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        with open(os.path.join(out_dir, "results.json"), "w", encoding="utf-8") as f:  # rewritten so a killed run keeps partial results
+            json.dump(doc, f, indent=1)
     return doc

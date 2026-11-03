@@ -42,6 +42,8 @@ def list_tools(cmd, timeout=90.0):
         send({"jsonrpc": "2.0", "id": id_, "method": method, "params": params})
         deadline = time.time() + timeout
         while True:
+            if time.time() > deadline:  # a chatty server must not keep us here forever
+                raise StdioError(why("timeout waiting for %s" % method))
             try:
                 line = lines.get(timeout=max(0.1, deadline - time.time()))
             except queue.Empty:
@@ -76,6 +78,10 @@ def list_tools(cmd, timeout=90.0):
         except OSError:
             pass
         proc.terminate()
-        proc.wait()
+        try:
+            proc.wait(10)
+        except subprocess.TimeoutExpired:
+            proc.kill()
+            proc.wait()
         proc.stdout.close()
         proc.stderr.close()
