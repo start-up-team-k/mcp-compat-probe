@@ -1,5 +1,4928 @@
 {
  "schema_version": 1,
- "generated_at": null,
- "results": []
+ "generated_at": "2026-11-03T10:51:44Z",
+ "results": [
+  {
+   "probe_id": "control",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:02Z",
+   "usage": {
+    "input_tokens": 381,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "top_anyof",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"tools.0.custom.input_schema: input_schema does not support oneOf, allOf, or anyOf at the top level\"},\"request_id\":\"req_011Cgfs4wNteZPHS1LxqPSrd\"}",
+   "measured_at": "2026-11-03T10:49:02Z",
+   "usage": null
+  },
+  {
+   "probe_id": "top_oneof",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"tools.0.custom.input_schema: input_schema does not support oneOf, allOf, or anyOf at the top level\"},\"request_id\":\"req_011Cgfs4wy71axJQyaL7CY4v\"}",
+   "measured_at": "2026-11-03T10:49:02Z",
+   "usage": null
+  },
+  {
+   "probe_id": "top_allof",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"tools.0.custom.input_schema: input_schema does not support oneOf, allOf, or anyOf at the top level\"},\"request_id\":\"req_011Cgfs4xc4PXCpAq25ymkap\"}",
+   "measured_at": "2026-11-03T10:49:02Z",
+   "usage": null
+  },
+  {
+   "probe_id": "schema_draft07",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:03Z",
+   "usage": {
+    "input_tokens": 405,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "schema_2020_12",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:04Z",
+   "usage": {
+    "input_tokens": 407,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "ref_defs",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:05Z",
+   "usage": {
+    "input_tokens": 402,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "ref_definitions",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:05Z",
+   "usage": {
+    "input_tokens": 402,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "ref_recursive",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:06Z",
+   "usage": {
+    "input_tokens": 440,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "additional_props_missing",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:07Z",
+   "usage": {
+    "input_tokens": 365,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "additional_props_true",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:07Z",
+   "usage": {
+    "input_tokens": 381,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "additional_props_schema",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:08Z",
+   "usage": {
+    "input_tokens": 388,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "required_partial",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:08Z",
+   "usage": {
+    "input_tokens": 387,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "type_array_null",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:09Z",
+   "usage": {
+    "input_tokens": 380,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "nullable_keyword",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:09Z",
+   "usage": {
+    "input_tokens": 382,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "const",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:10Z",
+   "usage": {
+    "input_tokens": 375,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "enum_numbers",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:10Z",
+   "usage": {
+    "input_tokens": 388,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "empty_properties",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:11Z",
+   "usage": {
+    "input_tokens": 356,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "object_no_properties",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:12Z",
+   "usage": {
+    "input_tokens": 339,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "format_uri",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:12Z",
+   "usage": {
+    "input_tokens": 382,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "format_datetime",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:13Z",
+   "usage": {
+    "input_tokens": 383,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "format_email",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:13Z",
+   "usage": {
+    "input_tokens": 381,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "pattern",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:14Z",
+   "usage": {
+    "input_tokens": 390,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "min_max_length",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:14Z",
+   "usage": {
+    "input_tokens": 392,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "min_max_number",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:15Z",
+   "usage": {
+    "input_tokens": 391,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "exclusive_minimum",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:15Z",
+   "usage": {
+    "input_tokens": 389,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "multiple_of",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:16Z",
+   "usage": {
+    "input_tokens": 385,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "default",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:16Z",
+   "usage": {
+    "input_tokens": 381,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "examples",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:17Z",
+   "usage": {
+    "input_tokens": 384,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "title",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:17Z",
+   "usage": {
+    "input_tokens": 381,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "prop_anyof",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:18Z",
+   "usage": {
+    "input_tokens": 394,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "not",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:18Z",
+   "usage": {
+    "input_tokens": 380,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "if_then_else",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:19Z",
+   "usage": {
+    "input_tokens": 407,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "pattern_properties",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:19Z",
+   "usage": {
+    "input_tokens": 371,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "property_names",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:20Z",
+   "usage": {
+    "input_tokens": 406,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "unevaluated_properties",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:20Z",
+   "usage": {
+    "input_tokens": 369,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "prefix_items",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:21Z",
+   "usage": {
+    "input_tokens": 397,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "unique_min_items",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:21Z",
+   "usage": {
+    "input_tokens": 404,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "name_dot",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"tools.0.custom.name: String should match pattern '^[a-zA-Z0-9_-]{1,128}$'\"},\"request_id\":\"req_011Cgfs6N3EoshxQCoPYLJet\"}",
+   "measured_at": "2026-11-03T10:49:21Z",
+   "usage": null
+  },
+  {
+   "probe_id": "name_hyphen",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:22Z",
+   "usage": {
+    "input_tokens": 381,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "name_too_long",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:22Z",
+   "usage": {
+    "input_tokens": 410,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "long_description",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:23Z",
+   "usage": {
+    "input_tokens": 6104,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "deep_nesting",
+   "config": "anthropic_messages",
+   "model": "claude-haiku-5-5",
+   "model_returned": "claude-haiku-5-5",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:23Z",
+   "usage": {
+    "input_tokens": 447,
+    "output_tokens": 1
+   }
+  },
+  {
+   "probe_id": "control",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:23Z",
+   "usage": {
+    "input_tokens": 381
+   }
+  },
+  {
+   "probe_id": "top_anyof",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"tools.0.custom.input_schema: input_schema does not support oneOf, allOf, or anyOf at the top level\"},\"request_id\":\"req_011Cgfs6YeTGdRiyNdMFBjiw\"}",
+   "measured_at": "2026-11-03T10:49:24Z",
+   "usage": null
+  },
+  {
+   "probe_id": "top_oneof",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"tools.0.custom.input_schema: input_schema does not support oneOf, allOf, or anyOf at the top level\"},\"request_id\":\"req_011Cgfs6ZAxkNa7Xy6kXZmgJ\"}",
+   "measured_at": "2026-11-03T10:49:24Z",
+   "usage": null
+  },
+  {
+   "probe_id": "top_allof",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"tools.0.custom.input_schema: input_schema does not support oneOf, allOf, or anyOf at the top level\"},\"request_id\":\"req_011Cgfs6ZmBHoK5o8GqX2hC6\"}",
+   "measured_at": "2026-11-03T10:49:24Z",
+   "usage": null
+  },
+  {
+   "probe_id": "schema_draft07",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:24Z",
+   "usage": {
+    "input_tokens": 405
+   }
+  },
+  {
+   "probe_id": "schema_2020_12",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:24Z",
+   "usage": {
+    "input_tokens": 407
+   }
+  },
+  {
+   "probe_id": "ref_defs",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:24Z",
+   "usage": {
+    "input_tokens": 402
+   }
+  },
+  {
+   "probe_id": "ref_definitions",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:24Z",
+   "usage": {
+    "input_tokens": 402
+   }
+  },
+  {
+   "probe_id": "ref_recursive",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:24Z",
+   "usage": {
+    "input_tokens": 440
+   }
+  },
+  {
+   "probe_id": "additional_props_missing",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:25Z",
+   "usage": {
+    "input_tokens": 365
+   }
+  },
+  {
+   "probe_id": "additional_props_true",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:25Z",
+   "usage": {
+    "input_tokens": 381
+   }
+  },
+  {
+   "probe_id": "additional_props_schema",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:25Z",
+   "usage": {
+    "input_tokens": 388
+   }
+  },
+  {
+   "probe_id": "required_partial",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:25Z",
+   "usage": {
+    "input_tokens": 387
+   }
+  },
+  {
+   "probe_id": "type_array_null",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:25Z",
+   "usage": {
+    "input_tokens": 380
+   }
+  },
+  {
+   "probe_id": "nullable_keyword",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:25Z",
+   "usage": {
+    "input_tokens": 382
+   }
+  },
+  {
+   "probe_id": "const",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:25Z",
+   "usage": {
+    "input_tokens": 375
+   }
+  },
+  {
+   "probe_id": "enum_numbers",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:26Z",
+   "usage": {
+    "input_tokens": 388
+   }
+  },
+  {
+   "probe_id": "empty_properties",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:26Z",
+   "usage": {
+    "input_tokens": 356
+   }
+  },
+  {
+   "probe_id": "object_no_properties",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:26Z",
+   "usage": {
+    "input_tokens": 339
+   }
+  },
+  {
+   "probe_id": "format_uri",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:26Z",
+   "usage": {
+    "input_tokens": 382
+   }
+  },
+  {
+   "probe_id": "format_datetime",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:26Z",
+   "usage": {
+    "input_tokens": 383
+   }
+  },
+  {
+   "probe_id": "format_email",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:26Z",
+   "usage": {
+    "input_tokens": 381
+   }
+  },
+  {
+   "probe_id": "pattern",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:26Z",
+   "usage": {
+    "input_tokens": 390
+   }
+  },
+  {
+   "probe_id": "min_max_length",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:27Z",
+   "usage": {
+    "input_tokens": 392
+   }
+  },
+  {
+   "probe_id": "min_max_number",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:27Z",
+   "usage": {
+    "input_tokens": 391
+   }
+  },
+  {
+   "probe_id": "exclusive_minimum",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:27Z",
+   "usage": {
+    "input_tokens": 389
+   }
+  },
+  {
+   "probe_id": "multiple_of",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:27Z",
+   "usage": {
+    "input_tokens": 385
+   }
+  },
+  {
+   "probe_id": "default",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:27Z",
+   "usage": {
+    "input_tokens": 381
+   }
+  },
+  {
+   "probe_id": "examples",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:27Z",
+   "usage": {
+    "input_tokens": 384
+   }
+  },
+  {
+   "probe_id": "title",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:27Z",
+   "usage": {
+    "input_tokens": 381
+   }
+  },
+  {
+   "probe_id": "prop_anyof",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:27Z",
+   "usage": {
+    "input_tokens": 394
+   }
+  },
+  {
+   "probe_id": "not",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:28Z",
+   "usage": {
+    "input_tokens": 380
+   }
+  },
+  {
+   "probe_id": "if_then_else",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:28Z",
+   "usage": {
+    "input_tokens": 407
+   }
+  },
+  {
+   "probe_id": "pattern_properties",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:28Z",
+   "usage": {
+    "input_tokens": 371
+   }
+  },
+  {
+   "probe_id": "property_names",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:28Z",
+   "usage": {
+    "input_tokens": 406
+   }
+  },
+  {
+   "probe_id": "unevaluated_properties",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:28Z",
+   "usage": {
+    "input_tokens": 369
+   }
+  },
+  {
+   "probe_id": "prefix_items",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:28Z",
+   "usage": {
+    "input_tokens": 397
+   }
+  },
+  {
+   "probe_id": "unique_min_items",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:28Z",
+   "usage": {
+    "input_tokens": 404
+   }
+  },
+  {
+   "probe_id": "name_dot",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"tools.0.custom.name: String should match pattern '^[a-zA-Z0-9_-]{1,128}$'\"},\"request_id\":\"req_011Cgfs6v5KQ8e6YuPURb1BH\"}",
+   "measured_at": "2026-11-03T10:49:29Z",
+   "usage": null
+  },
+  {
+   "probe_id": "name_hyphen",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:29Z",
+   "usage": {
+    "input_tokens": 381
+   }
+  },
+  {
+   "probe_id": "name_too_long",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:29Z",
+   "usage": {
+    "input_tokens": 410
+   }
+  },
+  {
+   "probe_id": "long_description",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:29Z",
+   "usage": {
+    "input_tokens": 6104
+   }
+  },
+  {
+   "probe_id": "deep_nesting",
+   "config": "anthropic_count_tokens",
+   "model": "claude-haiku-5-5",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/messages/count_tokens",
+   "api_version": "anthropic-version: 2023-06-01",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:29Z",
+   "usage": {
+    "input_tokens": 447
+   }
+  },
+  {
+   "probe_id": "control",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:31Z",
+   "usage": {
+    "input_tokens": 125,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "top_anyof",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': schema must have type 'object' and not have 'oneOf'/'anyOf'/'allOf'/'enum'/'const'/'not' at the top level.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:49:31Z",
+   "usage": null
+  },
+  {
+   "probe_id": "top_oneof",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': schema must have type 'object' and not have 'oneOf'/'anyOf'/'allOf'/'enum'/'const'/'not' at the top level.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:49:31Z",
+   "usage": null
+  },
+  {
+   "probe_id": "top_allof",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': schema must have type 'object' and not have 'oneOf'/'anyOf'/'allOf'/'enum'/'const'/'not' at the top level.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:49:32Z",
+   "usage": null
+  },
+  {
+   "probe_id": "schema_draft07",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:33Z",
+   "usage": {
+    "input_tokens": 125,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "schema_2020_12",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:34Z",
+   "usage": {
+    "input_tokens": 125,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "ref_defs",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:34Z",
+   "usage": {
+    "input_tokens": 122,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "ref_definitions",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:35Z",
+   "usage": {
+    "input_tokens": 122,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "ref_recursive",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:36Z",
+   "usage": {
+    "input_tokens": 138,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "additional_props_missing",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:37Z",
+   "usage": {
+    "input_tokens": 122,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "additional_props_true",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:38Z",
+   "usage": {
+    "input_tokens": 131,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "additional_props_schema",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:39Z",
+   "usage": {
+    "input_tokens": 131,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "required_partial",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:39Z",
+   "usage": {
+    "input_tokens": 126,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "type_array_null",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:40Z",
+   "usage": {
+    "input_tokens": 124,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "nullable_keyword",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:40Z",
+   "usage": {
+    "input_tokens": 124,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "const",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:41Z",
+   "usage": {
+    "input_tokens": 124,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "enum_numbers",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:42Z",
+   "usage": {
+    "input_tokens": 129,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "empty_properties",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:42Z",
+   "usage": {
+    "input_tokens": 116,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "object_no_properties",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:43Z",
+   "usage": {
+    "input_tokens": 116,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "format_uri",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:43Z",
+   "usage": {
+    "input_tokens": 129,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "format_datetime",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:44Z",
+   "usage": {
+    "input_tokens": 130,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "format_email",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:45Z",
+   "usage": {
+    "input_tokens": 129,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "pattern",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:45Z",
+   "usage": {
+    "input_tokens": 132,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "min_max_length",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:46Z",
+   "usage": {
+    "input_tokens": 136,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "min_max_number",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:46Z",
+   "usage": {
+    "input_tokens": 138,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "exclusive_minimum",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:47Z",
+   "usage": {
+    "input_tokens": 132,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "multiple_of",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:47Z",
+   "usage": {
+    "input_tokens": 132,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "default",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:48Z",
+   "usage": {
+    "input_tokens": 129,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "examples",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:48Z",
+   "usage": {
+    "input_tokens": 128,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "title",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:49Z",
+   "usage": {
+    "input_tokens": 125,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "prop_anyof",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:50Z",
+   "usage": {
+    "input_tokens": 124,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "not",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:50Z",
+   "usage": {
+    "input_tokens": 127,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "if_then_else",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:51Z",
+   "usage": {
+    "input_tokens": 144,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "pattern_properties",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:51Z",
+   "usage": {
+    "input_tokens": 138,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "property_names",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:52Z",
+   "usage": {
+    "input_tokens": 143,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "unevaluated_properties",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:52Z",
+   "usage": {
+    "input_tokens": 134,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "prefix_items",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:53Z",
+   "usage": {
+    "input_tokens": 127,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "unique_min_items",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:54Z",
+   "usage": {
+    "input_tokens": 139,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "name_dot",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid 'tools[0].function.name': string does not match pattern. Expected a string that matches the pattern '^[a-zA-Z0-9_-]+$'.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.name\",\n    \"code\": \"invalid_value\"\n  }\n}",
+   "measured_at": "2026-11-03T10:49:54Z",
+   "usage": null
+  },
+  {
+   "probe_id": "name_hyphen",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:54Z",
+   "usage": {
+    "input_tokens": 125,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "name_too_long",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:55Z",
+   "usage": {
+    "input_tokens": 156,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "long_description",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:56Z",
+   "usage": {
+    "input_tokens": 2270,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "deep_nesting",
+   "config": "openai_chat",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:56Z",
+   "usage": {
+    "input_tokens": 138,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "control",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:57Z",
+   "usage": {
+    "input_tokens": 125,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "top_anyof",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=('anyOf', '0'), 'additionalProperties' is required to be supplied and to be false.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:49:57Z",
+   "usage": null
+  },
+  {
+   "probe_id": "top_oneof",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'oneOf' is not permitted.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:49:57Z",
+   "usage": null
+  },
+  {
+   "probe_id": "top_allof",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'allOf' is not permitted.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:49:57Z",
+   "usage": null
+  },
+  {
+   "probe_id": "schema_draft07",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:58Z",
+   "usage": {
+    "input_tokens": 125,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "schema_2020_12",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:59Z",
+   "usage": {
+    "input_tokens": 125,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "ref_defs",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:49:59Z",
+   "usage": {
+    "input_tokens": 122,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "ref_definitions",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:00Z",
+   "usage": {
+    "input_tokens": 122,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "ref_recursive",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'additionalProperties' is required to be supplied and to be false.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:00Z",
+   "usage": null
+  },
+  {
+   "probe_id": "additional_props_missing",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'additionalProperties' is required to be supplied and to be false.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:00Z",
+   "usage": null
+  },
+  {
+   "probe_id": "additional_props_true",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'additionalProperties' is required to be supplied and to be false.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:00Z",
+   "usage": null
+  },
+  {
+   "probe_id": "additional_props_schema",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:01Z",
+   "usage": {
+    "input_tokens": 131,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "required_partial",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'required' is required to be supplied and to be an array including every key in properties. Missing 'b'.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:01Z",
+   "usage": null
+  },
+  {
+   "probe_id": "type_array_null",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:02Z",
+   "usage": {
+    "input_tokens": 124,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "nullable_keyword",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:02Z",
+   "usage": {
+    "input_tokens": 124,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "const",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=('properties', 'x'), schema must have a 'type' key.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:03Z",
+   "usage": null
+  },
+  {
+   "probe_id": "enum_numbers",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:03Z",
+   "usage": {
+    "input_tokens": 129,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "empty_properties",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:04Z",
+   "usage": {
+    "input_tokens": 116,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "object_no_properties",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'additionalProperties' is required to be supplied and to be false.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:04Z",
+   "usage": null
+  },
+  {
+   "probe_id": "format_uri",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=('properties', 'x'), 'uri' is not a valid format.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:04Z",
+   "usage": null
+  },
+  {
+   "probe_id": "format_datetime",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:05Z",
+   "usage": {
+    "input_tokens": 130,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "format_email",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:05Z",
+   "usage": {
+    "input_tokens": 129,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "pattern",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:06Z",
+   "usage": {
+    "input_tokens": 132,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "min_max_length",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:06Z",
+   "usage": {
+    "input_tokens": 136,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "min_max_number",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:07Z",
+   "usage": {
+    "input_tokens": 138,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "exclusive_minimum",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:07Z",
+   "usage": {
+    "input_tokens": 132,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "multiple_of",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:08Z",
+   "usage": {
+    "input_tokens": 132,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "default",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:08Z",
+   "usage": {
+    "input_tokens": 129,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "examples",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:09Z",
+   "usage": {
+    "input_tokens": 128,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "title",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:10Z",
+   "usage": {
+    "input_tokens": 125,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "prop_anyof",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:10Z",
+   "usage": {
+    "input_tokens": 124,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "not",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': context=('properties', 'x'), Unsupported keywords ('not',).\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:10Z",
+   "usage": null
+  },
+  {
+   "probe_id": "if_then_else",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'if' is not permitted.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:11Z",
+   "usage": null
+  },
+  {
+   "probe_id": "pattern_properties",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), object schema missing properties.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:11Z",
+   "usage": null
+  },
+  {
+   "probe_id": "property_names",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'propertyNames' is not permitted.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:11Z",
+   "usage": null
+  },
+  {
+   "probe_id": "unevaluated_properties",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'unevaluatedProperties' is not permitted.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:11Z",
+   "usage": null
+  },
+  {
+   "probe_id": "prefix_items",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=('properties', 'x'), array schema items is not an object.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:11Z",
+   "usage": null
+  },
+  {
+   "probe_id": "unique_min_items",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=('properties', 'x'), 'uniqueItems' is not permitted.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:11Z",
+   "usage": null
+  },
+  {
+   "probe_id": "name_dot",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid 'tools[0].function.name': string does not match pattern. Expected a string that matches the pattern '^[a-zA-Z0-9_-]+$'.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.name\",\n    \"code\": \"invalid_value\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:11Z",
+   "usage": null
+  },
+  {
+   "probe_id": "name_hyphen",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:12Z",
+   "usage": {
+    "input_tokens": 125,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "name_too_long",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:13Z",
+   "usage": {
+    "input_tokens": 156,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "long_description",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:13Z",
+   "usage": {
+    "input_tokens": 2270,
+    "output_tokens": 16
+   }
+  },
+  {
+   "probe_id": "deep_nesting",
+   "config": "openai_chat_strict",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/chat/completions (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=('properties', 'x'), 'additionalProperties' is required to be supplied and to be false.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].function.parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:13Z",
+   "usage": null
+  },
+  {
+   "probe_id": "control",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:14Z",
+   "usage": {
+    "input_tokens": 43,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "top_anyof",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:15Z",
+   "usage": {
+    "input_tokens": 58,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "top_oneof",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:16Z",
+   "usage": {
+    "input_tokens": 58,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "top_allof",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:17Z",
+   "usage": {
+    "input_tokens": 58,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "schema_draft07",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:18Z",
+   "usage": {
+    "input_tokens": 43,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "schema_2020_12",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:18Z",
+   "usage": {
+    "input_tokens": 43,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "ref_defs",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:19Z",
+   "usage": {
+    "input_tokens": 40,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "ref_definitions",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:20Z",
+   "usage": {
+    "input_tokens": 40,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "ref_recursive",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:21Z",
+   "usage": {
+    "input_tokens": 56,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "additional_props_missing",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:22Z",
+   "usage": {
+    "input_tokens": 40,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "additional_props_true",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:22Z",
+   "usage": {
+    "input_tokens": 49,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "additional_props_schema",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:23Z",
+   "usage": {
+    "input_tokens": 49,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "required_partial",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:24Z",
+   "usage": {
+    "input_tokens": 44,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "type_array_null",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:25Z",
+   "usage": {
+    "input_tokens": 42,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "nullable_keyword",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:26Z",
+   "usage": {
+    "input_tokens": 42,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "const",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:26Z",
+   "usage": {
+    "input_tokens": 42,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "enum_numbers",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:27Z",
+   "usage": {
+    "input_tokens": 47,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "empty_properties",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:28Z",
+   "usage": {
+    "input_tokens": 34,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "object_no_properties",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:28Z",
+   "usage": {
+    "input_tokens": 34,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "format_uri",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:29Z",
+   "usage": {
+    "input_tokens": 47,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "format_datetime",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:30Z",
+   "usage": {
+    "input_tokens": 48,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "format_email",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:31Z",
+   "usage": {
+    "input_tokens": 47,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "pattern",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:32Z",
+   "usage": {
+    "input_tokens": 50,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "min_max_length",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:32Z",
+   "usage": {
+    "input_tokens": 54,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "min_max_number",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:33Z",
+   "usage": {
+    "input_tokens": 56,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "exclusive_minimum",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:34Z",
+   "usage": {
+    "input_tokens": 50,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "multiple_of",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:35Z",
+   "usage": {
+    "input_tokens": 50,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "default",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:35Z",
+   "usage": {
+    "input_tokens": 47,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "examples",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:36Z",
+   "usage": {
+    "input_tokens": 46,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "title",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:37Z",
+   "usage": {
+    "input_tokens": 43,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "prop_anyof",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:38Z",
+   "usage": {
+    "input_tokens": 42,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "not",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:39Z",
+   "usage": {
+    "input_tokens": 45,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "if_then_else",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:39Z",
+   "usage": {
+    "input_tokens": 62,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "pattern_properties",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:40Z",
+   "usage": {
+    "input_tokens": 56,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "property_names",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:41Z",
+   "usage": {
+    "input_tokens": 61,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "unevaluated_properties",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:42Z",
+   "usage": {
+    "input_tokens": 52,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "prefix_items",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:43Z",
+   "usage": {
+    "input_tokens": 45,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "unique_min_items",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:43Z",
+   "usage": {
+    "input_tokens": 57,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "name_dot",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid 'tools[0].name': string does not match pattern. Expected a string that matches the pattern '^[a-zA-Z0-9_-]+$'.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].name\",\n    \"code\": \"invalid_value\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:43Z",
+   "usage": null
+  },
+  {
+   "probe_id": "name_hyphen",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:44Z",
+   "usage": {
+    "input_tokens": 43,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "name_too_long",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:45Z",
+   "usage": {
+    "input_tokens": 74,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "long_description",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:46Z",
+   "usage": {
+    "input_tokens": 2188,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "deep_nesting",
+   "config": "openai_responses",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict omitted)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:47Z",
+   "usage": {
+    "input_tokens": 56,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "control",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:48Z",
+   "usage": {
+    "input_tokens": 43,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "top_anyof",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=('anyOf', '0'), 'additionalProperties' is required to be supplied and to be false.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:48Z",
+   "usage": null
+  },
+  {
+   "probe_id": "top_oneof",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'oneOf' is not permitted.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:48Z",
+   "usage": null
+  },
+  {
+   "probe_id": "top_allof",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'allOf' is not permitted.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:48Z",
+   "usage": null
+  },
+  {
+   "probe_id": "schema_draft07",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:49Z",
+   "usage": {
+    "input_tokens": 43,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "schema_2020_12",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:50Z",
+   "usage": {
+    "input_tokens": 43,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "ref_defs",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:52Z",
+   "usage": {
+    "input_tokens": 40,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "ref_definitions",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:53Z",
+   "usage": {
+    "input_tokens": 40,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "ref_recursive",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'additionalProperties' is required to be supplied and to be false.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:53Z",
+   "usage": null
+  },
+  {
+   "probe_id": "additional_props_missing",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'additionalProperties' is required to be supplied and to be false.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:53Z",
+   "usage": null
+  },
+  {
+   "probe_id": "additional_props_true",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'additionalProperties' is required to be supplied and to be false.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:54Z",
+   "usage": null
+  },
+  {
+   "probe_id": "additional_props_schema",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:54Z",
+   "usage": {
+    "input_tokens": 49,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "required_partial",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'required' is required to be supplied and to be an array including every key in properties. Missing 'b'.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:55Z",
+   "usage": null
+  },
+  {
+   "probe_id": "type_array_null",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:55Z",
+   "usage": {
+    "input_tokens": 42,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "nullable_keyword",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:56Z",
+   "usage": {
+    "input_tokens": 42,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "const",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=('properties', 'x'), schema must have a 'type' key.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:56Z",
+   "usage": null
+  },
+  {
+   "probe_id": "enum_numbers",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:57Z",
+   "usage": {
+    "input_tokens": 47,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "empty_properties",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:58Z",
+   "usage": {
+    "input_tokens": 34,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "object_no_properties",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'additionalProperties' is required to be supplied and to be false.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:58Z",
+   "usage": null
+  },
+  {
+   "probe_id": "format_uri",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=('properties', 'x'), 'uri' is not a valid format.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:50:58Z",
+   "usage": null
+  },
+  {
+   "probe_id": "format_datetime",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:59Z",
+   "usage": {
+    "input_tokens": 48,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "format_email",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:50:59Z",
+   "usage": {
+    "input_tokens": 47,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "pattern",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:00Z",
+   "usage": {
+    "input_tokens": 50,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "min_max_length",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:01Z",
+   "usage": {
+    "input_tokens": 54,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "min_max_number",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:02Z",
+   "usage": {
+    "input_tokens": 56,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "exclusive_minimum",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:03Z",
+   "usage": {
+    "input_tokens": 50,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "multiple_of",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:04Z",
+   "usage": {
+    "input_tokens": 50,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "default",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:04Z",
+   "usage": {
+    "input_tokens": 47,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "examples",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:05Z",
+   "usage": {
+    "input_tokens": 46,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "title",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:06Z",
+   "usage": {
+    "input_tokens": 43,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "prop_anyof",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:07Z",
+   "usage": {
+    "input_tokens": 42,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "not",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': context=('properties', 'x'), Unsupported keywords ('not',).\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:51:07Z",
+   "usage": null
+  },
+  {
+   "probe_id": "if_then_else",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'if' is not permitted.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:51:07Z",
+   "usage": null
+  },
+  {
+   "probe_id": "pattern_properties",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), object schema missing properties.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:51:07Z",
+   "usage": null
+  },
+  {
+   "probe_id": "property_names",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'propertyNames' is not permitted.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:51:08Z",
+   "usage": null
+  },
+  {
+   "probe_id": "unevaluated_properties",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=(), 'unevaluatedProperties' is not permitted.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:51:08Z",
+   "usage": null
+  },
+  {
+   "probe_id": "prefix_items",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=('properties', 'x'), array schema items is not an object.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:51:08Z",
+   "usage": null
+  },
+  {
+   "probe_id": "unique_min_items",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=('properties', 'x'), 'uniqueItems' is not permitted.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:51:08Z",
+   "usage": null
+  },
+  {
+   "probe_id": "name_dot",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid 'tools[0].name': string does not match pattern. Expected a string that matches the pattern '^[a-zA-Z0-9_-]+$'.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].name\",\n    \"code\": \"invalid_value\"\n  }\n}",
+   "measured_at": "2026-11-03T10:51:08Z",
+   "usage": null
+  },
+  {
+   "probe_id": "name_hyphen",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:09Z",
+   "usage": {
+    "input_tokens": 43,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "name_too_long",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:10Z",
+   "usage": {
+    "input_tokens": 74,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "long_description",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:10Z",
+   "usage": {
+    "input_tokens": 2188,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "deep_nesting",
+   "config": "openai_responses_strict_true",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: true)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid schema for function 'probe_tool': In context=('properties', 'x'), 'additionalProperties' is required to be supplied and to be false.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].parameters\",\n    \"code\": \"invalid_function_parameters\"\n  }\n}",
+   "measured_at": "2026-11-03T10:51:11Z",
+   "usage": null
+  },
+  {
+   "probe_id": "control",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:11Z",
+   "usage": {
+    "input_tokens": 43,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "top_anyof",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:12Z",
+   "usage": {
+    "input_tokens": 58,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "top_oneof",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:13Z",
+   "usage": {
+    "input_tokens": 58,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "top_allof",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:14Z",
+   "usage": {
+    "input_tokens": 58,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "schema_draft07",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:15Z",
+   "usage": {
+    "input_tokens": 43,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "schema_2020_12",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:16Z",
+   "usage": {
+    "input_tokens": 43,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "ref_defs",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:17Z",
+   "usage": {
+    "input_tokens": 40,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "ref_definitions",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:18Z",
+   "usage": {
+    "input_tokens": 40,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "ref_recursive",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:19Z",
+   "usage": {
+    "input_tokens": 56,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "additional_props_missing",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:19Z",
+   "usage": {
+    "input_tokens": 40,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "additional_props_true",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:20Z",
+   "usage": {
+    "input_tokens": 49,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "additional_props_schema",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:21Z",
+   "usage": {
+    "input_tokens": 49,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "required_partial",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:22Z",
+   "usage": {
+    "input_tokens": 44,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "type_array_null",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:22Z",
+   "usage": {
+    "input_tokens": 42,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "nullable_keyword",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:23Z",
+   "usage": {
+    "input_tokens": 42,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "const",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:24Z",
+   "usage": {
+    "input_tokens": 42,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "enum_numbers",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:25Z",
+   "usage": {
+    "input_tokens": 47,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "empty_properties",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:25Z",
+   "usage": {
+    "input_tokens": 34,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "object_no_properties",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:26Z",
+   "usage": {
+    "input_tokens": 34,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "format_uri",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:27Z",
+   "usage": {
+    "input_tokens": 47,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "format_datetime",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:28Z",
+   "usage": {
+    "input_tokens": 48,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "format_email",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:28Z",
+   "usage": {
+    "input_tokens": 47,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "pattern",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:29Z",
+   "usage": {
+    "input_tokens": 50,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "min_max_length",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:30Z",
+   "usage": {
+    "input_tokens": 54,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "min_max_number",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:31Z",
+   "usage": {
+    "input_tokens": 56,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "exclusive_minimum",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:31Z",
+   "usage": {
+    "input_tokens": 50,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "multiple_of",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:32Z",
+   "usage": {
+    "input_tokens": 50,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "default",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:33Z",
+   "usage": {
+    "input_tokens": 47,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "examples",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:34Z",
+   "usage": {
+    "input_tokens": 46,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "title",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:35Z",
+   "usage": {
+    "input_tokens": 43,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "prop_anyof",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:36Z",
+   "usage": {
+    "input_tokens": 42,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "not",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:36Z",
+   "usage": {
+    "input_tokens": 45,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "if_then_else",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:37Z",
+   "usage": {
+    "input_tokens": 62,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "pattern_properties",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:38Z",
+   "usage": {
+    "input_tokens": 56,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "property_names",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:39Z",
+   "usage": {
+    "input_tokens": 61,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "unevaluated_properties",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:40Z",
+   "usage": {
+    "input_tokens": 52,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "prefix_items",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:40Z",
+   "usage": {
+    "input_tokens": 45,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "unique_min_items",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:41Z",
+   "usage": {
+    "input_tokens": 57,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "name_dot",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": null,
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": false,
+   "http_status": 400,
+   "error": "{\n  \"error\": {\n    \"message\": \"Invalid 'tools[0].name': string does not match pattern. Expected a string that matches the pattern '^[a-zA-Z0-9_-]+$'.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"tools[0].name\",\n    \"code\": \"invalid_value\"\n  }\n}",
+   "measured_at": "2026-11-03T10:51:41Z",
+   "usage": null
+  },
+  {
+   "probe_id": "name_hyphen",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:42Z",
+   "usage": {
+    "input_tokens": 43,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "name_too_long",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:43Z",
+   "usage": {
+    "input_tokens": 74,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "long_description",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:44Z",
+   "usage": {
+    "input_tokens": 2188,
+    "output_tokens": 0
+   }
+  },
+  {
+   "probe_id": "deep_nesting",
+   "config": "openai_responses_strict_false",
+   "model": "gpt-5-nano",
+   "model_returned": "gpt-5-nano-2025-08-07",
+   "transport": "rest-direct",
+   "endpoint": "POST /v1/responses (strict: false)",
+   "api_version": "v1",
+   "accepted": true,
+   "http_status": 200,
+   "error": null,
+   "measured_at": "2026-11-03T10:51:44Z",
+   "usage": {
+    "input_tokens": 56,
+    "output_tokens": 0
+   }
+  }
+ ]
 }

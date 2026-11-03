@@ -58,5 +58,6 @@ jobs:
           git add mcp_compat_probe/data
           if git diff --cached --quiet; then echo "no new data"; exit 0; fi
           git commit -m "data: probe results $(date -u +%F)"
+          git pull --rebase origin main   # main may have moved during the run
           git push
           gh workflow run pages.yml
