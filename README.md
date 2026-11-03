@@ -37,7 +37,7 @@ From a live stdio server (everything after `--` is the server command; needs Nod
 python -m mcp_compat_probe check -- npx -y @modelcontextprotocol/server-everything
 ```
 
-Output is a table with one row per tool and one column per provider configuration (Anthropic messages, Anthropic `count_tokens`, OpenAI, OpenAI strict, Gemini `parameters`, Gemini `parametersJsonSchema`). Each cell is `PASS (date)`, `FAIL (date)`, `FAIL (issue)` or `UNKNOWN`. Exit code: `0` nothing failed, `1` at least one FAIL, `2` input error. `UNKNOWN` never fails the check. Add `--json` for machine-readable output.
+Output is a table with one row per tool and one column per provider configuration (Anthropic messages, Anthropic `count_tokens`, OpenAI Chat Completions plain and `strict: true`, OpenAI Responses with `strict` omitted / true / false, Gemini `parameters`, Gemini `parametersJsonSchema`). Each cell is `PASS (date)`, `FAIL (date)`, `FAIL (issue)` or `UNKNOWN`. Exit code: `0` nothing failed, `1` at least one FAIL, `2` input error. `UNKNOWN` never fails the check. Add `--json` for machine-readable output.
 
 Run the measurement yourself (needs your own keys; providers without a key are skipped):
 
@@ -47,6 +47,8 @@ ANTHROPIC_API_KEY=... OPENAI_API_KEY=... GEMINI_API_KEY=... python -m mcp_compat
 
 Default models are the cheapest current model per provider (`claude-haiku-5-5`, `gpt-5-nano`, `gemini-3.5-flash-lite`); override with `MCP_COMPAT_ANTHROPIC_MODEL`, `MCP_COMPAT_OPENAI_MODEL`, `MCP_COMPAT_GEMINI_MODEL`. Output tokens are capped at 1 (16 for OpenAI).
 
+OpenAI paths are separate because they behave differently: the Responses API normalizes a schema itself when `strict` is omitted ([docs](https://developers.openai.com/api/docs/guides/function-calling#strict-mode)), so omitted, `true` and `false` are recorded separately there. Chat Completions has two configs (omitted, `true`); `strict: false` is not measured on Chat Completions because it is equivalent to omitting it, which keeps the count at 9 configs instead of 10. Every result records `transport: "rest-direct"`.
+
 ## Test
 
 Offline, no keys, no network:
@@ -54,6 +56,20 @@ Offline, no keys, no network:
 ```bash
 python -m unittest discover -s tests -v
 ```
+
+## Registry scan
+
+Scan real servers from the [official MCP registry](https://registry.modelcontextprotocol.io) (npm via `npx`, PyPI via `uvx`, stdio, no required env vars), list their tools and judge them in two stages:
+
+```bash
+python -m mcp_compat_probe scan registry-scan/targets.json --out registry-scan/YYYY-MM-DD
+```
+
+Run it from the `registry-scan` GitHub Actions workflow (manual dispatch, no secrets, read-only token): it executes third-party packages, so it should not run on a personal machine. Results (raw `tools/list` per server plus verdicts in `results.json`) are committed under `registry-scan/YYYY-MM-DD/` and shown as the "Registry scan" table on the Pages site.
+
+- Stage 1, public API: our dataset per provider configuration (FAIL / PASS / UNKNOWN) and where the verdict comes from (`measured` or `issue-derived`). `issue-derived` is NOT a measurement.
+- Stage 2, client validation: JSON Schema dialect mismatch that Ajv-style validators reject, e.g. a draft-07 `$schema` against a 2020-12-only client ([typescript-sdk#2677](https://github.com/modelcontextprotocol/typescript-sdk/issues/2677)) or a 2020-12 `$schema` against a draft-07-only client ([claude-task-master#1284](https://github.com/eyaltoledano/claude-task-master/issues/1284)). Judged from the declared `$schema` and 2020-12-only keywords only; no validator is run, so it shows risk for a client class, not a verified failure of a specific client.
+- Servers that declare required env vars, or exit with a configuration-looking stderr, are recorded as `needs config` and skipped; a keyword match on stderr is a heuristic.
 
 ## Dataset
 
@@ -79,6 +95,8 @@ Corpus: 43 probes (`mcp_compat_probe/probes.py`), each with one keyword or struc
 - Each probe tests one construct alone. A tool is judged by the constructs it contains; interactions between constructs and total size limits are not modeled.
 - The measured set is empty until API keys are configured for the weekly workflow; until then only issue-derived expectations exist. An API accepting a schema does not prove the model uses the tool well.
 - "Accepted" means HTTP 2xx; "rejected" means HTTP 400/422. Other statuses (rate limits, auth, 5xx) are recorded as inconclusive.
+- Requests go straight to the REST endpoints (`transport: "rest-direct"`). Official SDKs can change the schema before sending (for example the `@google/genai` SDK strips unsupported keywords), so an SDK-based client may behave differently from these results.
+- The registry scan covers only registry servers that start without configuration; stage 2 is a dialect heuristic, and stage 1 verdicts stay `issue-derived` or `UNKNOWN` until live measurements exist.
 - Provider behavior changes over time; check the measurement date. Windows stdio launch of `npx` may need `npx.cmd`.
 
 ## License

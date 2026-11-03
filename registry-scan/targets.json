@@ -1,0 +1,465 @@
+{
+ "_comment": "Selected 2026-11-03 from registry.modelcontextprotocol.io (latest, active, stdio npm/pypi, GitHub repo, no required env/args), by GitHub stars, max 2 per repo.",
+ "targets": [
+  {
+   "name": "com.browser-use/browser-use",
+   "repo": "https://github.com/browser-use/browser-use",
+   "stars": 119901,
+   "registry_type": "pypi",
+   "package": "browser-use",
+   "version": "0.13.11",
+   "command": [
+    "uvx",
+    "browser-use@0.13.11"
+   ]
+  },
+  {
+   "name": "app.pascal/editor",
+   "repo": "https://github.com/pascalorg/editor",
+   "stars": 25290,
+   "registry_type": "npm",
+   "package": "@pascal-app/mcp",
+   "version": "1.0.6",
+   "command": [
+    "npx",
+    "-y",
+    "@pascal-app/mcp@1.0.6"
+   ]
+  },
+  {
+   "name": "ai.autonomous.harness/harness",
+   "repo": "https://github.com/autonomous-ai/openharness",
+   "stars": 1418,
+   "registry_type": "npm",
+   "package": "@autonomous-ai/harness-mcp",
+   "version": "0.2.0",
+   "command": [
+    "npx",
+    "-y",
+    "@autonomous-ai/harness-mcp@0.2.0"
+   ]
+  },
+  {
+   "name": "ai.thetahealth/mirobody",
+   "repo": "https://github.com/thetahealth/mirobody",
+   "stars": 1404,
+   "registry_type": "pypi",
+   "package": "mirobody",
+   "version": "1.5.10",
+   "command": [
+    "uvx",
+    "mirobody@1.5.10"
+   ]
+  },
+  {
+   "name": "co.firecms/mcp",
+   "repo": "https://github.com/firecmsco/firecms",
+   "stars": 1283,
+   "registry_type": "npm",
+   "package": "@firecms/mcp-server",
+   "version": "3.5.1",
+   "command": [
+    "npx",
+    "-y",
+    "@firecms/mcp-server@3.5.1"
+   ]
+  },
+  {
+   "name": "com.decionis/mcp",
+   "repo": "https://github.com/decionis/agent-safe-pipeline",
+   "stars": 671,
+   "registry_type": "npm",
+   "package": "@decionis/mcp",
+   "version": "0.3.0",
+   "command": [
+    "npx",
+    "-y",
+    "@decionis/mcp@0.3.0"
+   ]
+  },
+  {
+   "name": "ai.ankimcp/anki-mcp-server",
+   "repo": "https://github.com/ankimcp/anki-mcp-server",
+   "stars": 544,
+   "registry_type": "npm",
+   "package": "@ankimcp/anki-mcp-server",
+   "version": "0.27.0",
+   "command": [
+    "npx",
+    "-y",
+    "@ankimcp/anki-mcp-server@0.27.0"
+   ]
+  },
+  {
+   "name": "com.docfork/docfork-mcp",
+   "repo": "https://github.com/docfork/docfork",
+   "stars": 483,
+   "registry_type": "npm",
+   "package": "docfork",
+   "version": "1.3.0",
+   "command": [
+    "npx",
+    "-y",
+    "docfork@1.3.0"
+   ]
+  },
+  {
+   "name": "ai.adeu/adeu",
+   "repo": "https://github.com/dealfluence/adeu",
+   "stars": 170,
+   "registry_type": "npm",
+   "package": "@adeu/mcp-server",
+   "version": "1.7.1",
+   "command": [
+    "npx",
+    "-y",
+    "@adeu/mcp-server@1.7.1"
+   ]
+  },
+  {
+   "name": "ai.toolprint/hypertool-mcp",
+   "repo": "https://github.com/toolprint/hypertool-mcp",
+   "stars": 155,
+   "registry_type": "npm",
+   "package": "@toolprint/hypertool-mcp",
+   "version": "0.0.42",
+   "command": [
+    "npx",
+    "-y",
+    "@toolprint/hypertool-mcp@0.0.42"
+   ]
+  },
+  {
+   "name": "com.auth0/mcp",
+   "repo": "https://github.com/auth0/auth0-mcp-server",
+   "stars": 122,
+   "registry_type": "npm",
+   "package": "@auth0/auth0-mcp-server",
+   "version": "0.1.0-beta.10",
+   "command": [
+    "npx",
+    "-y",
+    "@auth0/auth0-mcp-server@0.1.0-beta.10"
+   ]
+  },
+  {
+   "name": "com.atagon/kogiqa-mcp",
+   "repo": "https://github.com/atagon-GmbH/kogiqa-mcp",
+   "stars": 92,
+   "registry_type": "npm",
+   "package": "kogiqa-mcp",
+   "version": "1.3.103",
+   "command": [
+    "npx",
+    "-y",
+    "kogiqa-mcp@1.3.103"
+   ]
+  },
+  {
+   "name": "ai.wilm/wilma",
+   "repo": "https://github.com/aikarjal/wilmai",
+   "stars": 81,
+   "registry_type": "npm",
+   "package": "@wilm-ai/wilma-cli",
+   "version": "2.4.0",
+   "command": [
+    "npx",
+    "-y",
+    "@wilm-ai/wilma-cli@2.4.0"
+   ]
+  },
+  {
+   "name": "com.codescene/codescene-mcp-server",
+   "repo": "https://github.com/codescene-oss/codescene-mcp-server",
+   "stars": 73,
+   "registry_type": "npm",
+   "package": "@codescene/codehealth-mcp",
+   "version": "0.3.1",
+   "command": [
+    "npx",
+    "-y",
+    "@codescene/codehealth-mcp@0.3.1"
+   ]
+  },
+  {
+   "name": "ai.mcpcap/mcpcap",
+   "repo": "https://github.com/mcpcap/mcpcap",
+   "stars": 54,
+   "registry_type": "pypi",
+   "package": "mcpcap",
+   "version": "0.10.0",
+   "command": [
+    "uvx",
+    "mcpcap@0.10.0"
+   ]
+  },
+  {
+   "name": "ai.glassflow/tares",
+   "repo": "https://github.com/glassflow/tares",
+   "stars": 44,
+   "registry_type": "pypi",
+   "package": "tares",
+   "version": "1.55.1",
+   "command": [
+    "uvx",
+    "tares@1.55.1"
+   ]
+  },
+  {
+   "name": "ai.vaaya/mcp",
+   "repo": "https://github.com/vaaya-ai/vaaya-mcp",
+   "stars": 44,
+   "registry_type": "npm",
+   "package": "@vaaya/mcp",
+   "version": "0.6.8",
+   "command": [
+    "npx",
+    "-y",
+    "@vaaya/mcp@0.6.8"
+   ]
+  },
+  {
+   "name": "ai.ekwo/mcp",
+   "repo": "https://github.com/Ekwo-ai/ekwo-os",
+   "stars": 41,
+   "registry_type": "npm",
+   "package": "@ekwo-ai/mcp",
+   "version": "0.24.0",
+   "command": [
+    "npx",
+    "-y",
+    "@ekwo-ai/mcp@0.24.0"
+   ]
+  },
+  {
+   "name": "com.ausca/agent-services",
+   "repo": "https://github.com/auscahq/ausca",
+   "stars": 38,
+   "registry_type": "npm",
+   "package": "ausca",
+   "version": "0.1.0",
+   "command": [
+    "npx",
+    "-y",
+    "ausca@0.1.0"
+   ]
+  },
+  {
+   "name": "ai.wavespeed/mcp",
+   "repo": "https://github.com/WaveSpeedAI/mcp-server",
+   "stars": 37,
+   "registry_type": "npm",
+   "package": "@wavespeed/mcp",
+   "version": "1.2.4",
+   "command": [
+    "npx",
+    "-y",
+    "@wavespeed/mcp@1.2.4"
+   ]
+  },
+  {
+   "name": "com.1102tools/acquisition-gov-mcp",
+   "repo": "https://github.com/1102tools-dev/federal-contracting-mcps",
+   "stars": 29,
+   "registry_type": "pypi",
+   "package": "acquisition-gov-mcp",
+   "version": "1.0.17",
+   "command": [
+    "uvx",
+    "acquisition-gov-mcp@1.0.17"
+   ]
+  },
+  {
+   "name": "com.1102tools/usaspending-gov-mcp",
+   "repo": "https://github.com/1102tools-dev/federal-contracting-mcps",
+   "stars": 29,
+   "registry_type": "pypi",
+   "package": "usaspending-gov-mcp",
+   "version": "1.0.29",
+   "command": [
+    "uvx",
+    "usaspending-gov-mcp@1.0.29"
+   ]
+  },
+  {
+   "name": "ai.zensation/zenbrain",
+   "repo": "https://github.com/zensation-ai/zenbrain",
+   "stars": 27,
+   "registry_type": "npm",
+   "package": "@zensation/mcp",
+   "version": "0.3.1",
+   "command": [
+    "npx",
+    "-y",
+    "@zensation/mcp@0.3.1"
+   ]
+  },
+  {
+   "name": "com.dbconvert/streams",
+   "repo": "https://github.com/slotix/dbconvert-streams-public",
+   "stars": 24,
+   "registry_type": "npm",
+   "package": "@dbconvert/stream-mcp",
+   "version": "2.7.3",
+   "command": [
+    "npx",
+    "-y",
+    "@dbconvert/stream-mcp@2.7.3"
+   ]
+  },
+  {
+   "name": "com.appfigures/mcp",
+   "repo": "https://github.com/appfigures/cli",
+   "stars": 21,
+   "registry_type": "npm",
+   "package": "@appfigures/cli",
+   "version": "4.0.0",
+   "command": [
+    "npx",
+    "-y",
+    "@appfigures/cli@4.0.0"
+   ]
+  },
+  {
+   "name": "ai.orangepro/mcp",
+   "repo": "https://github.com/OrangeproAI/orangepro-mcp",
+   "stars": 19,
+   "registry_type": "npm",
+   "package": "@orangepro/mcp-server",
+   "version": "0.2.59",
+   "command": [
+    "npx",
+    "-y",
+    "@orangepro/mcp-server@0.2.59"
+   ]
+  },
+  {
+   "name": "ai.dinglebear/yarr",
+   "repo": "https://github.com/dinglebear-ai/yarr",
+   "stars": 17,
+   "registry_type": "npm",
+   "package": "@dinglebear/yarr",
+   "version": "2.2.2",
+   "command": [
+    "npx",
+    "-y",
+    "@dinglebear/yarr@2.2.2"
+   ]
+  },
+  {
+   "name": "ai.dinglebear/yarr-mcp",
+   "repo": "https://github.com/jmagar/yarr",
+   "stars": 17,
+   "registry_type": "npm",
+   "package": "yarr-mcp",
+   "version": "1.1.1",
+   "command": [
+    "npx",
+    "-y",
+    "yarr-mcp@1.1.1"
+   ]
+  },
+  {
+   "name": "com.ascent-partners/hkex-filings",
+   "repo": "https://github.com/simonmak-ascent/hkex-filing-scraper",
+   "stars": 16,
+   "registry_type": "pypi",
+   "package": "hkex-filing-scraper",
+   "version": "2.4.3",
+   "command": [
+    "uvx",
+    "hkex-filing-scraper@2.4.3"
+   ]
+  },
+  {
+   "name": "ai.skilltotal/skilltotal",
+   "repo": "https://github.com/pezhik/skilltotal",
+   "stars": 16,
+   "registry_type": "pypi",
+   "package": "skilltotal",
+   "version": "0.90.0",
+   "command": [
+    "uvx",
+    "skilltotal@0.90.0"
+   ]
+  },
+  {
+   "name": "au.com.ato-mcp/ato-mcp",
+   "repo": "https://github.com/william-laverty/ato-mcp",
+   "stars": 15,
+   "registry_type": "npm",
+   "package": "ato-mcp",
+   "version": "2.3.0",
+   "command": [
+    "npx",
+    "-y",
+    "ato-mcp@2.3.0"
+   ]
+  },
+  {
+   "name": "ai.satohub/onchain-agents",
+   "repo": "https://github.com/satohubai/onchain-agents",
+   "stars": 15,
+   "registry_type": "npm",
+   "package": "@satohub/mcp",
+   "version": "1.0.3",
+   "command": [
+    "npx",
+    "-y",
+    "@satohub/mcp@1.0.3"
+   ]
+  },
+  {
+   "name": "co.workix/mcp",
+   "repo": "https://github.com/facetoplace/Workix",
+   "stars": 12,
+   "registry_type": "npm",
+   "package": "@workix/mcp",
+   "version": "1.0.0",
+   "command": [
+    "npx",
+    "-y",
+    "@workix/mcp@1.0.0"
+   ]
+  },
+  {
+   "name": "ai.takara/miru",
+   "repo": "https://github.com/takara-ai/miru-code",
+   "stars": 12,
+   "registry_type": "npm",
+   "package": "@takara-ai/miru-code",
+   "version": "1.10.1",
+   "command": [
+    "npx",
+    "-y",
+    "@takara-ai/miru-code@1.10.1"
+   ]
+  },
+  {
+   "name": "com.beacio/mcp",
+   "repo": "https://github.com/wklm/beacio-sdk",
+   "stars": 11,
+   "registry_type": "npm",
+   "package": "@beacio/mcp",
+   "version": "1.0.1",
+   "command": [
+    "npx",
+    "-y",
+    "@beacio/mcp@1.0.1"
+   ]
+  },
+  {
+   "name": "com.adrianczuczka/mason",
+   "repo": "https://github.com/adrianczuczka/mason",
+   "stars": 11,
+   "registry_type": "npm",
+   "package": "mason-context",
+   "version": "0.24.0",
+   "command": [
+    "npx",
+    "-y",
+    "mason-context@0.24.0"
+   ]
+  }
+ ]
+}

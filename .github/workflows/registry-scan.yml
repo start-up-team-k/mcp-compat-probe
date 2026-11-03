@@ -1,0 +1,29 @@
+# Runs third-party MCP servers from the official registry (npm/PyPI, stdio) ONLY inside this runner.
+# No secrets are used and the token is read-only. Results are uploaded as an artifact and committed by a maintainer.
+name: registry-scan
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install uv (runs PyPI servers)
+        run: pip install uv
+      - name: Scan targets (90 s per server)
+        run: python -m mcp_compat_probe scan registry-scan/targets.json --out "out/$(date -u +%F)" --timeout 90
+      - uses: actions/upload-artifact@v4
+        with:
+          name: registry-scan
+          path: out

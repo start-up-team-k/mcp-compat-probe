@@ -8,7 +8,7 @@ import unittest
 import urllib.error
 from unittest import mock
 
-from mcp_compat_probe import check, cli, runner, stdio
+from mcp_compat_probe import check, cli, runner, scan, stdio
 from mcp_compat_probe.probes import BY_ID, PROBES, match_probes
 
 HERE = os.path.dirname(__file__)
@@ -60,7 +60,7 @@ class IssueDerivedExpectations(unittest.TestCase):
     def test_e003_top_level_combinators(self):
         for probe in ("top_anyof", "top_oneof", "top_allof"):
             ev = check.evaluate(BY_ID[probe]["tool"], self.table)
-            for cfg in ("anthropic_messages", "openai"):
+            for cfg in ("anthropic_messages", "openai_chat"):
                 self.assertEqual(ev[cfg]["status"], "FAIL")
                 self.assertEqual(ev[cfg]["source"], "issue-derived")
             self.assertEqual(ev["gemini_parameters"]["status"], "UNKNOWN")
@@ -96,7 +96,7 @@ class Check(unittest.TestCase):
         ev = check.evaluate(BY_ID["top_anyof"]["tool"], check.load_table(d))
         self.assertEqual(ev["anthropic_messages"]["status"], "PASS")
         self.assertEqual(ev["anthropic_messages"]["source"], "measured 2026-01-02")
-        self.assertEqual(ev["openai"]["status"], "FAIL")  # still issue-derived
+        self.assertEqual(ev["openai_chat"]["status"], "FAIL")  # still issue-derived
 
     def test_cli_file_fails_with_nonzero_exit(self):
         code, out, _ = run_cli("check", os.path.join(ROOT, "examples", "tools-list.json"))
@@ -185,6 +185,7 @@ class Runner(unittest.TestCase):
         r = results[0]
         self.assertTrue(r["accepted"])
         self.assertEqual((r["model_returned"], r["http_status"], r["usage"]["input_tokens"]), ("m-resp", 200, 7))
+        self.assertEqual(r["transport"], "rest-direct")
         self.assertTrue(r["measured_at"].endswith("Z"))
         latest = json.loads(rd(d, "latest.json"))
         self.assertEqual(len(latest["results"]), 4)  # (control + const) x 2 anthropic configs
@@ -192,13 +193,68 @@ class Runner(unittest.TestCase):
 
     def test_request_shapes(self):
         t = BY_ID["control"]["tool"]
-        _, _, b = runner.build("openai_strict", "m", "k", t)
+        _, _, b = runner.build("openai_chat_strict", "m", "k", t)
         self.assertTrue(b["tools"][0]["function"]["strict"])
+        for cfg, want in (("openai_responses", None), ("openai_responses_strict_true", True),
+                          ("openai_responses_strict_false", False)):
+            url, _, b = runner.build(cfg, "m", "k", t)
+            self.assertTrue(url.endswith("/v1/responses"))
+            self.assertEqual(b["tools"][0].get("strict", "absent"), "absent" if want is None else want)
+        _, _, b = runner.build("openai_chat", "m", "k", t)
+        self.assertNotIn("strict", b["tools"][0]["function"])
         _, _, b = runner.build("gemini_parameters_json_schema", "m", "k", t)
         self.assertIn("parametersJsonSchema", b["tools"][0]["functionDeclarations"][0])
         url, h, b = runner.build("anthropic_count_tokens", "m", "SECRETKEY99", t)
         self.assertTrue(url.endswith("/count_tokens"))
         self.assertNotIn("SECRETKEY99", url + json.dumps(b))  # key only in headers
+
+
+class Scan(unittest.TestCase):
+    def tool(self, schema):
+        return {"name": "t", "description": "d", "inputSchema": schema}
+
+    def test_client_stage_dialects(self):
+        d07 = scan.client_stage(self.tool({"$schema": "http://json-schema.org/draft-07/schema#", "type": "object"}))
+        self.assertEqual(d07["dialect"], "draft-07")
+        self.assertIn("2020-12-only", d07["risk"])
+        new = scan.client_stage(self.tool({"$schema": "https://json-schema.org/draft/2020-12/schema",
+                                           "type": "object", "properties": {"a": {"prefixItems": []}}}))
+        self.assertEqual(new["dialect"], "2020-12")
+        self.assertIsNone(scan.client_stage(self.tool({"type": "object"})))
+        mixed = scan.client_stage(self.tool({"$schema": "http://json-schema.org/draft-07/schema#",
+                                             "properties": {"a": {"prefixItems": []}}}))
+        self.assertIn("prefixItems", mixed["keywords"])
+
+    def test_scan_one_statuses_and_judging(self):
+        d = tempfile.mkdtemp()
+        table = check.load_table(DATA)
+        base = {"name": "a/b", "command": ["x"]}
+        needs = scan.scan_one(dict(base, env=["API_KEY"]), d, table)
+        self.assertEqual(needs["status"], "needs config")
+
+        def boom(cmd, timeout):
+            raise stdio.StdioError("server exited before answering initialize; stderr: Error: API_KEY is not set")
+        self.assertEqual(scan.scan_one(base, d, table, lister=boom)["status"], "needs config")
+
+        def crash(cmd, timeout):
+            raise stdio.StdioError("timeout waiting for initialize")
+        self.assertEqual(scan.scan_one(base, d, table, lister=crash)["status"], "exec failed")
+        tools = [self.tool({"type": "object", "anyOf": [{}]})]
+        ok = scan.scan_one(base, d, table, lister=lambda c, timeout: tools)
+        self.assertEqual(ok["status"], "ok")
+        self.assertEqual(ok["api_stage"]["configs"]["anthropic_messages"]["FAIL"], 1)
+        self.assertEqual(ok["api_stage"]["configs"]["anthropic_messages"]["sources"], ["issue-derived"])
+        self.assertTrue(os.path.exists(os.path.join(d, ok["tools_file"])))
+
+    def test_scan_cli_with_fake_server(self):
+        d = tempfile.mkdtemp()
+        tf = os.path.join(d, "t.json")
+        with open(tf, "w") as f:
+            json.dump({"targets": [{"name": "fake/one", "command": [sys.executable, os.path.join(HERE, "fake_server.py")]}]}, f)
+        code, _, _ = run_cli("scan", tf, "--out", os.path.join(d, "2026-01-01"), "--timeout", "20")
+        self.assertEqual(code, 0)
+        doc = json.loads(rd(d, "2026-01-01", "results.json"))
+        self.assertEqual(doc["servers"][0]["n_tools"], 2)
 
 
 if __name__ == "__main__":

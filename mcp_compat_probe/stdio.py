@@ -1,6 +1,7 @@
 """Minimal MCP stdio client: initialize, then page through tools/list. Standard library only."""
 from __future__ import annotations
 
+import collections
 import json
 import queue
 import shutil
@@ -18,7 +19,7 @@ def list_tools(cmd, timeout=90.0):
     if exe is None:
         raise StdioError("command not found: %s" % cmd[0])
     proc = subprocess.Popen([exe] + list(cmd[1:]), stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                            stderr=subprocess.DEVNULL, text=True, encoding="utf-8")
+                            stderr=subprocess.PIPE, text=True, encoding="utf-8")
     lines = queue.Queue()
 
     def pump():
@@ -27,6 +28,11 @@ def list_tools(cmd, timeout=90.0):
         lines.put(None)
 
     threading.Thread(target=pump, daemon=True).start()
+    errtail = collections.deque(maxlen=15)  # last stderr lines, to explain startup failures
+    threading.Thread(target=lambda: [errtail.append(l.rstrip()) for l in proc.stderr], daemon=True).start()
+
+    def why(msg):
+        return "%s; stderr: %s" % (msg, " | ".join(errtail)[-600:]) if errtail else msg
 
     def send(msg):
         proc.stdin.write(json.dumps(msg) + "\n")
@@ -39,9 +45,9 @@ def list_tools(cmd, timeout=90.0):
             try:
                 line = lines.get(timeout=max(0.1, deadline - time.time()))
             except queue.Empty:
-                raise StdioError("timeout waiting for %s" % method)
+                raise StdioError(why("timeout waiting for %s" % method))
             if line is None:
-                raise StdioError("server exited before answering %s" % method)
+                raise StdioError(why("server exited before answering %s" % method))
             try:
                 msg = json.loads(line)
             except ValueError:
@@ -72,3 +78,4 @@ def list_tools(cmd, timeout=90.0):
         proc.terminate()
         proc.wait()
         proc.stdout.close()
+        proc.stderr.close()

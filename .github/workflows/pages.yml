@@ -2,7 +2,7 @@ name: pages
 on:
   push:
     branches: [main]
-    paths: ["site/**", "mcp_compat_probe/data/**"]
+    paths: ["site/**", "mcp_compat_probe/data/**", "registry-scan/**"]
   workflow_dispatch:
 permissions:
   contents: read
@@ -26,7 +26,9 @@ jobs:
           mkdir -p _site/data
           cp site/index.html _site/
           cp -r mcp_compat_probe/data/. _site/data/
-          mkdir -p _site/data/results
+          mkdir -p _site/data/results _site/registry-scan
+          cp -r registry-scan/. _site/registry-scan/
+          python3 -c "import json,os; print(json.dumps(sorted([d for d in os.listdir('registry-scan') if os.path.isdir('registry-scan/'+d)],reverse=True)))" > _site/registry-scan/index.json
           python3 -c "import json,os; print(json.dumps(sorted(os.listdir('_site/data/results'),reverse=True)))" > _site/data/index.json
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

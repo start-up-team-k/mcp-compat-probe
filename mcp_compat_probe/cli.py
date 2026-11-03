@@ -4,7 +4,7 @@ import argparse
 import json
 import sys
 
-from . import check, runner, stdio
+from . import check, runner, scan, stdio
 
 
 def main(argv=None):
@@ -22,7 +22,16 @@ def main(argv=None):
     p = sub.add_parser("probe", help="measure the probe corpus against live APIs (needs API keys in env)")
     p.add_argument("--only", help="comma-separated probe ids (control always included)")
     p.add_argument("--data-dir", default=check.DATA_DIR)
+    r = sub.add_parser("scan", help="list tools of every server in a targets file and judge both stages")
+    r.add_argument("targets")
+    r.add_argument("--out", required=True)
+    r.add_argument("--timeout", type=float, default=90)
+    r.add_argument("--data-dir", default=check.DATA_DIR)
     args = ap.parse_args(argv)
+
+    if args.sub == "scan":
+        scan.run_scan(args.targets, args.out, args.data_dir, args.timeout)
+        return 0
 
     if args.sub == "probe":
         only = set(args.only.split(",")) if args.only else None

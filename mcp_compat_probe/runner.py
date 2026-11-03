@@ -24,10 +24,19 @@ CONFIGS = {
     "anthropic_count_tokens": dict(key="ANTHROPIC_API_KEY", model_env="MCP_COMPAT_ANTHROPIC_MODEL",
                                    model="claude-haiku-5-5", endpoint="POST /v1/messages/count_tokens",
                                    api_version="anthropic-version: 2023-06-01"),
-    "openai": dict(key="OPENAI_API_KEY", model_env="MCP_COMPAT_OPENAI_MODEL", model="gpt-5-nano",
-                   endpoint="POST /v1/chat/completions", api_version="v1"),
-    "openai_strict": dict(key="OPENAI_API_KEY", model_env="MCP_COMPAT_OPENAI_MODEL", model="gpt-5-nano",
-                          endpoint="POST /v1/chat/completions (strict: true)", api_version="v1"),
+    "openai_chat": dict(key="OPENAI_API_KEY", model_env="MCP_COMPAT_OPENAI_MODEL", model="gpt-5-nano",
+                        endpoint="POST /v1/chat/completions (strict omitted)", api_version="v1"),
+    "openai_chat_strict": dict(key="OPENAI_API_KEY", model_env="MCP_COMPAT_OPENAI_MODEL", model="gpt-5-nano",
+                               endpoint="POST /v1/chat/completions (strict: true)", api_version="v1"),
+    # Responses API normalizes the schema itself when `strict` is omitted, so omitted/true/false are separate paths.
+    "openai_responses": dict(key="OPENAI_API_KEY", model_env="MCP_COMPAT_OPENAI_MODEL", model="gpt-5-nano",
+                             endpoint="POST /v1/responses (strict omitted)", api_version="v1"),
+    "openai_responses_strict_true": dict(key="OPENAI_API_KEY", model_env="MCP_COMPAT_OPENAI_MODEL",
+                                         model="gpt-5-nano", endpoint="POST /v1/responses (strict: true)",
+                                         api_version="v1"),
+    "openai_responses_strict_false": dict(key="OPENAI_API_KEY", model_env="MCP_COMPAT_OPENAI_MODEL",
+                                          model="gpt-5-nano", endpoint="POST /v1/responses (strict: false)",
+                                          api_version="v1"),
     "gemini_parameters": dict(key="GEMINI_API_KEY", model_env="MCP_COMPAT_GEMINI_MODEL",
                               model="gemini-3.5-flash-lite", endpoint="POST models/{model}:generateContent (parameters)",
                               api_version="v1beta"),
@@ -58,11 +67,19 @@ def build(config, model, key, tool):
             return "https://api.anthropic.com/v1/messages", h, body
         return "https://api.anthropic.com/v1/messages/count_tokens", h, body
     if config.startswith("openai"):
+        h = {"authorization": "Bearer " + key, "content-type": "application/json"}
+        if config.startswith("openai_responses"):
+            tool_def = {"type": "function", "name": name, "description": desc, "parameters": schema}
+            if config.endswith("strict_true"):
+                tool_def["strict"] = True
+            elif config.endswith("strict_false"):
+                tool_def["strict"] = False
+            return ("https://api.openai.com/v1/responses", h,
+                    {"model": model, "input": "hi", "max_output_tokens": 16, "tools": [tool_def]})
         fn = {"name": name, "description": desc, "parameters": schema}
-        if config == "openai_strict":
+        if config == "openai_chat_strict":
             fn["strict"] = True
-        return ("https://api.openai.com/v1/chat/completions",
-                {"authorization": "Bearer " + key, "content-type": "application/json"},
+        return ("https://api.openai.com/v1/chat/completions", h,
                 {"model": model, "messages": [{"role": "user", "content": "hi"}], "max_completion_tokens": 16,
                  "tools": [{"type": "function", "function": fn}]})
     field = "parametersJsonSchema" if config.endswith("json_schema") else "parameters"
@@ -90,6 +107,8 @@ def _usage(config, js):
     if config.startswith("gemini"):
         return {"input_tokens": u.get("promptTokenCount"), "output_tokens": u.get("candidatesTokenCount")}
     if config.startswith("openai"):
+        if "prompt_tokens" not in u:  # Responses API field names
+            return {"input_tokens": u.get("input_tokens"), "output_tokens": u.get("output_tokens")}
         return {"input_tokens": u.get("prompt_tokens"), "output_tokens": u.get("completion_tokens")}
     return {"input_tokens": u.get("input_tokens"), "output_tokens": u.get("output_tokens")}
 
@@ -116,7 +135,7 @@ def measure(config, probe, env, sleep=time.sleep):
     ok = status is not None and 200 <= status < 300
     return {"probe_id": probe["id"], "config": config, "model": model,
             "model_returned": js.get("model") or js.get("modelVersion") if isinstance(js, dict) else None,
-            "endpoint": spec["endpoint"], "api_version": spec["api_version"],
+            "transport": "rest-direct", "endpoint": spec["endpoint"], "api_version": spec["api_version"],
             # 400/422 = the API looked at the schema and refused it; anything else is inconclusive.
             "accepted": True if ok else (False if status in (400, 422) else None),
             "http_status": status, "error": err if not ok else None,

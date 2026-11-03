@@ -13,7 +13,7 @@
   },
   {
    "probe_id": "top_anyof",
-   "config": "openai",
+   "config": "openai_chat",
    "accepted": false,
    "source_url": "https://github.com/makenotion/notion-mcp-server/issues/340",
    "quote": "Both Anthropic and OpenAI reject this at the API level",
@@ -31,7 +31,7 @@
   },
   {
    "probe_id": "top_oneof",
-   "config": "openai",
+   "config": "openai_chat",
    "accepted": false,
    "source_url": "https://github.com/makenotion/notion-mcp-server/issues/340",
    "quote": "Both Anthropic and OpenAI reject this at the API level",
@@ -49,7 +49,7 @@
   },
   {
    "probe_id": "top_allof",
-   "config": "openai",
+   "config": "openai_chat",
    "accepted": false,
    "source_url": "https://github.com/makenotion/notion-mcp-server/issues/340",
    "quote": "Both Anthropic and OpenAI reject this at the API level",

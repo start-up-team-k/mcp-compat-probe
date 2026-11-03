@@ -13,6 +13,7 @@ experiment run by start-up-team-k.
 <div id="status" class="note">Loading...</div>
 <h2>Live measurements</h2><div id="measured"></div>
 <h2>Issue-derived expectations (not measured)</h2><div id="expected"></div>
+<h2>Registry scan</h2><div id="scan" class="note">Loading...</div>
 <h2>Raw files</h2><ul id="files"></ul>
 <script>
 const get = u => fetch(u).then(r => { if (!r.ok) throw new Error(u + " " + r.status); return r.json(); });
@@ -44,4 +45,28 @@ Promise.all([get("data/latest.json"), get("data/expected-from-issues.json"), get
     const li = el("li"), a = el("a", f); a.href = "data/" + f; li.appendChild(a); ul.appendChild(li);
   });
 }).catch(e => { document.getElementById("status").textContent = "Could not load dataset: " + e.message; });
+
+// Registry scan table (latest date). issue-derived verdicts are NOT measurements.
+(async () => {
+  const box = document.getElementById("scan");
+  try {
+    const dates = await get("registry-scan/index.json");
+    if (!dates.length) { box.textContent = "No registry scan has been committed yet."; return; }
+    const doc = await get("registry-scan/" + dates[0] + "/results.json");
+    const sv = doc.servers, cnt = s => sv.filter(x => x.status === s).length;
+    box.textContent = "Scan " + dates[0] + ": " + sv.length + " servers, " + cnt("ok") + " listed, " + cnt("needs config") +
+      " needs config, " + cnt("exec failed") + " exec failed. API-stage verdicts marked 'issue-derived' come from public bug reports, " +
+      "NOT from measurements" + (doc.measured_data_present ? " (measured data exists and takes precedence where present)." : " (no live measurements exist yet).") +
+      " Client stage = JSON Schema dialect check (standard-library judgement, no validator was run).";
+    const fmt = a => { const out = [];
+      for (const [c, v] of Object.entries(a.configs)) if (v.FAIL) out.push(c + ": " + v.FAIL + " FAIL (" + v.sources.join("+") + ")");
+      return out.join("; ") || (Object.values(a.configs).every(v => v.UNKNOWN === 0) ? "all PASS" : "no FAIL known (some UNKNOWN)"); };
+    const fk = a => [...new Set(a.failures.flatMap(f => f.tool + ": " + f.keywords.join(",")))].slice(0, 6).join("; ");
+    const ck = c => c.flagged.length ? c.flagged.length + " tools (" + c.dialects.join("/") + "): " + [...new Set(c.flagged.map(f => f.risk))].join("; ") : "none flagged";
+    box.after(table(["server", "package@version", "stars", "status", "API stage", "failed tools: keywords", "client stage"],
+      sv.map(x => [x.name, x.registry_type + ":" + x.package + "@" + x.version, String(x.stars), { t: x.status, c: x.status === "ok" ? "ok" : "unk" },
+        x.status === "ok" ? fmt(x.api_stage) : (x.error || "").slice(0, 120), x.status === "ok" ? fk(x.api_stage) : "",
+        x.status === "ok" ? ck(x.client_stage) : ""])));
+  } catch (e) { box.textContent = "Could not load registry scan: " + e.message; }
+})();
 </script>

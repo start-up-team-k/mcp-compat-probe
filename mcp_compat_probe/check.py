@@ -7,7 +7,8 @@ import os
 from .probes import PROBES, match_probes
 
 # Order = table column order. Ids are stable dataset keys.
-CONFIGS = ["anthropic_messages", "anthropic_count_tokens", "openai", "openai_strict",
+CONFIGS = ["anthropic_messages", "anthropic_count_tokens", "openai_chat", "openai_chat_strict",
+           "openai_responses", "openai_responses_strict_true", "openai_responses_strict_false",
            "gemini_parameters", "gemini_parameters_json_schema"]
 DATA_DIR = os.environ.get("MCP_COMPAT_PROBE_DATA") or os.path.join(os.path.dirname(__file__), "data")
 
