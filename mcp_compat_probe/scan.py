@@ -81,8 +81,17 @@ def scan_one(target, out_dir, table, timeout=90, lister=stdio.list_tools):
     if target.get("env"):
         rec.update(status="needs config", error="registry declares required env: " + ", ".join(target["env"]))
         return rec
+    cmd = target["command"]
     try:
-        tools = lister(target["command"], timeout=timeout)
+        try:
+            tools = lister(cmd, timeout=timeout)
+        except Exception as e:  # uvx prints "Use `uvx --from PKG EXE` instead" when the package has another executable name
+            m = re.search(r"uvx --from (\S+) (\S+)` instead", str(e))
+            if cmd[0] != "uvx" or not m:
+                raise
+            cmd = ["uvx", "--from", m.group(1) + "==" + (target.get("version") or ""), m.group(2)]
+            rec["command"] = cmd
+            tools = lister(cmd, timeout=timeout)
     except Exception as e:
         msg = str(e)[:700]
         stderr = msg.split("stderr:", 1)[-1] if "stderr:" in msg else ""

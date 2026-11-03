@@ -1,5 +1,5 @@
 {
- "_comment": "Selected 2026-11-03 from registry.modelcontextprotocol.io (latest, active, stdio npm/pypi, GitHub repo, no required env/args), by GitHub stars, max 2 per repo.",
+ "_comment": "Selected 2026-11-03 from registry.modelcontextprotocol.io (latest, active, stdio npm/pypi, GitHub repo, no required env/args), by GitHub stars, max 2 per repo. Extended from 36 to 60 targets after the first run listed 18 servers.",
  "targets": [
   {
    "name": "com.browser-use/browser-use",
@@ -459,6 +459,313 @@
     "npx",
     "-y",
     "mason-context@0.24.0"
+   ]
+  },
+  {
+   "name": "ai.nauro/nauro",
+   "repo": "https://github.com/Nauro-AI/nauro",
+   "stars": 11,
+   "registry_type": "pypi",
+   "package": "nauro",
+   "version": "1.23.0",
+   "command": [
+    "uvx",
+    "nauro@1.23.0"
+   ]
+  },
+  {
+   "name": "ai.jaxon/dsail",
+   "repo": "https://github.com/JaxonAI/dsail",
+   "stars": 10,
+   "registry_type": "pypi",
+   "package": "dsail",
+   "version": "1.0.6",
+   "command": [
+    "uvx",
+    "dsail@1.0.6"
+   ]
+  },
+  {
+   "name": "ai.imboard/dossier",
+   "repo": "https://github.com/imboard-ai/ai-dossier",
+   "stars": 10,
+   "registry_type": "npm",
+   "package": "@ai-dossier/mcp-server",
+   "version": "1.0.4",
+   "command": [
+    "npx",
+    "-y",
+    "@ai-dossier/mcp-server@1.0.4"
+   ]
+  },
+  {
+   "name": "ai.sanctuaryprotocol/sanctuary",
+   "repo": "https://github.com/eriknewton/sanctuary-framework",
+   "stars": 10,
+   "registry_type": "npm",
+   "package": "@sanctuary-framework/mcp-server",
+   "version": "1.8.4",
+   "command": [
+    "npx",
+    "-y",
+    "@sanctuary-framework/mcp-server@1.8.4"
+   ]
+  },
+  {
+   "name": "ai.etincel/etincel-nonfiction",
+   "repo": "https://github.com/AIStoryHub/etincel",
+   "stars": 9,
+   "registry_type": "npm",
+   "package": "etincel",
+   "version": "0.10.1",
+   "command": [
+    "npx",
+    "-y",
+    "etincel@0.10.1"
+   ]
+  },
+  {
+   "name": "ai.dinglebear/labby",
+   "repo": "https://github.com/dinglebear-ai/labby",
+   "stars": 9,
+   "registry_type": "npm",
+   "package": "@dinglebear/labby",
+   "version": "2.6.2",
+   "command": [
+    "npx",
+    "-y",
+    "@dinglebear/labby@2.6.2"
+   ]
+  },
+  {
+   "name": "com.codician/growmos",
+   "repo": "https://github.com/codician-team/growmos",
+   "stars": 9,
+   "registry_type": "pypi",
+   "package": "growmos",
+   "version": "0.1.5",
+   "command": [
+    "uvx",
+    "growmos@0.1.5"
+   ]
+  },
+  {
+   "name": "ai.ravenmcp/raven-mcp",
+   "repo": "https://github.com/rhinocap/raven-mcp",
+   "stars": 8,
+   "registry_type": "npm",
+   "package": "raven-mcp",
+   "version": "2.6.0",
+   "command": [
+    "npx",
+    "-y",
+    "raven-mcp@2.6.0"
+   ]
+  },
+  {
+   "name": "app.crawlio/crawlio-browser",
+   "repo": "https://github.com/Crawlio-app/crawlio-browser",
+   "stars": 8,
+   "registry_type": "npm",
+   "package": "crawlio-browser",
+   "version": "1.11.0",
+   "command": [
+    "npx",
+    "-y",
+    "crawlio-browser@1.11.0"
+   ]
+  },
+  {
+   "name": "com.altmetric.mcp/altmetric-mcp",
+   "repo": "https://github.com/altmetric/altmetric-mcp",
+   "stars": 7,
+   "registry_type": "npm",
+   "package": "altmetric-mcp",
+   "version": "1.2.6",
+   "command": [
+    "npx",
+    "-y",
+    "altmetric-mcp@1.2.6"
+   ]
+  },
+  {
+   "name": "ai.agenticaffiliate/affiliate-networks-mcp",
+   "repo": "https://github.com/bobberrisford/affiliatemcp",
+   "stars": 7,
+   "registry_type": "npm",
+   "package": "affiliate-networks-mcp",
+   "version": "0.19.0",
+   "command": [
+    "npx",
+    "-y",
+    "affiliate-networks-mcp@0.19.0"
+   ]
+  },
+  {
+   "name": "capital.hove/read-only-local-mysql-mcp-server",
+   "repo": "https://github.com/hovecapital/read-only-local-mysql-mcp-server",
+   "stars": 7,
+   "registry_type": "npm",
+   "package": "@hovecapital/read-only-mysql-mcp-server",
+   "version": "0.1.1",
+   "command": [
+    "npx",
+    "-y",
+    "@hovecapital/read-only-mysql-mcp-server@0.1.1"
+   ]
+  },
+  {
+   "name": "co.indigloo/model-finder",
+   "repo": "https://github.com/Abhiindigloo/EvalHarness",
+   "stars": 7,
+   "registry_type": "pypi",
+   "package": "model-finder-mcp",
+   "version": "1.3.5",
+   "command": [
+    "uvx",
+    "model-finder-mcp@1.3.5"
+   ]
+  },
+  {
+   "name": "ai.testiv/mcp",
+   "repo": "https://github.com/testivai/testivai-oss",
+   "stars": 7,
+   "registry_type": "npm",
+   "package": "@testivai/mcp",
+   "version": "0.9.1",
+   "command": [
+    "npx",
+    "-y",
+    "@testivai/mcp@0.9.1"
+   ]
+  },
+  {
+   "name": "com.debugbundle/mcp",
+   "repo": "https://github.com/debugbundle/debugbundle",
+   "stars": 7,
+   "registry_type": "npm",
+   "package": "@debugbundle/mcp",
+   "version": "1.18.1",
+   "command": [
+    "npx",
+    "-y",
+    "@debugbundle/mcp@1.18.1"
+   ]
+  },
+  {
+   "name": "ai.keenable/web-search",
+   "repo": "https://github.com/keenableai/keenable-mcp",
+   "stars": 6,
+   "registry_type": "npm",
+   "package": "@keenable/mcp",
+   "version": "0.1.0",
+   "command": [
+    "npx",
+    "-y",
+    "@keenable/mcp@0.1.0"
+   ]
+  },
+  {
+   "name": "app.nomac/simulator-use",
+   "repo": "https://github.com/NoMac-app/simulator-use",
+   "stars": 5,
+   "registry_type": "npm",
+   "package": "simulator-use",
+   "version": "0.15.1",
+   "command": [
+    "npx",
+    "-y",
+    "simulator-use@0.15.1"
+   ]
+  },
+  {
+   "name": "ai.huddo/huddo",
+   "repo": "https://github.com/puffo-ai/huddo-mcp",
+   "stars": 5,
+   "registry_type": "npm",
+   "package": "huddoai",
+   "version": "0.10.2",
+   "command": [
+    "npx",
+    "-y",
+    "huddoai@0.10.2"
+   ]
+  },
+  {
+   "name": "ai.hashgrid/sdk",
+   "repo": "https://github.com/hashgrid-labs/sdk",
+   "stars": 4,
+   "registry_type": "pypi",
+   "package": "hashgrid",
+   "version": "1.3.0",
+   "command": [
+    "uvx",
+    "hashgrid@1.3.0"
+   ]
+  },
+  {
+   "name": "ai.dinglebear/cortex",
+   "repo": "https://github.com/dinglebear-ai/cortex",
+   "stars": 4,
+   "registry_type": "npm",
+   "package": "@dinglebear/cortex",
+   "version": "3.13.2",
+   "command": [
+    "npx",
+    "-y",
+    "@dinglebear/cortex@3.13.2"
+   ]
+  },
+  {
+   "name": "ai.dinglebear/cortex-rmcp",
+   "repo": "https://github.com/jmagar/cortex",
+   "stars": 4,
+   "registry_type": "npm",
+   "package": "cortex-rmcp",
+   "version": "3.9.1",
+   "command": [
+    "npx",
+    "-y",
+    "cortex-rmcp@3.9.1"
+   ]
+  },
+  {
+   "name": "com.antideploy/antideploy-mcp",
+   "repo": "https://github.com/antideploy/antideploy-mcp",
+   "stars": 4,
+   "registry_type": "npm",
+   "package": "antideploy-mcp",
+   "version": "0.2.0",
+   "command": [
+    "npx",
+    "-y",
+    "antideploy-mcp@0.2.0"
+   ]
+  },
+  {
+   "name": "codes.qrx/mcp",
+   "repo": "https://github.com/qrxcodes/qrx-mcp",
+   "stars": 3,
+   "registry_type": "npm",
+   "package": "@qrxcodes/mcp",
+   "version": "1.0.1",
+   "command": [
+    "npx",
+    "-y",
+    "@qrxcodes/mcp@1.0.1"
+   ]
+  },
+  {
+   "name": "com.a11ychk/mcp",
+   "repo": "https://github.com/IsaacEryn/a11ychk",
+   "stars": 3,
+   "registry_type": "npm",
+   "package": "@a11ychk/mcp",
+   "version": "0.2.5",
+   "command": [
+    "npx",
+    "-y",
+    "@a11ychk/mcp@0.2.5"
    ]
   }
  ]

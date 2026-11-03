@@ -246,6 +246,15 @@ class Scan(unittest.TestCase):
         def crash(cmd, timeout):
             raise stdio.StdioError("timeout waiting for initialize")
         self.assertEqual(scan.scan_one(base, d, table, lister=crash)["status"], "exec failed")
+        calls = []
+
+        def hinted(cmd, timeout):
+            calls.append(cmd)
+            if len(calls) == 1:
+                raise stdio.StdioError("x; stderr: executables are available: - srv | Use `uvx --from pkg srv` instead.")
+            return []
+        r = scan.scan_one(dict(base, command=["uvx", "pkg@1.0"], version="1.0"), d, table, lister=hinted)
+        self.assertEqual((r["status"], calls[1]), ("ok", ["uvx", "--from", "pkg==1.0", "srv"]))
         tools = [self.tool({"type": "object", "anyOf": [{}]})]
         ok = scan.scan_one(base, d, table, lister=lambda c, timeout: tools)
         self.assertEqual(ok["status"], "ok")
